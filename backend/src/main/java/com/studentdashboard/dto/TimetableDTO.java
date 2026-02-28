@@ -10,6 +10,7 @@ public class TimetableDTO {
     private LocalTime startTime;
     private LocalTime endTime;
     private String venue;
+    private boolean marked;
 
     public TimetableDTO() {
     }
@@ -71,5 +72,13 @@ public class TimetableDTO {
 
     public void setVenue(String venue) {
         this.venue = venue;
+    }
+
+    public boolean isMarked() {
+        return marked;
+    }
+
+    public void setMarked(boolean marked) {
+        this.marked = marked;
     }
 }
