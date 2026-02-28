@@ -180,22 +180,70 @@
               </div>
             </div>
 
-            <!-- Full Grouped View -->
-            <div v-else class="timetable-full-list">
-              <div v-for="(group, date) in groupedTimetable" :key="date" class="date-group">
-                <div class="date-header">
-                   <div class="date-badge">{{ formatDate(date) }}</div>
-                   <div class="date-line"></div>
-                </div>
-                <div class="entries-mini-grid">
-                  <div v-for="entry in group" :key="entry.id" class="mini-card" @click="editEntry(entry)">
-                    <div class="mini-card-header">
-                      <h4 class="mini-subject">{{ entry.subjectName }}</h4>
-                      <button @click.stop="deleteEntry(entry.id)" class="mini-delete">×</button>
+            <!-- Full Weekly Grid View (Professional Grid) -->
+            <div v-else class="timetable-grid-wrapper">
+              <div class="table-responsive no-scrollbar">
+                <table class="weekly-grid-table">
+                  <thead>
+                    <tr>
+                      <th class="time-col">TIME</th>
+                      <th v-for="day in weekDays" :key="day" class="day-header">{{ day.toUpperCase() }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="hour in timeSlots" :key="hour">
+                      <td class="time-cell">{{ hour.toString().padStart(2, '0') }}:00</td>
+                      <td v-for="day in weekDays" :key="day" class="grid-cell">
+                        <div v-for="entry in weeklyGrid[day][hour]" :key="entry.id" class="grid-entry" @click="editEntry(entry)">
+                          <div class="entry-slot-bg"></div>
+                          <div class="entry-inner">
+                            <div class="entry-header-mini">
+                              <span class="entry-subject">{{ entry.subjectName }}</span>
+                              <span class="entry-date-tag">{{ formatDateShort(entry.date) }}</span>
+                            </div>
+                            <div class="entry-meta">
+                              <svg class="icon-tiny" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                              </svg>
+                              <span>{{ entry.venue || 'TBA' }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Task 2: Category B - Future Events Section -->
+            <div v-if="viewMode === 'all' && futureEvents.length > 0" class="future-events-section">
+              <h2 class="future-section-title">Upcoming Beyond This Week</h2>
+              <div class="future-cards-grid">
+                <div v-for="event in futureEvents" :key="event.id" class="future-card" @click="editEntry(event)">
+                  <div class="card-glass-effect"></div>
+                  <div class="future-card-header">
+                    <h3 class="future-subject-name">{{ event.subjectName }}</h3>
+                    <div class="days-remaining-badge">{{ getDaysRemaining(event.date) }}</div>
+                  </div>
+                  <div class="future-card-body">
+                    <div class="future-detail">
+                      <svg class="icon accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                      <span>{{ formatDateLong(event.date) }}</span>
                     </div>
-                    <div class="mini-info">
-                      <p><svg class="icon mini-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ formatTime(entry.startTime) }}</p>
-                      <p><svg class="icon mini-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg> {{ entry.venue }}</p>
+                    <div class="future-detail">
+                      <svg class="icon accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <span>{{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}</span>
+                    </div>
+                    <div class="future-detail">
+                      <svg class="icon accent-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      </svg>
+                      <span>{{ event.venue || 'Virtual Lab' }}</span>
                     </div>
                   </div>
                 </div>
@@ -235,6 +283,9 @@ const form = ref({
   endTime: '',
   venue: ''
 });
+
+const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const timeSlots = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
 // Privacy Redirect (Task 2)
 const checkAuth = () => {
@@ -330,9 +381,52 @@ const formatTime = (time) => {
   return timeStr;
 };
 
+const formatDateShort = (dateStr) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
   return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+};
+
+// Task 1: Logic Update - Split categories
+const getCurrentWeekRange = () => {
+  const now = new Date();
+  const day = now.getDay();
+  // Adjust so Monday is 1, Sunday is 0 -> Mon becomes 0, Sun becomes 6
+  const diffToMonday = (day === 0 ? -6 : 1 - day);
+  
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+  monday.setHours(0, 0, 0, 0);
+  
+  const friday = new Date(monday);
+  friday.setDate(monday.getDate() + 4);
+  friday.setHours(23, 59, 59, 999);
+  
+  return { monday, friday };
+};
+
+const getDaysRemaining = (dateStr) => {
+  const eventDate = new Date(dateStr);
+  eventDate.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffTime = eventDate - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Tomorrow';
+  if (diffDays < 0) return `${Math.abs(diffDays)} Days Ago`;
+  return `In ${diffDays} Days`;
+};
+
+const formatDateLong = (dateStr) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 };
 
 const filteredTimetable = computed(() => {
@@ -342,15 +436,44 @@ const filteredTimetable = computed(() => {
   );
 });
 
-const groupedTimetable = computed(() => {
-  if (viewMode.value !== 'all') return {};
-  const groups = {};
-  filteredTimetable.value.forEach(entry => {
-    const date = entry.date;
-    if (!groups[date]) groups[date] = [];
-    groups[date].push(entry);
+const currentWeekEvents = computed(() => {
+  const { monday, friday } = getCurrentWeekRange();
+  return filteredTimetable.value.filter(entry => {
+    const d = new Date(entry.date);
+    return d >= monday && d <= friday;
   });
-  return groups;
+});
+
+const futureEvents = computed(() => {
+  const { friday } = getCurrentWeekRange();
+  return filteredTimetable.value.filter(entry => {
+    const d = new Date(entry.date);
+    return d > friday;
+  });
+});
+
+const weeklyGrid = computed(() => {
+  const grid = {};
+  weekDays.forEach(day => {
+    grid[day] = {};
+    timeSlots.forEach(hour => {
+      grid[day][hour] = [];
+    });
+  });
+
+  currentWeekEvents.value.forEach(entry => {
+    const date = new Date(entry.date);
+    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+    
+    if (weekDays.includes(dayName)) {
+      const hour = parseInt(entry.startTime.split(':')[0]);
+      if (grid[dayName] && grid[dayName][hour]) {
+        grid[dayName][hour].push(entry);
+      }
+    }
+  });
+
+  return grid;
 });
 
 onMounted(() => {
@@ -379,7 +502,7 @@ onMounted(() => {
 }
 
 /* Sidebar & Header (Clean CSS) */
-.sidebar { width: 260px; padding: 12px; z-index: 20; }
+.sidebar { width: 220px; padding: 10px; z-index: 20; }
 .sidebar-inner {
   height: 100%;
   background: rgba(255, 255, 255, 0.03);
@@ -429,6 +552,18 @@ onMounted(() => {
 .input-field input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; color: white; font-size: 13px; outline: none; }
 .input-field input:focus { border-color: #6366f1; background: rgba(255, 255, 255, 0.05); }
 
+.input-field input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: 0.2s;
+}
+
+.input-field input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
 .form-actions { display: flex; justify-content: flex-end; gap: 12px; }
 .btn-save { background: #6366f1; color: white; border: none; padding: 10px 24px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; }
 .btn-cancel { background: transparent; color: #64748b; border: 1px solid rgba(255,255,255,0.05); padding: 10px 24px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; }
@@ -473,8 +608,262 @@ onMounted(() => {
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s, transform 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-10px); }
 
+.timetable-grid-wrapper {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.weekly-grid-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+  min-width: 100%;
+  table-layout: fixed;
+}
+
+.time-col { width: 35px; }
+
+.day-header {
+  padding: 6px 2px;
+  font-size: 8px;
+  font-weight: 900;
+  color: #64748b;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.03);
+  letter-spacing: 0.02em;
+  border-radius: 4px;
+}
+
+.time-cell {
+  text-align: center;
+  font-size: 8px;
+  font-weight: 800;
+  color: #475569;
+  padding: 6px 0;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.grid-cell {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+  height: 55px;
+  vertical-align: top;
+  padding: 1px;
+}
+
+.grid-entry {
+  position: relative;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 4px;
+  padding: 2px;
+  height: 100%;
+  cursor: pointer;
+  transition: 0.3s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.grid-entry:hover {
+  background: rgba(99, 102, 241, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+}
+
+.entry-slot-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.2), transparent);
+  pointer-events: none;
+}
+
+.entry-inner {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entry-header-mini {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.entry-date-tag {
+  font-size: 8px;
+  font-weight: 900;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 2px 5px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.entry-subject {
+  font-size: 9px;
+  font-weight: 800;
+  color: white;
+  display: block;
+  line-height: 1.1;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 7px;
+  color: #94a3b8;
+}
+
+.icon-tiny {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+@media (max-width: 1024px) {
+  .weekly-grid-table { min-width: 100%; }
+}
+
 @media (max-width: 768px) {
   .sidebar { position: fixed; left: -260px; }
   .main-layout { padding: 12px; }
 }
+
+/* Task 2: Future Events Section & Premium Cards */
+.future-events-section {
+  margin-top: 40px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.future-section-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.future-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
+}
+
+.future-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 5px 5px 20px 5px;
+}
+
+.future-card {
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.future-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+.card-glass-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent);
+  pointer-events: none;
+}
+
+.future-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.future-subject-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  max-width: 65%;
+  line-height: 1.4;
+}
+
+.days-remaining-badge {
+  background: rgba(99, 102, 241, 0.1);
+  color: #818cf8;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  white-space: nowrap;
+}
+
+.future-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.future-detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.accent-blue { color: #60a5fa; opacity: 0.8; }
+.accent-purple { color: #a78bfa; opacity: 0.8; }
+.accent-pink { color: #f472b6; opacity: 0.8; }
+
 </style>

@@ -16,6 +16,9 @@ public class TimetableService {
     @Autowired
     private TimetableRepository timetableRepository;
 
+    @Autowired
+    private com.studentdashboard.repository.AttendanceLogRepository attendanceLogRepository;
+
     public Timetable addEntry(Timetable timetable) {
         if (timetable.getStartTime() != null && timetable.getEndTime() != null &&
                 !timetable.getStartTime().isBefore(timetable.getEndTime())) {
@@ -72,13 +75,22 @@ public class TimetableService {
     }
 
     private TimetableDTO convertToDTO(Timetable timetable) {
-        return new TimetableDTO(
+        TimetableDTO dto = new TimetableDTO(
                 timetable.getId(),
                 timetable.getSubjectName(),
                 timetable.getDate(),
                 timetable.getStartTime(),
                 timetable.getEndTime(),
                 timetable.getVenue());
+
+        // Check if marked for this date/subject
+        boolean isMarked = attendanceLogRepository.findByStudentIdAndSubjectNameAndDate(
+                timetable.getStudentId(),
+                timetable.getSubjectName(),
+                timetable.getDate()).isPresent();
+
+        dto.setMarked(isMarked);
+        return dto;
     }
 
     public List<String> findFreeSlots(Long studentId, java.time.LocalDate date) {

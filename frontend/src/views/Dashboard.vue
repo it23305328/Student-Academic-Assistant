@@ -79,8 +79,50 @@
           <button @click="isGpaModalOpen = true" class="btn-primary gpa-btn">GPA Tracker</button>
           
           <div class="header-notif-group">
-            <div class="notif-bell-circle">
-              <NotificationBell class="icon notif-bell" />
+            <div class="notif-bell-wrapper">
+              <button @click="isNotifDropdownOpen = !isNotifDropdownOpen" class="notif-bell-btn" :class="{ 'has-notifs': notificationsList.length > 0 }">
+                <svg class="icon notif-bell-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <div v-if="notificationsList.length > 0" class="bell-badge">{{ notificationsList.length }}</div>
+              </button>
+
+              <transition name="dropdown">
+                <div v-if="isNotifDropdownOpen" class="bell-dropdown glass-morphism">
+                  <div class="dropdown-header">
+                    <span class="dropdown-title">Notifications</span>
+                    <button v-if="notificationsList.length > 0" @click="clearAllNotifications" class="btn-clear-all">Clear All</button>
+                  </div>
+                  
+                  <div class="dropdown-list no-scrollbar">
+                    <div v-for="notif in notificationsList" :key="notif.id" class="dropdown-item" :class="notif.type">
+                      <div class="item-icon-box">
+                        <svg v-if="notif.type === 'lecture'" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <svg v-else-if="notif.type === 'critical'" class="icon vibrating-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <svg v-else class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div class="item-content">
+                        <p class="item-title">{{ notif.title }}</p>
+                        <p class="item-msg">{{ notif.message }}</p>
+                      </div>
+                      <button @click="markAsRead(notif.id)" class="btn-read-check" title="Mark as read">
+                        <svg class="icon-small" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div v-if="notificationsList.length === 0" class="dropdown-empty">
+                      <p>No new notifications</p>
+                    </div>
+                  </div>
+                </div>
+              </transition>
             </div>
           </div>
         </div>
@@ -113,20 +155,40 @@
                     <div class="pulse-text">Loading classes...</div>
                  </div>
                  <template v-else>
-                   <div v-for="cls in todayClasses" :key="cls.id" class="schedule-item class-item">
+                   <div v-for="cls in todayClasses" :key="cls.id" class="schedule-item class-item" :class="{ 'item-missed': getClassStatus(cls) === 'missed' }">
                       <div class="item-left">
-                        <div class="status-dot online"></div>
+                        <div class="status-dot" :class="getClassStatus(cls)"></div>
                         <div class="item-info">
                           <span class="item-text font-bold">{{ cls.subjectName }}</span>
                           <span class="item-subtext">{{ formatTime(cls.startTime) }} - {{ formatTime(cls.endTime) }}</span>
                         </div>
                       </div>
-                      <button @click="markAsPresent(cls.subjectName)" class="btn-mark">
-                        <svg class="icon btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Mark Present
-                      </button>
+                      <div class="item-actions">
+                        <div v-if="cls.marked" class="status-badge checked">
+                          <svg class="icon anim-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                          <span>Checked-in ✅</span>
+                        </div>
+
+                        <button v-else-if="getClassStatus(cls) === 'ongoing'" @click="markAsPresent(cls.subjectName)" class="btn-mark glow-indigo">
+                          <svg class="icon btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          Mark Present
+                        </button>
+
+                        <div v-else-if="getClassStatus(cls) === 'missed'" class="status-badge missed">
+                          <svg class="icon anim-shake" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                          <span>Missed ❌</span>
+                        </div>
+
+                        <div v-else class="status-badge upcoming">
+                           <span>Scheduled</span>
+                        </div>
+                      </div>
                    </div>
                    <div v-if="!todayClasses.length" class="empty-state">No classes scheduled for today.</div>
                  </template>
@@ -290,6 +352,16 @@
                           <span>{{ freeSlotsCount }} Gaps Today</span>
                        </div>
                     </div>
+
+                    <div class="gap-list-mini">
+                      <div v-for="(gap, idx) in freeGaps" :key="idx" class="gap-item-mini">
+                        <div class="gap-dot"></div>
+                        <span class="gap-time-text">{{ formatTime12h(gap.startTime) }} - {{ formatTime12h(gap.endTime) }}</span>
+                      </div>
+                      <div v-if="!freeGaps.length" class="empty-gap-msg">
+                        No free gaps available today
+                      </div>
+                    </div>
                   </template>
                </div>
              </div>
@@ -345,9 +417,12 @@ const todayClasses = ref([]);
 const attendanceSummary = ref([]);
 const assignments = ref([]);
 const notificationToasts = ref([]);
+const notificationsList = ref([]);
+const isNotifDropdownOpen = ref(false);
 const notifiedIds = new Set();
 const smartSuggestion = ref(null);
 const freeSlotsCount = ref(0);
+const freeGaps = ref([]);
 const isLoadingFreeSlots = ref(true);
 const isLoadingTodayClasses = ref(true);
 const isLoadingAttendance = ref(true);
@@ -410,6 +485,7 @@ const fetchAttendanceSummary = async (studentId) => {
 
 const updateSmartPlanner = () => {
     const gaps = calculateFreeSlots();
+    freeGaps.value = gaps;
     freeSlotsCount.value = gaps.length;
     smartSuggestion.value = getSmartSuggestion(gaps);
 };
@@ -430,16 +506,25 @@ const calculateFreeSlots = () => {
         const end = timeToMinutes(cls.endTime);
 
         if (start - lastEnd >= 60) {
-            gaps.push({ start: minutesToTime(lastEnd), end: minutesToTime(start) });
+            gaps.push({ startTime: minutesToTime(lastEnd), endTime: minutesToTime(start) });
         }
         lastEnd = Math.max(lastEnd, end);
     });
 
     if (dayEnd - lastEnd >= 60) {
-        gaps.push({ start: minutesToTime(lastEnd), end: minutesToTime(dayEnd) });
+        gaps.push({ startTime: minutesToTime(lastEnd), endTime: minutesToTime(dayEnd) });
     }
 
     return gaps;
+};
+
+const formatTime12h = (timeStr) => {
+    if (!timeStr) return '';
+    const [h, m] = timeStr.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const hours = h % 12 || 12;
+    const minutes = m.toString().padStart(2, '0');
+    return `${hours}:${minutes} ${ampm}`;
 };
 
 const timeToMinutes = (timeStr) => {
@@ -465,12 +550,12 @@ const getSmartSuggestion = (gaps) => {
     const mainGap = gaps[0];
     if (urgentDeadline) {
         return {
-            title: `Smart Gap: ${mainGap.start} - ${mainGap.end}`,
+            title: `Smart Gap: ${formatTime12h(mainGap.startTime)} - ${formatTime12h(mainGap.endTime)}`,
             message: `Perfect time to work on your ${urgentDeadline.title} assignment! ✍️`
         };
     } else {
         return {
-            title: `Free Time: ${mainGap.start} - ${mainGap.end}`,
+            title: `Free Time: ${formatTime12h(mainGap.startTime)} - ${formatTime12h(mainGap.endTime)}`,
             message: "Free time found! Time for a coffee break? ☕"
         };
     }
@@ -554,6 +639,17 @@ const formatTime = (timeStr) => {
     return timeStr.substring(0, 5);
 };
 
+const getClassStatus = (cls) => {
+  const now = new Date();
+  const startTime = timeToMinutes(cls.startTime);
+  const endTime = timeToMinutes(cls.endTime);
+  const currentMins = now.getHours() * 60 + now.getMinutes();
+
+  if (currentMins < startTime) return 'upcoming';
+  if (currentMins >= startTime && currentMins <= endTime) return 'ongoing';
+  return 'missed';
+};
+
 const handleLogout = () => {
     localStorage.removeItem('studentId');
     router.push('/login');
@@ -601,11 +697,10 @@ const checkNotifications = () => {
         lectureDate.setHours(hours, minutes, 0, 0);
         
         const diffMs = lectureDate - now;
-        const diffMins = Math.round(diffMs / 60000);
+        const diffMins = Math.floor(diffMs / 60000);
 
         if (diffMins === 60 && !notifiedIds.has(`lecture-${cls.id}`)) {
             triggerNotification({
-                id: `lecture-${cls.id}`,
                 type: 'lecture',
                 title: 'Upcoming Lecture',
                 message: `${cls.subjectName} starts in 60 minutes!`
@@ -614,36 +709,66 @@ const checkNotifications = () => {
         }
     });
 
-    // Check Exams/Deadlines (24 hours before)
+    checkDeadlines(now);
+};
+
+const checkDeadlines = (now) => {
     assignments.value.forEach(a => {
         if (!a.deadline) return;
         const deadlineDate = new Date(a.deadline);
         const diffMs = deadlineDate - now;
-        const diffHours = Math.round(diffMs / 3600000);
+        const diffMins = Math.floor(diffMs / 60000);
 
-        if (diffHours === 24 && !notifiedIds.has(`deadline-${a.id}`)) {
+        // 1 Day Warning (approx 1440 mins)
+        // Check if it's within the next 24 hours but more than 23.5 hours
+        if (diffMins <= 1440 && diffMins > 1380 && !notifiedIds.has(`warn-1d-${a.id}`)) {
             triggerNotification({
-                id: `deadline-${a.id}`,
-                type: 'exam',
-                title: 'Deadline Reminder',
-                message: `${a.title} is due in 24 hours!`
+                type: 'warning',
+                title: 'Deadline Tomorrow',
+                message: `${a.title} is due in 24 hours. Get ready!`
             });
-            notifiedIds.add(`deadline-${a.id}`);
+            notifiedIds.add(`warn-1d-${a.id}`);
+        }
+
+        // 2 Hour Critical Warning (approx 120 mins)
+        if (diffMins <= 120 && diffMins > 0 && !notifiedIds.has(`crit-2h-${a.id}`)) {
+            triggerNotification({
+                type: 'critical',
+                title: 'URGENT: Submit Soon!',
+                message: `${a.title} is due in 2 hours! Final push! 🚀`
+            });
+            notifiedIds.add(`crit-2h-${a.id}`);
         }
     });
 };
 
 const triggerNotification = (details) => {
+    const id = Date.now() + Math.random();
     const toast = {
         ...details,
-        id: Date.now() + Math.random()
+        id: id
     };
     notificationToasts.value.push(toast);
+
+    // Add to persistent dropdown list
+    notificationsList.value.unshift({
+        ...details,
+        id: id,
+        timestamp: new Date()
+    });
     
-    // Auto-dismiss after 10 seconds
+    // Auto-dismiss toast after 10 seconds
     setTimeout(() => {
         dismissToast(toast.id);
     }, 10000);
+};
+
+const clearAllNotifications = () => {
+    notificationsList.value = [];
+};
+
+const markAsRead = (id) => {
+    notificationsList.value = notificationsList.value.filter(n => n.id !== id);
 };
 
 const dismissToast = (id) => {
@@ -924,13 +1049,171 @@ onUnmounted(() => {
   transform: translateY(-1px);
 }
 
-.header-notif-group {
+.notif-bell-wrapper {
+  position: relative;
+  z-index: 100;
+}
+
+.notif-bell-btn {
+  width: 36px;
+  height: 36px;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
-  padding: 2px;
+  color: #94a3b8;
+  cursor: pointer;
+  position: relative;
+  transition: 0.3s;
 }
+
+.notif-bell-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.notif-bell-btn.has-notifs .notif-bell-icon {
+  animation: bell-shake 2s infinite;
+}
+
+@keyframes bell-shake {
+  0%, 100% { transform: rotate(0); }
+  5%, 15%, 25% { transform: rotate(10deg); }
+  10%, 20%, 30% { transform: rotate(-10deg); }
+  35% { transform: rotate(0); }
+}
+
+.bell-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ef4444;
+  color: white;
+  font-size: 9px;
+  font-weight: 900;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #050511;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+/* Bell Dropdown Styles */
+.bell-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 320px;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.dropdown-header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-title { font-size: 14px; font-weight: 800; color: white; }
+.btn-clear-all {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6366f1;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-list {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.dropdown-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px 20px;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  transition: 0.2s;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.item-icon-box {
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dropdown-item.lecture .item-icon-box { color: #818cf8; background: rgba(99, 102, 241, 0.1); }
+.dropdown-item.critical .item-icon-box { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+.dropdown-item.warning .item-icon-box { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+
+.item-content { flex: 1; }
+.item-title { font-size: 12px; font-weight: 800; color: white; margin: 0 0 2px; }
+.item-msg { font-size: 11px; color: #94a3b8; margin: 0; line-height: 1.4; }
+
+.btn-read-check {
+  background: none;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.btn-read-check:hover {
+  background: rgba(255,255,255,0.05);
+  color: #10b981;
+}
+
+.icon-small { width: 14px !important; height: 14px !important; }
+
+.dropdown-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #475569;
+  font-size: 12px;
+}
+
+.vibrating-icon {
+  animation: icon-vibrate 0.3s infinite;
+}
+
+/* Transitions */
+.dropdown-enter-active, .dropdown-leave-active { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(-10px) scale(0.95); }
 
 .notif-bell-circle {
   width: 28px;
@@ -1350,6 +1633,13 @@ onUnmounted(() => {
 .mini-input::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
+  opacity: 0.8;
+  transition: 0.2s;
+}
+
+.mini-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .deadline-list {
@@ -1425,14 +1715,28 @@ onUnmounted(() => {
 }
 
 .toast-item.lecture { border-left: 4px solid #6366f1; }
-.toast-item.exam { border-left: 4px solid #ef4444; }
+.toast-item.warning { border-left: 4px solid #f59e0b; border-right: 1px solid rgba(245, 158, 11, 0.2); }
+.toast-item.critical { 
+  border: 2px solid #ef4444; 
+  animation: critical-pulse 1.5s infinite;
+}
 
 .toast-item.lecture .toast-glow {
   background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent);
 }
 
-.toast-item.exam .toast-glow {
-  background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.15), transparent);
+.toast-item.warning .toast-glow {
+  background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.1), transparent);
+}
+
+.toast-item.critical .toast-glow {
+  background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.2), transparent);
+}
+
+@keyframes critical-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4), 0 10px 30px rgba(0, 0, 0, 0.3); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0), 0 10px 30px rgba(0, 0, 0, 0.3); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 10px 30px rgba(0, 0, 0, 0.3); }
 }
 
 .toast-glow {
@@ -1460,7 +1764,19 @@ onUnmounted(() => {
 }
 
 .toast-item.lecture .toast-icon { color: #818cf8; }
-.toast-item.exam .toast-icon { color: #f87171; }
+.toast-item.warning .toast-icon { color: #f59e0b; }
+.toast-item.critical .toast-icon { 
+  color: #ef4444; 
+  animation: icon-vibrate 0.3s infinite;
+}
+
+@keyframes icon-vibrate {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, 1px); }
+  75% { transform: translate(1px, 1px); }
+  100% { transform: translate(0, 0); }
+}
 
 .toast-body { flex: 1; }
 .toast-title { font-size: 13px; font-weight: 800; color: white; margin: 0 0 2px; }
@@ -1483,6 +1799,72 @@ onUnmounted(() => {
 .toast-enter-active, .toast-leave-active { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 .toast-enter-from { opacity: 0; transform: translateX(50px) scale(0.9); }
 .toast-leave-to { opacity: 0; transform: translateX(20px) scale(0.95); }
+
+/* Task 2: Attendance Status Badges & Glows */
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+}
+
+.status-badge.checked {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-badge.missed {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+
+.status-badge.upcoming {
+  background: rgba(148, 163, 184, 0.1);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* Status Dots */
+.status-dot.ongoing { background: #10b981; box-shadow: 0 0 8px #10b981; }
+.status-dot.upcoming { background: #94a3b8; }
+.status-dot.missed { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+/* Glowing Buttons & Animations */
+.glow-indigo {
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+}
+
+.anim-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.anim-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.item-missed {
+  border-color: rgba(239, 68, 68, 0.2) !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
 
 /* Smart Planner Styles */
 .smart-planner-card {
@@ -1544,6 +1926,53 @@ onUnmounted(() => {
   font-size: 11px;
   font-weight: 600;
   color: #94a3b8;
+}
+
+.gap-list-mini {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gap-item-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  transition: 0.2s;
+}
+
+.gap-item-mini:hover {
+  background: rgba(34, 211, 238, 0.05);
+  border-color: rgba(34, 211, 238, 0.2);
+}
+
+.gap-dot {
+  width: 5px;
+  height: 5px;
+  background: #22d3ee;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+}
+
+.gap-time-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.empty-gap-msg {
+  font-size: 11px;
+  color: #64748b;
+  text-align: center;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 .spinner-small.cyan {
