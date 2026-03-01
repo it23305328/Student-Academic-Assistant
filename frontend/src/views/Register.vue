@@ -21,15 +21,67 @@
 
         <div class="input-group">
           <label for="email">Email Address</label>
-          <input type="email" id="email" v-model="form.email" placeholder="example@student.com" required>
+          <input 
+            type="email" 
+            id="email" 
+            v-model="form.email" 
+            placeholder="example@my.sliit.lk" 
+            :class="{ 'input-error': emailError }"
+            required
+          >
+          <span v-if="emailError" class="error-text">{{ emailError }}</span>
         </div>
         
         <div class="input-group">
           <label for="password">Password</label>
           <input type="password" id="password" v-model="form.password" placeholder="••••••••" required>
         </div>
+
+        <div class="dropdown-row">
+            <div class="input-group">
+                <label for="academicYear">Academic Year</label>
+                <select id="academicYear" v-model="form.academicYear" required>
+                    <option value="" disabled>Select Year</option>
+                    <option value="Year 1">Year 1</option>
+                    <option value="Year 2">Year 2</option>
+                    <option value="Year 3">Year 3</option>
+                    <option value="Year 4">Year 4</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="semester">Semester</label>
+                <select id="semester" v-model="form.semester" required>
+                    <option value="" disabled>Select Semester</option>
+                    <option value="Semester 1">Semester 1</option>
+                    <option value="Semester 2">Semester 2</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="dropdown-row">
+            <div class="input-group">
+                <label for="faculty">Faculty/Department</label>
+                <select id="faculty" v-model="form.faculty" @change="handleFacultyChange" required>
+                    <option value="" disabled>Select Faculty</option>
+                    <option v-for="faculty in faculties" :key="faculty" :value="faculty">
+                        {{ faculty }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="course">Course/Specialization</label>
+                <select id="course" v-model="form.course" :disabled="!form.faculty" required>
+                    <option value="" disabled>Select Course</option>
+                    <option v-for="course in availableCourses" :key="course" :value="course">
+                        {{ course }}
+                    </option>
+                </select>
+            </div>
+        </div>
         
-        <button type="submit" class="register-btn" :disabled="isLoading">
+        <button type="submit" class="register-btn" :disabled="isLoading || !isFormValid">
           {{ isLoading ? 'Creating account...' : 'Create Account' }}
         </button>
       </form>
@@ -42,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../services/api';
 
@@ -51,10 +103,51 @@ const isLoading = ref(false);
 const form = ref({
   name: '',
   email: '',
-  password: ''
+  password: '',
+  academicYear: '',
+  semester: '',
+  faculty: '',
+  course: ''
+});
+
+const faculties = ['Computing', 'Business', 'Hotel Management'];
+const coursesByFaculty = {
+  'Computing': ['IT', 'SE', 'CS'],
+  'Business': ['BM', 'HR', 'Marketing'],
+  'Hotel Management': ['Hospitality', 'Culinary Arts', 'Event Management']
+};
+
+const availableCourses = computed(() => {
+  if (!form.value.faculty) return [];
+  return coursesByFaculty[form.value.faculty] || [];
+});
+
+const handleFacultyChange = () => {
+  form.value.course = '';
+};
+
+const emailError = computed(() => {
+  if (!form.value.email) return '';
+  const regex = /^[a-zA-Z0-9._%+-]+@my\.sliit\.lk$/i;
+  if (!regex.test(form.value.email)) {
+    return 'Only university email addresses (@my.sliit.lk) are allowed';
+  }
+  return '';
+});
+
+const isFormValid = computed(() => {
+  return form.value.name && 
+         form.value.email && 
+         !emailError.value && 
+         form.value.password && 
+         form.value.academicYear && 
+         form.value.semester && 
+         form.value.faculty && 
+         form.value.course;
 });
 
 const handleRegister = async () => {
+    if (!isFormValid.value) return;
     isLoading.value = true;
     try {
         const response = await api.post('/register', form.value);
@@ -121,7 +214,7 @@ const handleRegister = async () => {
 
 .register-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -183,7 +276,8 @@ const handleRegister = async () => {
   letter-spacing: 0.05em;
 }
 
-.input-group input {
+.input-group input, 
+.input-group select {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
@@ -191,13 +285,49 @@ const handleRegister = async () => {
   color: white;
   font-size: 14px;
   transition: all 0.2s;
+  width: 100%;
+  appearance: none;
 }
 
-.input-group input:focus {
+.input-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  cursor: pointer;
+}
+
+.input-group input:focus,
+.input-group select:focus {
   outline: none;
   border-color: #6366f1;
   background: rgba(255, 255, 255, 0.05);
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.input-group select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dropdown-row {
+  display: flex;
+  gap: 16px;
+}
+
+.dropdown-row .input-group {
+  flex: 1;
+}
+
+.input-group input.input-error {
+  border-color: #ef4444;
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
 }
 
 .register-btn {

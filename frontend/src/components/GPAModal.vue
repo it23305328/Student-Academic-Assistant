@@ -1,14 +1,22 @@
 <template>
   <div v-if="isOpen" class="modal-overlay">
-    <!-- Backdrop Close -->
     <div class="backdrop" @click="closeModal"></div>
 
-    <!-- Modal Card -->
-    <div class="modal-card">
+    <div class="modal-card advanced-estimator">
       <div class="modal-glow"></div>
       
       <header class="modal-header">
-        <h2 class="modal-title">GPA Estimator</h2>
+        <h2 class="modal-title">GPA Estimator Pro</h2>
+        <div class="mode-toggle">
+          <button 
+            :class="['toggle-btn', { active: calcMode === 'simple' }]" 
+            @click="calcMode = 'simple'"
+          >Simple</button>
+          <button 
+            :class="['toggle-btn', { active: calcMode === 'advanced' }]" 
+            @click="calcMode = 'advanced'"
+          >Advanced</button>
+        </div>
         <button @click="closeModal" class="close-btn">
           <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -17,44 +25,107 @@
       </header>
 
       <div class="modal-body">
-        <!-- Input Table/List -->
-        <div class="subject-list">
-          <div v-for="(sub, index) in subjects" :key="index" class="subject-row">
-            <div class="input-field grow">
-              <label>Subject Name</label>
-              <input type="text" v-model="sub.name" placeholder="e.g. Algorithms">
+        <!-- Weightage Configuration (Only for Advanced Mode) -->
+        <div v-if="calcMode === 'advanced'" class="weightage-config">
+          <p class="config-label">Configure Weightage (%)</p>
+          <div class="config-inputs">
+            <div class="weight-item">
+              <span>Assignments</span>
+              <input type="number" v-model.number="weights.assignment" min="0" max="100" class="weight-input">
             </div>
-            <div class="input-field small">
-              <label>Credits</label>
-              <input type="number" v-model.number="sub.credits" min="1" max="10">
+            <div class="weight-item">
+              <span>Mid-term</span>
+              <input type="number" v-model.number="weights.midterm" min="0" max="100" class="weight-input">
             </div>
-            <div class="input-field medium">
-              <label>Grade</label>
-              <select v-model="sub.grade">
-                <option v-for="g in GRADE_POINTS" :key="g.label" :value="g.label">{{ g.label }}</option>
-              </select>
+            <div class="weight-item">
+              <span>Final Exam</span>
+              <input type="number" v-model.number="weights.final" min="0" max="100" class="weight-input">
             </div>
-            <button @click="removeSubject(index)" class="remove-btn" v-if="subjects.length > 1">
-               <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-               </svg>
-            </button>
+            <div :class="['weight-total', { 'text-error': totalWeight !== 100 }]">
+              <span>Total: {{ totalWeight }}%</span>
+              <span v-if="totalWeight !== 100" class="weight-warning">! Must be 100%</span>
+            </div>
           </div>
         </div>
 
-        <div class="action-buttons">
-          <button @click="addSubject" class="btn-secondary">+ Add Subject</button>
-          <button @click="handleCalculate" class="btn-primary">Calculate GPA</button>
+        <div class="table-container no-scrollbar">
+          <table class="estimator-table">
+            <thead>
+              <tr>
+                <th class="col-name">Subject</th>
+                <th class="col-credits">Credits</th>
+                <!-- Advanced Mode Columns -->
+                <template v-if="calcMode === 'advanced'">
+                  <th class="col-mark">Asmt</th>
+                  <th class="col-mark">Mid</th>
+                  <th class="col-mark">Final</th>
+                  <th class="col-total">Total</th>
+                </template>
+                <th class="col-grade">Grade</th>
+                <th class="col-action"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(sub, index) in subjects" :key="index">
+                <td>
+                  <input type="text" v-model="sub.name" placeholder="Subject Name" class="table-input">
+                </td>
+                <td>
+                  <input type="number" v-model.number="sub.credits" min="1" max="10" class="table-input text-center">
+                </td>
+                <!-- Advanced Mode Inputs -->
+                <template v-if="calcMode === 'advanced'">
+                  <td>
+                    <input type="number" v-model.number="sub.assignment" min="0" max="100" class="table-input text-center">
+                  </td>
+                  <td>
+                    <input type="number" v-model.number="sub.midterm" min="0" max="100" class="table-input text-center">
+                  </td>
+                  <td>
+                    <input type="number" v-model.number="sub.final" min="0" max="100" class="table-input text-center">
+                  </td>
+                  <td class="text-center font-bold text-accent">
+                    {{ calculateTotal(sub).toFixed(1) }}
+                  </td>
+                </template>
+                <!-- Grade Column (Select in Simple, Auto in Advanced) -->
+                <td class="text-center font-black">
+                  <select v-if="calcMode === 'simple'" v-model="sub.simpleGrade" class="table-select">
+                    <option v-for="g in GRADE_POINTS" :key="g.label" :value="g.label">{{ g.label }}</option>
+                  </select>
+                  <span v-else :class="['grade-badge', getGradeInfo(calculateTotal(sub)).label.toLowerCase().replace('-', 'n')]">
+                    {{ getGradeInfo(calculateTotal(sub)).label }}
+                  </span>
+                </td>
+                <td>
+                  <button @click="removeSubject(index)" class="table-remove-btn" v-if="subjects.length > 1">
+                    &times;
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <!-- Result Display -->
-        <div v-if="calculatedGPA !== null" class="result-section">
-           <div class="result-box">
-             <span class="result-label">Estimated GPA</span>
-             <h3 class="result-value">{{ calculatedGPA.toFixed(2) }}</h3>
-             <div class="result-glow"></div>
-           </div>
-           <p class="motivation-text">{{ getMotivationalText(calculatedGPA) }}</p>
+        <div class="table-footer">
+          <button @click="addSubject" class="btn-add-row">+ Add Subject</button>
+        </div>
+
+        <!-- Real-time Result Section -->
+        <div class="live-result-section">
+          <div class="result-display">
+            <div class="gpa-circle">
+              <span class="gpa-label">ESTIMATED GPA</span>
+              <h3 class="gpa-value">{{ estimatedGPA }}</h3>
+            </div>
+            <div class="result-details">
+              <p class="motivation-quote">{{ getMotivationalText(estimatedGPA) }}</p>
+              <div class="stats-pills">
+                <span class="stat-pill">Total Credits: {{ totalCredits }}</span>
+                <span class="stat-pill">Subjects: {{ subjects.length }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -62,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
   isOpen: Boolean
@@ -70,64 +141,97 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
-// Grade to Points Mapping Logic
-const GRADE_POINTS = [
-  { label: 'A', points: 4.0 },
-  { label: 'A-', points: 3.7 },
-  { label: 'B+', points: 3.3 },
-  { label: 'B', points: 3.0 },
-  { label: 'B-', points: 2.7 },
-  { label: 'C+', points: 2.3 },
-  { label: 'C', points: 2.0 },
-  { label: 'C-', points: 1.7 },
-  { label: 'D+', points: 1.3 },
-  { label: 'D', points: 1.0 },
-  { label: 'F', points: 0.0 }
-];
+const calcMode = ref('advanced'); // 'simple' or 'advanced'
 
 const subjects = ref([
-  { name: '', credits: 3, grade: 'A' }
+  { name: '', credits: 3, assignment: 0, midterm: 0, final: 0, simpleGrade: 'A' }
 ]);
 
-const calculatedGPA = ref(null);
+const weights = ref({
+  assignment: 20,
+  midterm: 30,
+  final: 50
+});
+
+const totalWeight = computed(() => {
+  return (weights.value.assignment || 0) + (weights.value.midterm || 0) + (weights.value.final || 0);
+});
+
+const GRADE_POINTS = [
+  { min: 85, label: 'A', points: 4.0 },
+  { min: 80, label: 'A-', points: 3.7 },
+  { min: 75, label: 'B+', points: 3.3 },
+  { min: 70, label: 'B', points: 3.0 },
+  { min: 65, label: 'B-', points: 2.7 },
+  { min: 60, label: 'C+', points: 2.3 },
+  { min: 55, label: 'C', points: 2.0 },
+  { min: 50, label: 'C-', points: 1.7 },
+  { min: 45, label: 'D+', points: 1.3 },
+  { min: 40, label: 'D', points: 1.0 },
+  { min: 0, label: 'F', points: 0.0 }
+];
+
+const calculateTotal = (sub) => {
+  if (totalWeight.value === 0) return 0;
+  const score = (sub.assignment * (weights.value.assignment / 100)) + 
+                (sub.midterm * (weights.value.midterm / 100)) + 
+                (sub.final * (weights.value.final / 100));
+  
+  return score * (100 / (totalWeight.value || 100));
+};
+
+const getGradeInfo = (total) => {
+  return GRADE_POINTS.find(g => total >= g.min) || GRADE_POINTS[GRADE_POINTS.length - 1];
+};
+
+const totalCredits = computed(() => {
+  return subjects.value.reduce((acc, sub) => acc + (sub.credits || 0), 0);
+});
+
+const estimatedGPA = computed(() => {
+  let totalPoints = 0;
+  let credits = 0;
+
+  subjects.value.forEach(sub => {
+    let point = 0;
+    if (calcMode.value === 'advanced') {
+      const total = calculateTotal(sub);
+      point = getGradeInfo(total).points;
+    } else {
+      point = GRADE_POINTS.find(g => g.label === sub.simpleGrade)?.points || 0;
+    }
+    
+    totalPoints += (point * (sub.credits || 0));
+    credits += (sub.credits || 0);
+  });
+
+  if (credits === 0) return '0.00';
+  return (totalPoints / credits).toFixed(2);
+});
 
 const addSubject = () => {
-  subjects.value.push({ name: '', credits: 3, grade: 'A' });
+  subjects.value.push({ name: '', credits: 3, assignment: 0, midterm: 0, final: 0, simpleGrade: 'A' });
 };
 
 const removeSubject = (index) => {
   subjects.value.splice(index, 1);
 };
 
-const handleCalculate = () => {
-  let totalGradePoints = 0;
-  let totalCredits = 0;
-
-  subjects.value.forEach(sub => {
-    const gradePoint = GRADE_POINTS.find(g => g.label === sub.grade)?.points || 0;
-    totalGradePoints += (gradePoint * sub.credits);
-    totalCredits += sub.credits;
-  });
-
-  calculatedGPA.value = totalCredits > 0 ? (totalGradePoints / totalCredits) : 0;
-};
-
 const closeModal = () => {
   emit('close');
-  calculatedGPA.value = null;
-  subjects.value = [{ name: '', credits: 3, grade: 'A' }];
+  subjects.value = [{ name: '', credits: 3, assignment: 0, midterm: 0, final: 0 }];
 };
 
-const getMotivationalText = (gpa) => {
-  if (gpa >= 3.7) return "Dean's List material! Outstanding performance. 🌟";
-  if (gpa >= 3.0) return "Solid stats! You're on the right track. 🚀";
-  if (gpa >= 2.0) return "Passing well, but there's room to climb! 📚";
-  return "Keep pushing. Every credit counts! 💪";
+const getMotivationalText = (gpaValue) => {
+    const gpa = parseFloat(gpaValue);
+    if (gpa >= 3.7) return "On track for a First Class! 🏆";
+    if (gpa >= 3.0) return "Impressive! Keep maintaining this pace. 🚀";
+    if (gpa >= 2.0) return "You're safe, but keep aiming higher! 📈";
+    return "Time to hit the books harder! 📚";
 };
 </script>
 
 <style scoped>
-/* Pure CSS Layout */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -141,32 +245,20 @@ const getMotivationalText = (gpa) => {
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(5, 5, 17, 0.9);
-  backdrop-filter: blur(10px);
+  background: rgba(3, 3, 11, 0.95);
+  backdrop-filter: blur(12px);
 }
 
 .modal-card {
   position: relative;
   width: 100%;
-  max-width: 500px;
-  background: #0b0b1a; /* Dark background as requested */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  z-index: 10;
+  max-width: 900px;
+  background: #0d0d1f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
   padding: 32px;
-}
-
-.modal-glow {
-  position: absolute;
-  top: -20%;
-  right: -20%;
-  width: 60%;
-  height: 60%;
-  background: radial-gradient(circle, rgba(217, 70, 239, 0.1), transparent);
-  filter: blur(60px);
-  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
 }
 
 .modal-header {
@@ -177,213 +269,298 @@ const getMotivationalText = (gpa) => {
 }
 
 .modal-title {
-  font-size: 20px;
-  font-weight: 900;
   color: white;
-  margin: 0;
-  letter-spacing: -0.02em;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+/* Mode Toggle Styling */
+.mode-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.toggle-btn {
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.toggle-btn.active {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .close-btn {
   background: rgba(255, 255, 255, 0.05);
   border: none;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: #64748b;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-/* Strict Icon Sizing Task 3 */
-.icon {
-  width: 20px !important;
-  height: 20px !important;
-  min-width: 20px !important;
-  min-height: 20px !important;
-}
-
-.modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.subject-list {
-  max-height: 300px;
+/* Table Spreadsheet Styling */
+.table-container {
+  max-height: 400px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-right: 8px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.01);
 }
 
-.subject-list::-webkit-scrollbar {
-  width: 4px;
+.estimator-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
 }
 
-.subject-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-}
-
-.subject-row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-}
-
-.input-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.input-field.grow { flex: 1; }
-.input-field.small { width: 70px; }
-.input-field.medium { width: 90px; }
-
-.input-field label {
-  font-size: 10px;
+.estimator-table th {
+  background: rgba(255, 255, 255, 0.03);
+  color: #64748b;
+  text-align: center;
+  padding: 12px;
   font-weight: 800;
-  color: #475569;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 
-.input-field input, .input-field select {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 10px 12px;
+.estimator-table td {
+  padding: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.table-input, .table-select {
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px;
   color: white;
-  font-size: 13px;
+  border-radius: 8px;
   outline: none;
   transition: 0.2s;
 }
 
-.input-field input:focus, .input-field select:focus {
-  border-color: #6366f1;
-  background: rgba(255, 255, 255, 0.05);
+.table-select {
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
 }
 
-.remove-btn {
+.table-select option {
+  background: #0d0d1f;
+  color: white;
+}
+
+.table-input:focus, .table-select:focus {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: #6366f1;
+}
+
+.text-center { text-align: center; }
+.font-bold { font-weight: 700; }
+.font-black { font-weight: 900; }
+
+.text-accent { color: #818cf8; }
+
+.grade-badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+.grade-badge.a, .grade-badge.an { color: #10b981; background: rgba(16, 185, 129, 0.1); }
+.grade-badge.b, .grade-badge.bn { color: #6366f1; background: rgba(99, 102, 241, 0.1); }
+.grade-badge.c, .grade-badge.cn { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+.grade-badge.f { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+
+.table-remove-btn {
   background: transparent;
   border: none;
-  color: #f87171;
+  color: #ef4444;
+  font-size: 20px;
   cursor: pointer;
-  padding: 8px;
   opacity: 0.5;
+}
+
+.table-remove-btn:hover { opacity: 1; }
+
+.btn-add-row {
+  background: transparent;
+  color: #6366f1;
+  border: 1px dashed rgba(99, 102, 241, 0.4);
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
   transition: 0.2s;
 }
 
-.remove-btn:hover {
-  opacity: 1;
+.btn-add-row:hover {
+  background: rgba(99, 102, 241, 0.05);
+  border-style: solid;
 }
 
-.action-buttons {
+/* Live Result Section */
+.live-result-section {
+  margin-top: 32px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(217, 70, 239, 0.08));
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.result-display {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.gpa-circle {
+  width: 120px;
+  height: 120px;
+  border: 4px solid #6366f1;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+  flex-shrink: 0;
+}
+
+.gpa-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #818cf8;
+}
+
+.gpa-value {
+  font-size: 32px;
+  font-weight: 900;
+  color: white;
+  margin: 0;
+}
+
+.result-details {
+  flex: 1;
+}
+
+.motivation-quote {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 12px;
+}
+
+.stats-pills {
   display: flex;
   gap: 12px;
 }
 
-.btn-primary {
-  flex: 1;
-  background: linear-gradient(135deg, #6366f1, #d946ef);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 12px;
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s;
-  box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.5);
-}
-
-.btn-secondary {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.03);
-  color: #94a3b8;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-secondary:hover {
+.stat-pill {
   background: rgba(255, 255, 255, 0.05);
-  color: white;
-}
-
-/* Large Glowing Result Display Task integration */
-.result-section {
-  padding: 24px;
-  background: rgba(99, 102, 241, 0.05);
-  border: 1px solid rgba(99, 102, 241, 0.1);
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 12px;
-}
-
-.result-box {
-  position: relative;
-  text-align: center;
-}
-
-.result-label {
+  padding: 6px 12px;
+  border-radius: 99px;
   font-size: 11px;
-  font-weight: 800;
-  color: #818cf8;
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: 8px;
-}
-
-.result-value {
-  font-size: 64px;
-  font-weight: 900;
-  color: white;
-  margin: 0;
-  letter-spacing: -2px;
-  text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-}
-
-.result-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100px;
-  height: 100px;
-  background: #6366f1;
-  filter: blur(50px);
-  opacity: 0.2;
-  z-index: -1;
-}
-
-.motivation-text {
-  margin-top: 16px;
-  font-size: 12px;
   color: #94a3b8;
   font-weight: 600;
+}
+
+/* Weightage Setup Styles */
+.weightage-config {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.config-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.config-inputs {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.weight-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.weight-input {
+  width: 60px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px;
+  color: white;
   text-align: center;
+  outline: none;
+}
+
+.weight-input:focus {
+  border-color: #6366f1;
+}
+
+.weight-total {
+  margin-left: auto;
+  font-weight: 800;
+  font-size: 12px;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weight-total.text-error {
+  color: #ef4444;
+}
+
+.weight-warning {
+  font-size: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.modal-glow {
+  position: absolute;
+  top: -20%;
+  right: -20%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+  filter: blur(60px);
+  pointer-events: none;
 }
 </style>

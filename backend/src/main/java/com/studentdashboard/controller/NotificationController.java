@@ -1,5 +1,6 @@
 package com.studentdashboard.controller;
 
+import com.studentdashboard.dto.UpcomingAlertDTO;
 import com.studentdashboard.model.Notification;
 import com.studentdashboard.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +21,11 @@ public class NotificationController {
     public ResponseEntity<List<Notification>> getNotifications(@PathVariable("studentId") Long studentId) {
         List<Notification> notifications = notificationService.getNotificationsForStudent(studentId);
         return new ResponseEntity<>(notifications, HttpStatus.OK);
+    }
+
+    @GetMapping("/alerts/{studentId}")
+    public ResponseEntity<List<UpcomingAlertDTO>> getUpcomingAlerts(@PathVariable("studentId") Long studentId) {
+        List<UpcomingAlertDTO> alerts = notificationService.getUpcomingAlerts(studentId);
+        return new ResponseEntity<>(alerts, HttpStatus.OK);
     }
 }

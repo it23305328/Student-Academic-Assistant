@@ -15,7 +15,15 @@
       <form @submit.prevent="handleLogin" class="login-form">
         <div class="input-group">
           <label for="email">Email Address</label>
-          <input type="email" id="email" v-model="form.email" placeholder="example@student.com" required>
+          <input 
+            type="email" 
+            id="email" 
+            v-model="form.email" 
+            placeholder="example@my.sliit.lk" 
+            :class="{ 'input-error': emailError }"
+            required
+          >
+          <span v-if="emailError" class="error-text">{{ emailError }}</span>
         </div>
         
         <div class="input-group">
@@ -30,7 +38,7 @@
           <a href="#" class="forgot-link">Forgot password?</a>
         </div>
         
-        <button type="submit" class="login-btn" :disabled="isLoading">
+        <button type="submit" class="login-btn" :disabled="isLoading || !!emailError">
           {{ isLoading ? 'Checking...' : 'Sign In' }}
         </button>
       </form>
@@ -43,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../services/api';
 
@@ -52,6 +60,15 @@ const isLoading = ref(false);
 const form = ref({
   email: '',
   password: ''
+});
+
+const emailError = computed(() => {
+  if (!form.value.email) return '';
+  const regex = /^[a-zA-Z0-9._%+-]+@my\.sliit\.lk$/i;
+  if (!regex.test(form.value.email)) {
+    return 'Only university email addresses (@my.sliit.lk) are allowed';
+  }
+  return '';
 });
 
 const handleLogin = async () => {
@@ -198,6 +215,17 @@ const handleLogin = async () => {
   border-color: #6366f1;
   background: rgba(255, 255, 255, 0.05);
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.input-group input.input-error {
+  border-color: #ef4444;
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
 }
 
 .login-btn {
