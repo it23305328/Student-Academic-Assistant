@@ -15,5 +15,13 @@ export default {
      */
     markAsRead(notificationId) {
         return api.put(`/notifications/${notificationId}/read`);
+    },
+
+    /**
+     * Retrieves upcoming alerts (deadlines, classes) for today/tomorrow
+     * @param {number} studentId 
+     */
+    getUpcomingAlerts(studentId) {
+        return api.get(`/notifications/alerts/${studentId}`);
     }
 };

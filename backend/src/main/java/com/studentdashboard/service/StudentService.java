@@ -14,6 +14,9 @@ public class StudentService {
     private StudentRepository studentRepository;
 
     public Student registerStudent(Student student) {
+        if (!student.getEmail().toLowerCase().endsWith("@my.sliit.lk")) {
+            throw new RuntimeException("Only university email addresses (@my.sliit.lk) are allowed");
+        }
         if (studentRepository.findByEmail(student.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }

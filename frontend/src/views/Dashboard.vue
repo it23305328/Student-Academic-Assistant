@@ -128,6 +128,9 @@
         </div>
       </header>
 
+      <!-- Upcoming Alerts Bar -->
+      <NotificationAlertBar :alerts="upcomingAlerts" @dismiss="dismissAlert" />
+
       <!-- Main Scrollable Inner Section -->
       <section class="content-scroll">
         <div class="dashboard-grid">
@@ -296,24 +299,42 @@
           </div>
 
           <!-- GPA / Standing Card -->
-          <div class="card card-small gpa-card">
-             <div class="card-inner">
-               <div class="card-glow"></div>
-             <span class="label-muted">Academic Standing</span>
-             <div class="gpa-value-group">
-                <span class="gpa-score">3.72</span>
-                <span class="gpa-max">/4.0</span>
-             </div>
-             <div class="progress-section">
-                <div class="progress-labels">
-                  <span class="label-tiny">Dean's List Target</span>
-                  <span class="label-tiny accent">93%</span>
+          <div class="card card-small gpa-card-upgrade">
+            <div class="card-inner">
+              <div class="card-glow"></div>
+              
+              <!-- Status Badge -->
+              <div class="status-badge-top">Academic Excellence</div>
+              
+              <div class="gauge-section">
+                <div class="gauge-container">
+                  <svg viewBox="0 0 100 100" class="gauge-svg">
+                    <defs>
+                      <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color: #6366f1; stop-opacity: 1" />
+                        <stop offset="100%" style="stop-color: #d946ef; stop-opacity: 1" />
+                      </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="42" class="gauge-bg" />
+                    <!-- stroke-dasharray is 2 * PI * r = 2 * 3.14159 * 42 = 263.89 -->
+                    <!-- offset for 93% (3.72/4.0) is 263.89 * (1 - 0.93) = 18.47 -->
+                    <circle cx="50" cy="50" r="42" class="gauge-progress" stroke-dasharray="263.9" stroke-dashoffset="18.5" />
+                  </svg>
+                  <div class="gauge-content">
+                    <span class="gauge-value">3.72</span>
+                    <span class="gauge-max">GPA</span>
+                  </div>
                 </div>
-                <div class="progress-bar-bg">
-                   <div class="progress-bar-fill indigo-fuchsia-gradient" style="width: 93%"></div>
+              </div>
+
+              <div class="target-info">
+                <p class="target-text">0.28 points to Dean’s List</p>
+                <div class="target-indicator">
+                  <span class="dot-pulse"></span>
+                  <span class="indicator-label">Top 5% Student</span>
                 </div>
-             </div>
-             </div>
+              </div>
+            </div>
           </div>
 
           <!-- Smart Planner Card -->
@@ -405,9 +426,11 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import GPAModal from '../components/GPAModal.vue';
 import NotificationBell from '../components/NotificationBell.vue';
+import NotificationAlertBar from '../components/NotificationAlertBar.vue';
 import timetableService from '../services/timetableService';
 import attendanceService from '../services/attendanceService';
 import assignmentService from '../services/assignmentService';
+import notificationService from '../services/notificationService';
 
 const router = useRouter();
 
@@ -427,6 +450,8 @@ const isLoadingFreeSlots = ref(true);
 const isLoadingTodayClasses = ref(true);
 const isLoadingAttendance = ref(true);
 const isLoadingAssignments = ref(true);
+const upcomingAlerts = ref([]);
+const isLoadingAlerts = ref(false);
 
 // Deadline Form
 const showDeadlineForm = ref(false);
@@ -599,6 +624,22 @@ const handleAddDeadline = async () => {
     }
 };
 
+const fetchUpcomingAlerts = async (studentId) => {
+    isLoadingAlerts.value = true;
+    try {
+        const response = await notificationService.getUpcomingAlerts(studentId);
+        upcomingAlerts.value = response.data || [];
+    } catch (error) {
+        console.error('Error fetching alerts:', error);
+    } finally {
+        isLoadingAlerts.value = false;
+    }
+};
+
+const dismissAlert = (id) => {
+    upcomingAlerts.value = upcomingAlerts.value.filter(a => a.id !== id);
+};
+
 const markAsPresent = async (subjectName) => {
     const studentId = checkAuth();
     if (!studentId) return;
@@ -664,6 +705,7 @@ onMounted(async () => {
         fetchAttendanceSummary(studentId);
         await fetchAssignments(studentId);
         await fetchTodayClasses(studentId);
+        fetchUpcomingAlerts(studentId);
         updateSmartPlanner();
 
         // Notification Check System
@@ -1369,73 +1411,133 @@ onUnmounted(() => {
 }
 
 /* GPA Card Specific */
-.gpa-card {
+/* GPA Card Upgraded Styles */
+.gpa-card-upgrade {
+  overflow: visible;
+}
+
+.status-badge-top {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #818cf8;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 20;
+}
+
+.gauge-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.gauge-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.gauge-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.03);
+  stroke-width: 8;
+}
+
+.gauge-progress {
+  fill: none;
+  stroke: url(#gauge-gradient);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gauge-content {
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px;
 }
 
-.label-muted {
-  font-size: 10px;
-  font-weight: 900;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 12px;
-}
-
-.gpa-value-group {
-  margin-bottom: 24px;
-}
-
-.gpa-score {
-  font-size: 42px;
+.gauge-value {
+  font-size: 32px;
   font-weight: 900;
   color: white;
-  letter-spacing: -0.05em;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 
-.gpa-max {
-  font-size: 14px;
-  color: #475569;
-  margin-left: 4px;
+.gauge-max {
+  font-size: 9px;
+  font-weight: 800;
+  color: #64748b;
+  margin-top: 4px;
 }
 
-.progress-section {
-  width: 100%;
+.target-info {
+  margin-top: auto;
+  text-align: center;
 }
 
-.progress-labels {
-  display: flex;
-  justify-content: space-between;
+.target-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
   margin-bottom: 8px;
 }
 
-.label-tiny {
+.target-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0.7;
+}
+
+.dot-pulse {
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+  position: relative;
+}
+
+.dot-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 1px solid #10b981;
+  border-radius: 50%;
+  animation: pulse-ring 1.5s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.indicator-label {
   font-size: 10px;
   font-weight: 600;
-  color: #64748b;
-}
-
-.label-tiny.accent { color: #818cf8; }
-
-.progress-bar-bg {
-  width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 99px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  border-radius: 99px;
-}
-
-.indigo-fuchsia-gradient {
-  background: linear-gradient(to right, #6366f1, #d946ef);
+  color: #94a3b8;
 }
 
 .section-divider {

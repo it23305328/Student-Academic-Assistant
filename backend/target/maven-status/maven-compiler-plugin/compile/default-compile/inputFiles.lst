@@ -15,6 +15,7 @@ C:\Users\HP\Desktop\ITPM project\student-dashboard-system\backend\src\main\java\
 C:\Users\HP\Desktop\ITPM project\student-dashboard-system\backend\src\main\java\com\studentdashboard\repository\AttendanceLogRepository.java
 C:\Users\HP\Desktop\ITPM project\student-dashboard-system\backend\src\main\java\com\studentdashboard\config\WebConfig.java
 C:\Users\HP\Desktop\ITPM project\student-dashboard-system\backend\src\main\java\com\studentdashboard\controller\GPAController.java
+C:\Users\HP\Desktop\ITPM project\student-dashboard-system\backend\src\main\java\com\studentdashboard\dto\UpcomingAlertDTO.java
 C:\Users\HP\Desktop\ITPM project\student-dashboard-system\backend\src\main\java\com\studentdashboard\model\Assignment.java
 C:\Users\HP\Desktop\ITPM project\student-dashboard-system\backend\src\main\java\com\studentdashboard\model\Student.java
 C:\Users\HP\Desktop\ITPM project\student-dashboard-system\backend\src\main\java\com\studentdashboard\service\NotificationService.java
