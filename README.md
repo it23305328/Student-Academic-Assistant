@@ -1,5 +1,4 @@
-Gemini said
-Ado machan, nice project! This is a solid tool that actually solves a real struggle for students. To make your GitHub repo look professional and stand out to recruiters or collaborators, you need a README that is clean, well-structured, and highlights the technical logic behind your features.
+This is a solid tool that actually solves a real struggle for students. To make your GitHub repo look professional and stand out to recruiters or collaborators, you need a README that is clean, well-structured, and highlights the technical logic behind your features.
 
 Here is a comprehensive description you can copy and paste into your README.md.
 
