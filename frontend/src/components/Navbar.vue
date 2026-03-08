@@ -12,9 +12,14 @@
 
         <!-- Navigation Links (Desktop) -->
         <div class="navbar-links">
-          <router-link to="/dashboard" class="nav-link" exact-active-class="active">Dashboard</router-link>
-          <router-link to="/timetable" class="nav-link" exact-active-class="active">Timetable</router-link>
-          <router-link to="/attendance" class="nav-link" exact-active-class="active">Attendance</router-link>
+          <template v-if="role === 'STUDENT'">
+            <router-link to="/student-dashboard" class="nav-link" exact-active-class="active">Dashboard</router-link>
+            <router-link to="/timetable" class="nav-link" exact-active-class="active">Timetable</router-link>
+            <router-link to="/attendance" class="nav-link" exact-active-class="active">Attendance</router-link>
+          </template>
+          <template v-else-if="role === 'ADMIN'">
+            <router-link to="/admin-panel" class="nav-link" exact-active-class="active">Admin Panel</router-link>
+          </template>
         </div>
         
         <!-- Action Section (Optional) -->
@@ -22,6 +27,7 @@
            <div class="notif-wrapper">
              <NotificationBell class="icon" />
            </div>
+           <button v-if="role" @click="handleLogout" class="logout-mini">Logout</button>
         </div>
       </div>
     </div>
@@ -29,7 +35,24 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import NotificationBell from './NotificationBell.vue';
+
+const router = useRouter();
+const role = ref(localStorage.getItem('role'));
+
+onMounted(() => {
+  window.addEventListener('storage', () => {
+    role.value = localStorage.getItem('role');
+  });
+});
+
+const handleLogout = () => {
+  localStorage.clear();
+  role.value = null;
+  router.push('/login');
+};
 </script>
 
 <style scoped>
@@ -137,6 +160,24 @@ import NotificationBell from './NotificationBell.vue';
 
 .notif-wrapper:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+.logout-mini {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 12px;
+  transition: 0.2s;
+}
+
+.logout-mini:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
 }
 
 /* Responsive Task 5 Task 5 Responsive System Task 5 */
