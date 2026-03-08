@@ -2,10 +2,12 @@ package com.studentdashboard.controller;
 
 import com.studentdashboard.model.Student;
 import com.studentdashboard.service.StudentService;
+import com.studentdashboard.dto.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -28,7 +30,14 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         Student student = studentService.login(loginRequest.getEmail(), loginRequest.getPassword());
         if (student != null) {
-            return new ResponseEntity<>(student, HttpStatus.OK);
+            // Generate a dummy token for this implementation
+            String dummyToken = UUID.randomUUID().toString();
+            LoginResponse response = new LoginResponse(
+                    dummyToken,
+                    student.getName(),
+                    student.getRole(),
+                    student.getId());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Invalid email or password", HttpStatus.UNAUTHORIZED);
         }

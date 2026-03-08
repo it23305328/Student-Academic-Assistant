@@ -77,15 +77,24 @@ const handleLogin = async () => {
         const response = await api.post('/login', form.value);
         
         // Success: Only if the backend returns 200 OK
-        if (response.status === 200 && response.data.id) {
+        if (response.status === 200 && response.data.token) {
+            // Store token, role and username in localStorage
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('role', response.data.role);
+            localStorage.setItem('username', response.data.username);
             localStorage.setItem('studentId', response.data.id.toString());
-            router.push('/dashboard');
+            
+            // Redirect based on role
+            if (response.data.role === 'ADMIN') {
+                router.push('/admin-panel');
+            } else {
+                router.push('/student-dashboard');
+            }
         } else {
             alert('Invalid Email or Password');
         }
     } catch (error) {
         console.error('Login error:', error);
-        // Unauthorized (401) will throw catch block in axios
         alert('Invalid Email or Password');
     } finally {
         isLoading.value = false;
