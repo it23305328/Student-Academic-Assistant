@@ -1,0 +1,48 @@
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+
+# --- IDE Files ---
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+.factorypath
+bin/
+
+# --- Maven / Spring Boot ---
+target/
+*.class
+*.log
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+
+# --- Node / Vue.js ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Environment & Security ---
+.env
+.env.*
+application.properties
+application-*.properties
+!application-sample.properties
+config/keys.js
+*.pem
+*.jks
+
+# --- Project Specific ---
+backend/target/
+frontend/node_modules/
+frontend/dist/
