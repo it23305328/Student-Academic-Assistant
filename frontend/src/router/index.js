@@ -7,6 +7,7 @@ const Login = () => import('../views/Login.vue');
 const Register = () => import('../views/Register.vue');
 const Timetable = () => import('../views/Timetable.vue');
 const Attendance = () => import('../views/Attendance.vue');
+const Summarization = () => import('../views/Summarization.vue');
 
 const routes = [
     {
@@ -55,6 +56,12 @@ const routes = [
         name: 'Attendance',
         component: Attendance,
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/summarization',
+        name: 'Summarization',
+        component: Summarization,
+        meta: { requiresAuth: true, role: 'STUDENT' }
     }
 ];
 
