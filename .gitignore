@@ -1,0 +1,45 @@
+# --- Build Artifacts ---
+backend/target/
+frontend/dist/
+frontend/node_modules/
+node_modules/
+target/
+bin/
+out/
+
+# --- Compiled Files ---
+*.class
+
+# --- IDE Configs ---
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+.factorypath
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+
+# --- Spring Boot ---
+*.log
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+
+# --- Node / Frontend ---
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.*
+!application-sample.properties
+
+# --- Project Specific ---
+application.properties
+backend/src/main/resources/application.properties
