@@ -1,5 +1,9 @@
 package com.studentdashboard.service;
 
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -19,6 +23,8 @@ import java.util.ArrayList;
 
 @Service
 public class SummarizerService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SummarizerService.class);
 
     @Value("${gemini.api.key}")
     private String apiKey;
