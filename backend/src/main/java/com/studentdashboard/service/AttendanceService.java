@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,7 +77,7 @@ public class AttendanceService {
 
         if (timetableId != null) {
             java.util.Optional<com.studentdashboard.model.AttendanceLog> logOpt = attendanceLogRepository
-                    .findByTimetableId(timetableId);
+                    .findFirstByTimetableId(timetableId);
             if (logOpt.isPresent()) {
                 return; // Already marked for this specific session
             }
@@ -116,5 +117,59 @@ public class AttendanceService {
         // but our dynamic calc will override it in the DTO
         attendance.setTotalSessions(attendance.getTotalSessions() + 1);
         attendanceRepository.save(attendance);
+    }
+
+    public List<Map<String, Object>> getWeeklyAttendance(Long studentId) {
+        java.time.LocalDate today = java.time.LocalDate.now();
+        java.time.LocalDate weekAgo = today.minusDays(6);
+
+        List<com.studentdashboard.model.Timetable> weekTimetables = timetableRepository
+                .findByStudentIdAndDateBetween(studentId, weekAgo, today);
+
+        List<com.studentdashboard.model.AttendanceLog> weekLogs = attendanceLogRepository
+                .findByStudentIdAndDateBetween(studentId, weekAgo, today);
+
+        List<Map<String, Object>> result = new java.util.ArrayList<>();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("EEE");
+
+        for (int i = 6; i >= 0; i--) {
+            java.time.LocalDate currentDate = today.minusDays(i);
+            String dayName = currentDate.format(formatter);
+
+            long expectedForDay = weekTimetables.stream()
+                    .filter(t -> t.getDate().isEqual(currentDate) &&
+                            (currentDate.isBefore(today) || (currentDate.isEqual(today)
+                                    && t.getEndTime().isBefore(java.time.LocalTime.now()))))
+                    .count();
+
+            long attendedForDay = weekLogs.stream()
+                    .filter(l -> l.getDate().isEqual(currentDate))
+                    .count();
+
+            // Limit attended to expected theoretically, though ideally 1:1
+            if (attendedForDay > expectedForDay)
+                attendedForDay = expectedForDay;
+
+            int percentage = 100;
+            if (expectedForDay > 0) {
+                percentage = (int) Math.round(((double) attendedForDay / expectedForDay) * 100);
+            } else {
+                percentage = 100; // If no classes, consider it 100% or 0%. Let's default to full for
+                                  // visualization if there are no classes scheduled that day, to avoid awkward 0
+                                  // drops. Or maybe 0? To match the chart, 0% looks bad if there's no class.
+                                  // Let's do 100 if no class, or just keep previous day's or 0. Let's do 0 for no
+                                  // classes if we want but it drops the chart. Actually, let's just do 0 so it's
+                                  // accurate, or null. Let's do 0.
+                percentage = 0;
+            }
+
+            Map<String, Object> dayData = new java.util.HashMap<>();
+            dayData.put("name", dayName);
+            dayData.put("value", expectedForDay == 0 ? 0 : percentage); // Using 0 if no class
+
+            result.add(dayData);
+        }
+
+        return result;
     }
 }

@@ -602,7 +602,7 @@ const fetchAssignments = async (studentId) => {
         assignments.value = (response.data || []).map(a => ({
             ...a,
             countdown: calculateCountdown(a.deadline)
-        }));
+        })).filter(a => a.countdown && !a.countdown.expired);
     } catch (error) {
         console.error('Error fetching assignments:', error);
     } finally {
@@ -728,7 +728,7 @@ onMounted(async () => {
             assignments.value = assignments.value.map(a => ({
                 ...a,
                 countdown: calculateCountdown(a.deadline)
-            }));
+            })).filter(a => a.countdown && !a.countdown.expired);
         }, 1000);
 
         onUnmounted(() => {

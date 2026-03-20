@@ -29,6 +29,12 @@ public class AttendanceController {
         return new ResponseEntity<>(summary, HttpStatus.OK);
     }
 
+    @GetMapping("/weekly/{studentId}")
+    public ResponseEntity<List<Map<String, Object>>> getWeeklyAttendance(@PathVariable("studentId") Long studentId) {
+        List<Map<String, Object>> weeklyData = attendanceService.getWeeklyAttendance(studentId);
+        return new ResponseEntity<>(weeklyData, HttpStatus.OK);
+    }
+
     @PostMapping("/mark")
     public ResponseEntity<?> markAttendance(@RequestBody Map<String, Object> payload) {
         try {

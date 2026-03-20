@@ -84,7 +84,7 @@ public class TimetableService {
                 timetable.getVenue());
 
         // Check if marked for this specific session
-        boolean isMarked = attendanceLogRepository.findByTimetableId(timetable.getId()).isPresent();
+        boolean isMarked = attendanceLogRepository.findFirstByTimetableId(timetable.getId()).isPresent();
 
         dto.setMarked(isMarked);
         return dto;

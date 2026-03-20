@@ -12,4 +12,6 @@ public interface TimetableRepository extends JpaRepository<Timetable, Long> {
     List<Timetable> findByStudentIdOrderByDateAscStartTimeAsc(Long studentId);
 
     List<Timetable> findByStudentIdAndDateOrderByStartTimeAsc(Long studentId, LocalDate date);
+
+    List<Timetable> findByStudentIdAndDateBetween(Long studentId, LocalDate startDate, LocalDate endDate);
 }

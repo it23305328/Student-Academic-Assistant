@@ -31,7 +31,7 @@
     <div class="chart-footer">
        <div class="stat-box">
          <span class="stat-label">Average</span>
-         <span class="stat-value">84%</span>
+         <span class="stat-value">{{ averagePercentage }}%</span>
        </div>
        <div class="stat-box">
          <span class="stat-label">Target</span>
@@ -42,23 +42,51 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import attendanceService from '../services/attendanceService';
 
 const days = ref([
-  { name: 'Mon', value: 85 },
-  { name: 'Tue', value: 72 },
-  { name: 'Wed', value: 94 },
-  { name: 'Thu', value: 68 },
-  { name: 'Fri', value: 88 },
-  { name: 'Sat', value: 45 },
-  { name: 'Sun', value: 30 }
+  { name: 'Mon', value: 0 },
+  { name: 'Tue', value: 0 },
+  { name: 'Wed', value: 0 },
+  { name: 'Thu', value: 0 },
+  { name: 'Fri', value: 0 },
+  { name: 'Sat', value: 0 },
+  { name: 'Sun', value: 0 }
 ]);
+
+const averagePercentage = ref(0);
 
 const getBarGradient = (val) => {
   if (val < 50) return 'linear-gradient(to top, #ef4444, #f87171)';
   if (val < 75) return 'linear-gradient(to top, #f59e0b, #fbbf24)';
   return 'linear-gradient(to top, #6366f1, #d946ef)';
 };
+
+onMounted(async () => {
+  const studentId = localStorage.getItem('studentId');
+  if (studentId) {
+    try {
+      const response = await attendanceService.getWeeklyAttendance(studentId);
+      if (response.data && response.data.length > 0) {
+        // Animate the values starting from 0 to actual value
+        setTimeout(() => {
+          days.value = response.data;
+          // Calculate average
+          let sum = 0;
+          let validDays = 0;
+          response.data.forEach(d => {
+            sum += d.value;
+            if (d.value > 0) validDays++;
+          });
+          averagePercentage.value = validDays > 0 ? Math.round(sum / validDays) : 0;
+        }, 300); // Slight delay for animation effect
+      }
+    } catch (error) {
+      console.error('Failed to sync weekly attendance:', error);
+    }
+  }
+});
 </script>
 
 <style scoped>

@@ -10,6 +10,13 @@ export default {
     },
 
     /**
+     * Retrieves weekly attendance
+     */
+    getWeeklyAttendance(studentId) {
+        return api.get(`/attendance/weekly/${studentId}`);
+    },
+
+    /**
      * Marks attendance for a specific subject
      * @param {number} studentId - The ID of the student
      * @param {string} subjectName - Name of the subject

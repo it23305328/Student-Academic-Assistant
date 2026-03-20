@@ -12,5 +12,7 @@ public interface AttendanceLogRepository extends JpaRepository<AttendanceLog, Lo
     Optional<AttendanceLog> findFirstByStudentIdAndSubjectNameAndDate(Long studentId, String subjectName,
             LocalDate date);
 
-    Optional<AttendanceLog> findByTimetableId(Long timetableId);
+    Optional<AttendanceLog> findFirstByTimetableId(Long timetableId);
+
+    java.util.List<AttendanceLog> findByStudentIdAndDateBetween(Long studentId, LocalDate startDate, LocalDate endDate);
 }
