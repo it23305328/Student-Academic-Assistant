@@ -26,4 +26,7 @@ public class AttendanceLog {
 
     @Column(nullable = false)
     private LocalDate date;
+
+    @Column(name = "timetable_id")
+    private Long timetableId;
 }

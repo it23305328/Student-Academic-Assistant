@@ -181,7 +181,7 @@
                           <span>Checked-in ✅</span>
                         </div>
 
-                        <button v-else-if="getClassStatus(cls) === 'ongoing'" @click="markAsPresent(cls.subjectName)" class="btn-mark glow-indigo">
+                        <button v-else-if="getClassStatus(cls) === 'ongoing'" @click="markAsPresent(cls.subjectName, cls.id)" class="btn-mark glow-indigo">
                           <svg class="icon btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                           </svg>
@@ -649,14 +649,15 @@ const dismissAlert = (id) => {
     upcomingAlerts.value = upcomingAlerts.value.filter(a => a.id !== id);
 };
 
-const markAsPresent = async (subjectName) => {
+const markAsPresent = async (subjectName, timetableId) => {
     const studentId = checkAuth();
     if (!studentId) return;
     
     try {
-        await attendanceService.markAttendance(studentId, subjectName, true);
+        await attendanceService.markAttendance(studentId, subjectName, true, timetableId);
         alert(`Attendance marked for ${subjectName}`);
         fetchAttendanceSummary(studentId);
+        fetchTodayClasses(studentId); // Re-fetch classes to update the UI
     } catch (error) {
         alert('Failed to mark attendance.');
     }

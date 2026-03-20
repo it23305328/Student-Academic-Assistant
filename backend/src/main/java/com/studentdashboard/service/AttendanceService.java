@@ -71,15 +71,21 @@ public class AttendanceService {
         return getAttendanceForStudent(studentId);
     }
 
-    public void markAttendance(Long studentId, String subjectName, boolean present) {
+    public void markAttendance(Long studentId, String subjectName, boolean present, Long timetableId) {
         java.time.LocalDate today = java.time.LocalDate.now();
 
-        // Track daily log so we know if they marked for today
-        java.util.Optional<com.studentdashboard.model.AttendanceLog> logOpt = attendanceLogRepository
-                .findByStudentIdAndSubjectNameAndDate(studentId, subjectName, today);
-
-        if (logOpt.isPresent()) {
-            return; // Already marked for today
+        if (timetableId != null) {
+            java.util.Optional<com.studentdashboard.model.AttendanceLog> logOpt = attendanceLogRepository
+                    .findByTimetableId(timetableId);
+            if (logOpt.isPresent()) {
+                return; // Already marked for this specific session
+            }
+        } else {
+            java.util.Optional<com.studentdashboard.model.AttendanceLog> logOpt = attendanceLogRepository
+                    .findFirstByStudentIdAndSubjectNameAndDate(studentId, subjectName, today);
+            if (logOpt.isPresent()) {
+                return; // Already marked for today (fallback)
+            }
         }
 
         List<Attendance> attendances = attendanceRepository.findByStudentId(studentId);
@@ -102,6 +108,7 @@ public class AttendanceService {
             log.setStudentId(studentId);
             log.setSubjectName(subjectName);
             log.setDate(today);
+            log.setTimetableId(timetableId);
             attendanceLogRepository.save(log);
         }
 

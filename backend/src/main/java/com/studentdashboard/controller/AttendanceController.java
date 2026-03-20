@@ -36,7 +36,12 @@ public class AttendanceController {
             String subjectName = payload.get("subjectName").toString();
             boolean present = (boolean) payload.getOrDefault("present", true);
 
-            attendanceService.markAttendance(studentId, subjectName, present);
+            Long timetableId = null;
+            if (payload.containsKey("timetableId")) {
+                timetableId = Long.valueOf(payload.get("timetableId").toString());
+            }
+
+            attendanceService.markAttendance(studentId, subjectName, present, timetableId);
             return new ResponseEntity<>("Attendance marked successfully", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Error marking attendance: " + e.getMessage(), HttpStatus.BAD_REQUEST);

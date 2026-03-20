@@ -83,11 +83,8 @@ public class TimetableService {
                 timetable.getEndTime(),
                 timetable.getVenue());
 
-        // Check if marked for this date/subject
-        boolean isMarked = attendanceLogRepository.findByStudentIdAndSubjectNameAndDate(
-                timetable.getStudentId(),
-                timetable.getSubjectName(),
-                timetable.getDate()).isPresent();
+        // Check if marked for this specific session
+        boolean isMarked = attendanceLogRepository.findByTimetableId(timetable.getId()).isPresent();
 
         dto.setMarked(isMarked);
         return dto;

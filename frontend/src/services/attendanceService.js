@@ -15,11 +15,12 @@ export default {
      * @param {string} subjectName - Name of the subject
      * @param {boolean} present - Whether the student is present
      */
-    markAttendance(studentId, subjectName, present = true) {
+    markAttendance(studentId, subjectName, present = true, timetableId = null) {
         return api.post('/attendance/mark', {
             studentId,
             subjectName,
-            present
+            present,
+            timetableId
         });
     }
 };

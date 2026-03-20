@@ -9,5 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface AttendanceLogRepository extends JpaRepository<AttendanceLog, Long> {
-    Optional<AttendanceLog> findByStudentIdAndSubjectNameAndDate(Long studentId, String subjectName, LocalDate date);
+    Optional<AttendanceLog> findFirstByStudentIdAndSubjectNameAndDate(Long studentId, String subjectName,
+            LocalDate date);
+
+    Optional<AttendanceLog> findByTimetableId(Long timetableId);
 }
