@@ -43,6 +43,16 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/v1/students/details/{id}")
+    public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
+        return ResponseEntity.ok(studentService.getStudentById(id));
+    }
+
+    @GetMapping("/all-students")
+    public java.util.List<Student> getAllStudents() {
+        return studentService.getAllStudents();
+    }
+
     // Creating an inner class for the login request body so we don't need a
     // separate DTO file right away
     static class LoginRequest {

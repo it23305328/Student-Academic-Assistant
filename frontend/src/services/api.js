@@ -3,7 +3,7 @@ import axios from 'axios';
 // Create a configured Axios instance
 // Note: Changed to port 8081 since we updated the backend application.properties earlier to avoid port conflicts
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8082/api',
+    baseURL: 'http://localhost:8082',
     headers: {
         'Content-Type': 'application/json'
     }

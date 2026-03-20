@@ -36,8 +36,8 @@
         <div class="user-mini-card">
           <img :src="student.profilePic || defaultAvatar" alt="User" class="nav-avatar" />
           <div class="nav-user-info">
-            <p class="nav-user-name">{{ student.name }}</p>
-            <p class="nav-user-id">#{{ student.studentId || 'ID1042' }}</p>
+            <p class="nav-user-name">{{ student.name || 'Loading...' }}</p>
+            <p class="nav-user-id">#{{ student.id || 'N/A' }}</p>
           </div>
           <button @click="handleLogout" class="btn-logout-mini" title="Logout">
             <span class="material-symbols-outlined">logout</span>

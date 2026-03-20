@@ -6,7 +6,7 @@ export default {
      * @param {number} studentId - The ID of the student
      */
     getAssignments(studentId) {
-        return api.get(`/assignments/${studentId}`);
+        return api.get(`/api/assignments/${studentId}`);
     },
 
     /**
@@ -14,6 +14,6 @@ export default {
      * @param {Object} assignment - The assignment object
      */
     addAssignment(assignment) {
-        return api.post('/assignments/add', assignment);
+        return api.post('/api/assignments/add', assignment);
     }
 };

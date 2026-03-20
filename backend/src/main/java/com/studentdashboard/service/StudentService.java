@@ -45,7 +45,7 @@ public class StudentService {
                 return student;
             }
         }
-        return null; // or throw a custom exception
+        return null;
     }
 
     public Student getStudentById(Long id) {

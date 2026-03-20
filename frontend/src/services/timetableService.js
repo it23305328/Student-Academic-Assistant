@@ -6,7 +6,7 @@ export default {
      * @param {number} studentId - The ID of the student
      */
     getAllTimetable(studentId) {
-        return api.get(`/timetable/all/${studentId}`);
+        return api.get(`/api/timetable/all/${studentId}`);
     },
 
     /**
@@ -14,7 +14,7 @@ export default {
      * @param {number} studentId - The ID of the student
      */
     getTodayTimetable(studentId) {
-        return api.get(`/timetable/today/${studentId}`);
+        return api.get(`/api/timetable/today/${studentId}`);
     },
 
     /**
@@ -23,7 +23,7 @@ export default {
      * @param {string} date - ISO Date string (e.g., '2024-11-20')
      */
     getFreeSlots(studentId, date) {
-        return api.get(`/timetable/free-slots/${studentId}`, {
+        return api.get(`/api/timetable/free-slots/${studentId}`, {
             params: { date }
         });
     },
@@ -33,7 +33,7 @@ export default {
      * @param {Object} entry - The timetable entry object
      */
     addEntry(entry) {
-        return api.post('/timetable/add', entry);
+        return api.post('/api/timetable/add', entry);
     },
 
     /**
@@ -43,7 +43,7 @@ export default {
      * @param {Object} entry - The updated data
      */
     updateEntry(id, studentId, entry) {
-        return api.put(`/timetable/update/${id}`, entry, {
+        return api.put(`/api/timetable/update/${id}`, entry, {
             params: { studentId }
         });
     },
@@ -54,7 +54,7 @@ export default {
      * @param {number} studentId - The owner's ID
      */
     deleteEntry(id, studentId) {
-        return api.delete(`/timetable/delete/${id}`, {
+        return api.delete(`/api/timetable/delete/${id}`, {
             params: { studentId }
         });
     }

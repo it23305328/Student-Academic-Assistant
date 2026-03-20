@@ -74,7 +74,7 @@ const emailError = computed(() => {
 const handleLogin = async () => {
     isLoading.value = true;
     try {
-        const response = await api.post('/login', form.value);
+        const response = await api.post('login', form.value);
         
         // Success: Only if the backend returns 200 OK
         if (response.status === 200 && response.data.token) {

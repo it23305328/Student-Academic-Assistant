@@ -6,7 +6,7 @@ export default {
      * @param {number} studentId - The ID of the student
      */
     getNotifications(studentId) {
-        return api.get(`/notifications/${studentId}`);
+        return api.get(`/api/notifications/${studentId}`);
     },
 
     /**
@@ -14,7 +14,7 @@ export default {
      * @param {number} notificationId 
      */
     markAsRead(notificationId) {
-        return api.put(`/notifications/${notificationId}/read`);
+        return api.put(`/api/notifications/${notificationId}/read`);
     },
 
     /**
@@ -22,6 +22,6 @@ export default {
      * @param {number} studentId 
      */
     getUpcomingAlerts(studentId) {
-        return api.get(`/notifications/alerts/${studentId}`);
+        return api.get(`/api/notifications/alerts/${studentId}`);
     }
 };

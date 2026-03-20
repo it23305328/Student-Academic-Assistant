@@ -6,14 +6,14 @@ export default {
      * @param {number} studentId - The ID of the student
      */
     getAttendanceSummary(studentId) {
-        return api.get(`/attendance/summary/${studentId}`);
+        return api.get(`/api/attendance/summary/${studentId}`);
     },
 
     /**
      * Retrieves weekly attendance
      */
     getWeeklyAttendance(studentId) {
-        return api.get(`/attendance/weekly/${studentId}`);
+        return api.get(`/api/attendance/weekly/${studentId}`);
     },
 
     /**
@@ -23,7 +23,7 @@ export default {
      * @param {boolean} present - Whether the student is present
      */
     markAttendance(studentId, subjectName, present = true, timetableId = null) {
-        return api.post('/attendance/mark', {
+        return api.post('/api/attendance/mark', {
             studentId,
             subjectName,
             present,
