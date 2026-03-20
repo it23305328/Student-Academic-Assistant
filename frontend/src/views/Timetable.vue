@@ -1,233 +1,152 @@
 <template>
-  <div class="timetable-wrapper">
+  <div class="dashboard-root">
     
-    <!-- Ambient Background Bubbles -->
-    <div class="ambient-glows">
-      <div class="glow-bubble top-left"></div>
-      <div class="glow-bubble bottom-right"></div>
-    </div>
-
-    <!-- Sidebar Aside -->
+    <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-inner">
-        <div class="sidebar-mesh"></div>
-        <div class="sidebar-brand">
-          <div class="brand-logo-icon">S</div>
-          <span class="brand-name">StudentX</span>
+      <div class="sidebar-header">
+        <div class="brand-wrapper">
+          <img src="../assets/images/logo.png" alt="StudentX Logo" class="brand-logo" />
+          <div class="brand-text">
+            <h1 class="brand-title">StudentX</h1>
+            <p class="brand-subtitle">Academic Support</p>
+          </div>
         </div>
-        
-        <nav class="sidebar-nav">
-          <router-link to="/student-dashboard" class="nav-item">
-            <svg class="icon nav-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-            </svg>
-            <span class="nav-text">Overview</span>
-          </router-link>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <router-link to="/student-dashboard" class="nav-link">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span>Overview</span>
+        </router-link>
+        <router-link to="/timetable" class="nav-link">
+          <span class="material-symbols-outlined">calendar_month</span>
+          <span>Timetable</span>
+        </router-link>
+        <router-link to="/attendance" class="nav-link">
+          <span class="material-symbols-outlined">assignment_turned_in</span>
+          <span>Attendance</span>
+        </router-link>
+        <router-link to="/summarization" class="nav-link">
+          <span class="material-symbols-outlined">auto_awesome</span>
+          <span>Summarization</span>
+        </router-link>
+      </nav>
 
-          <router-link to="/timetable" class="nav-item active">
-            <svg class="icon nav-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <span class="nav-text">Timetable</span>
-          </router-link>
-
-          <router-link to="/attendance" class="nav-item">
-            <svg class="icon nav-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
-            <span class="nav-text">Attendance</span>
-          </router-link>
-
-          <router-link to="/summarization" class="nav-item">
-            <svg class="icon nav-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-            </svg>
-            <span class="nav-text">Summarization</span>
-          </router-link>
-        </nav>
-
-        <div class="sidebar-footer">
-          <router-link to="/login" class="logout-link" @click="handleLogout">
-            <svg class="icon logout-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-            </svg>
-            <span class="nav-text">Logout</span>
-          </router-link>
+      <div class="sidebar-footer">
+        <div class="user-mini-card">
+          <img :src="student.profilePic || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZLMFloQFw3dHPJPKEU3rkHcCXUhI-PejPet3H4YP4B8NeytxNNK7zizEHWtbfP6tLCoST-1XN2WsL9kna8pz5YAPc_f-mcHLIrvpuVMA-T3k_esCMMJXIni3cVGivY_rrTBhAmG8J0vzr43evcjecQm-Np8gcxwwfnuknyQGaUxlHRen09dOamPt7M9Ks8rbXwFxRwkceKVtPXqxwMQBqkkmFnD3Y9cVFeW4-UxfulRlUS_3I23ehETw977EMAClzjBnHVkOGI7o'" alt="User" class="nav-avatar" />
+          <div class="nav-user-info">
+            <p class="nav-user-name">{{ student.name }}</p>
+            <p class="nav-user-id">#{{ student.studentId || 'ID1042' }}</p>
+          </div>
+          <button @click="handleLogout" class="btn-logout-mini" title="Logout">
+            <span class="material-symbols-outlined">logout</span>
+          </button>
         </div>
       </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <div class="main-layout">
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
       
-      <!-- Top Header Sticky -->
-      <header class="header">
-        <div class="header-left">
-           <h1 class="header-title">Timetable</h1>
-           <div class="view-toggle">
-             <button @click="setViewMode('today')" :class="['toggle-btn', viewMode === 'today' ? 'active' : '']">Today</button>
-             <button @click="setViewMode('all')" :class="['toggle-btn', viewMode === 'all' ? 'active' : '']">Full Schedule</button>
-           </div>
+      <!-- App Header -->
+      <header class="app-header">
+        <div class="search-bar">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" v-model="searchQuery" placeholder="Search sessions or topics..." />
         </div>
-
-        <div class="header-right">
-           <button @click="toggleForm" class="btn-add">
-             {{ showForm ? 'Close Form' : '+ New Entry' }}
-           </button>
-           <div class="header-notif-group">
-            <div class="notif-bell-circle">
-              <NotificationBell class="icon notif-bell" />
-            </div>
-           </div>
+        
+        <div class="header-actions">
+          <div class="notif-wrapper">
+            <button class="action-btn">
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+          </div>
+          <button class="action-btn">
+            <span class="material-symbols-outlined">help_outline</span>
+          </button>
+          <div class="divider"></div>
+          <div class="user-profile">
+            <img :src="student.profilePic || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZLMFloQFw3dHPJPKEU3rkHcCXUhI-PejPet3H4YP4B8NeytxNNK7zizEHWtbfP6tLCoST-1XN2WsL9kna8pz5YAPc_f-mcHLIrvpuVMA-T3k_esCMMJXIni3cVGivY_rrTBhAmG8J0vzr43evcjecQm-Np8gcxwwfnuknyQGaUxlHRen09dOamPt7M9Ks8rbXwFxRwkceKVtPXqxwMQBqkkmFnD3Y9cVFeW4-UxfulRlUS_3I23ehETw977EMAClzjBnHVkOGI7o'" alt="Profile" />
+          </div>
         </div>
       </header>
 
-      <!-- Main Content Scroll Area -->
-      <main class="content-scroll">
-        <div class="timetable-container">
+      <!-- Content Canvas -->
+      <main class="content-canvas">
+        
+        <!-- Header Section -->
+        <section class="page-title-section">
+          <div class="title-details">
+            <h2 class="main-heading">Weekly <span class="highlight-text">Curriculum.</span></h2>
+            <p class="sub-heading">Your academic roadmap for the week. Stay focused, stay ahead.</p>
+          </div>
+          <div class="view-toggles">
+            <button @click="viewMode = 'grid'" :class="['toggle-btn', viewMode === 'grid' ? 'active' : '']">Grid View</button>
+            <button @click="viewMode = 'list'" :class="['toggle-btn', viewMode === 'list' ? 'active' : '']">List View</button>
+          </div>
+        </section>
+
+        <!-- Loading state -->
+        <div v-if="isLoading" class="loading-state">
+           <div class="spinner"></div>
+           <p>Syncing schedule...</p>
+        </div>
+
+        <!-- Timetable Bento Grid -->
+        <div v-else class="timetable-grid">
           
-          <!-- Add/Edit Form Section (Task 2 & 3) -->
-          <transition name="fade">
-            <div v-if="showForm" class="crud-form-card">
-              <div class="form-header">
-                <h3 class="form-title">{{ editingId ? 'Edit Entry' : 'Add New Subject' }}</h3>
+          <!-- LEFT COLUMN: Today's Focus -->
+          <div class="grid-left-col">
+            <div class="focus-card">
+              <div class="focus-header">
+                <h3>Today's Focus</h3>
+                <span class="focus-badge">{{ todayClasses.length }} CLASSES</span>
               </div>
-              <div class="form-grid">
-                <div class="input-field">
-                  <label>Subject Name</label>
-                  <input type="text" v-model="form.subjectName" placeholder="e.g. Data Science">
+
+              <div class="focus-list">
+                <div v-if="todayClasses.length === 0" class="empty-focus">
+                  No classes scheduled for today.
                 </div>
-                <div class="input-field">
-                  <label>Date</label>
-                  <input type="date" v-model="form.date">
+                <div v-for="(cls, idx) in todayClasses" :key="cls.id" 
+                     class="focus-item" :class="'border-' + getBorderColor(idx)">
+                  <p class="focus-time" :class="'text-' + getBorderColor(idx)">{{ formatTime(cls.startTime) }} - {{ formatTime(cls.endTime) }}</p>
+                  <h4 class="focus-subject">{{ cls.subjectName }}</h4>
+                  <p class="focus-venue">
+                    <span class="material-symbols-outlined">location_on</span>
+                    {{ cls.venue || 'Virtual Lab' }}
+                  </p>
+                  <div class="focus-actions">
+                     <button @click.stop="editEntry(cls)" class="mini-btn text-primary">Edit</button>
+                     <button @click.stop="deleteEntry(cls.id)" class="mini-btn text-error">Delete</button>
+                  </div>
                 </div>
-                <div class="input-field">
-                  <label>Start Time</label>
-                  <input type="time" v-model="form.startTime">
-                </div>
-                <div class="input-field">
-                  <label>End Time</label>
-                  <input type="time" v-model="form.endTime">
-                </div>
-                <div class="input-field">
-                  <label>Venue</label>
-                  <input type="text" v-model="form.venue" placeholder="e.g. Lab 01">
-                </div>
-              </div>
-              <div class="form-actions">
-                <button @click="cancelForm" class="btn-cancel">Cancel</button>
-                <button @click="saveEntry" class="btn-save">{{ editingId ? 'Update Entry' : 'Save Entry' }}</button>
               </div>
             </div>
-          </transition>
 
-          <!-- Search (Only for Full View) -->
-          <div v-if="viewMode === 'all'" class="search-section">
-             <div class="search-box">
-               <svg class="icon search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-               </svg>
-               <input type="text" v-model="searchQuery" placeholder="Filter subjects..." class="search-input">
-             </div>
+            <!-- Quick Stats / Progress -->
+            <div class="study-goal-card">
+              <div class="goal-content">
+                <h4>Study Goal</h4>
+                <div class="goal-stats">
+                  <span class="goal-perc">72%</span>
+                  <span class="goal-sub">18/25 hrs this week</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" style="width: 72%"></div>
+                </div>
+              </div>
+              <div class="goal-glow"></div>
+            </div>
           </div>
 
-          <!-- Loading Overlay -->
-          <div v-if="isLoading" class="loading-overlay">
-            <div class="spinner"></div>
-            <p class="loading-text">Loading secure data...</p>
-          </div>
-
-          <!-- Empty State -->
-          <div v-else-if="filteredTimetable.length === 0" class="empty-placeholder">
-            <svg class="icon large-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <p>Your timetable is empty. Add a new entry to get started.</p>
-          </div>
-
-          <!-- Timetable Content -->
-          <div v-else class="timetable-content">
+          <!-- RIGHT COLUMN: Weekly Grid or List View -->
+          <div class="grid-right-col">
             
-            <!-- Today's View List -->
-            <div v-if="viewMode === 'today'" class="timetable-today-grid">
-              <div v-for="entry in filteredTimetable" :key="entry.id" class="entry-card">
-                <div class="card-glow"></div>
-                <div class="entry-header">
-                  <div class="subject-group">
-                    <div class="accent-bar"></div>
-                    <h3 class="subject-name">{{ entry.subjectName }}</h3>
-                  </div>
-                  <div class="action-icons">
-                    <button @click="editEntry(entry)" class="icon-btn edit">
-                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                      </svg>
-                    </button>
-                    <button @click="deleteEntry(entry.id)" class="icon-btn delete">
-                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                <div class="entry-details">
-                  <div class="detail-row">
-                    <svg class="icon detail-icon accent-indigo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span>{{ formatTime(entry.startTime) }} - {{ formatTime(entry.endTime) }}</span>
-                  </div>
-                  <div class="detail-row">
-                    <svg class="icon detail-icon accent-fuchsia" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                    </svg>
-                    <span>{{ entry.venue || 'Virtual Lab' }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Full Weekly Grid View (Professional Grid) -->
-            <div v-else class="timetable-grid-wrapper">
-              <div class="table-responsive no-scrollbar">
-                <table class="weekly-grid-table">
-                  <thead>
-                    <tr>
-                      <th class="time-col">TIME</th>
-                      <th v-for="day in weekDays" :key="day" class="day-header">{{ day.toUpperCase() }}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="hour in timeSlots" :key="hour">
-                      <td class="time-cell">{{ hour.toString().padStart(2, '0') }}:00</td>
-                      <td v-for="day in weekDays" :key="day" class="grid-cell">
-                        <div v-for="entry in weeklyGrid[day][hour]" :key="entry.id" class="grid-entry" @click="editEntry(entry)">
-                          <div class="entry-slot-bg"></div>
-                          <div class="entry-inner">
-                            <div class="entry-header-mini">
-                              <span class="entry-subject">{{ entry.subjectName }}</span>
-                              <span class="entry-date-tag">{{ formatDateShort(entry.date) }}</span>
-                            </div>
-                            <div class="entry-meta">
-                              <svg class="icon-tiny" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                              </svg>
-                              <span>{{ entry.venue || 'TBA' }}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Task 2: Category B - Future Events Section -->
-            <div v-if="viewMode === 'all' && futureEvents.length > 0" class="future-events-section">
-              <h2 class="future-section-title">Upcoming Beyond This Week</h2>
+            <div v-if="viewMode === 'list'" class="future-events-section">
+              <h2 class="future-section-title">All Timetable Events</h2>
               <div class="future-cards-grid">
-                <div v-for="event in futureEvents" :key="event.id" class="future-card" @click="editEntry(event)">
+                <div v-for="event in filteredTimetable" :key="event.id" class="future-card" @click="editEntry(event)">
                   <div class="card-glass-effect"></div>
                   <div class="future-card-header">
                     <h3 class="future-subject-name">{{ event.subjectName }}</h3>
@@ -235,31 +154,90 @@
                   </div>
                   <div class="future-card-body">
                     <div class="future-detail">
-                      <svg class="icon accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                      </svg>
+                      <span class="material-symbols-outlined accent-blue">calendar_today</span>
                       <span>{{ formatDateLong(event.date) }}</span>
                     </div>
                     <div class="future-detail">
-                      <svg class="icon accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
+                      <span class="material-symbols-outlined accent-purple">schedule</span>
                       <span>{{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}</span>
                     </div>
                     <div class="future-detail">
-                      <svg class="icon accent-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                      </svg>
+                      <span class="material-symbols-outlined accent-pink">location_on</span>
                       <span>{{ event.venue || 'Virtual Lab' }}</span>
                     </div>
                   </div>
+                  <button @click.stop="deleteEntry(event.id)" class="del-card-btn">Delete</button>
                 </div>
               </div>
             </div>
 
+            <div v-else class="weekly-grid-container table-responsive">
+              <table class="grid-table">
+                <thead>
+                  <tr>
+                    <th class="time-col-header"></th>
+                    <th v-for="day in weekDays" :key="day" class="day-col-header">{{ day.toUpperCase() }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="hour in timeSlots" :key="hour">
+                    <td class="time-cell">{{ hour.toString().padStart(2, '0') }}:00</td>
+                    <td v-for="day in weekDays" :key="day" class="grid-cell">
+                      <div v-for="entry in weeklyGrid[day][hour]" :key="entry.id" 
+                           class="grid-entry" @click="editEntry(entry)">
+                        <div class="entry-inner">
+                          <span class="entry-sub-tag">Class</span>
+                          <span class="entry-subject-title">{{ entry.subjectName }}</span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
           </div>
         </div>
       </main>
+
+      <!-- Floating Action Button -->
+      <button @click="toggleForm" class="fab-add-btn group" title="New Entry">
+        <span class="material-symbols-outlined group-hover">add</span>
+        <span class="fab-tooltip">New Entry</span>
+      </button>
+
+      <!-- Modals & Overlays -->
+      <div v-if="showForm" class="modal-overlay" @click.self="cancelForm">
+        <div class="modal-content crud-form">
+          <h3 class="form-title">{{ editingId ? 'Edit Entry' : 'Add New Subject' }}</h3>
+          <div class="form-group-grid">
+            <div class="form-field">
+              <label>Subject Name</label>
+              <input type="text" v-model="form.subjectName" placeholder="e.g. Data Science">
+            </div>
+            <div class="form-field">
+              <label>Date</label>
+              <input type="date" v-model="form.date">
+            </div>
+            <div class="form-field">
+              <label>Start Time</label>
+              <input type="time" v-model="form.startTime">
+            </div>
+            <div class="form-field">
+              <label>End Time</label>
+              <input type="time" v-model="form.endTime">
+            </div>
+            <div class="form-field">
+              <label>Venue</label>
+              <input type="text" v-model="form.venue" placeholder="e.g. Lab 01">
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button @click="cancelForm" class="btn-cancel">Cancel</button>
+            <button @click="saveEntry" class="btn-save">{{ editingId ? 'Update Entry' : 'Save Entry' }}</button>
+          </div>
+        </div>
+      </div>
       
     </div>
   </div>
@@ -269,18 +247,18 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import timetableService from '../services/timetableService';
-import NotificationBell from '../components/NotificationBell.vue';
+import studentService from '../services/studentService';
 
 const router = useRouter();
 
-// Task 2: Data State
-const viewMode = ref('today');
+const student = ref({ name: 'Julian', studentId: 'ID1042' });
+
+const viewMode = ref('grid');
 const timetableData = ref([]);
 const searchQuery = ref('');
 const isLoading = ref(true);
 const studentId = ref(null);
 
-// Form Control
 const showForm = ref(false);
 const editingId = ref(null);
 const form = ref({
@@ -294,7 +272,11 @@ const form = ref({
 const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const timeSlots = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
-// Privacy Redirect (Task 2)
+const getBorderColor = (idx) => {
+    const colors = ['primary', 'tertiary', 'secondary', 'error'];
+    return colors[idx % colors.length];
+};
+
 const checkAuth = () => {
   const storedId = localStorage.getItem('studentId');
   if (!storedId) {
@@ -305,16 +287,21 @@ const checkAuth = () => {
   return true;
 };
 
+const fetchStudentData = async () => {
+    if(!studentId.value) return;
+    try {
+        const response = await studentService.getStudentById(studentId.value);
+        if(response.data) student.value = response.data;
+    } catch (e) {
+        console.error('Error fetching student data:', e);
+    }
+};
+
 const fetchData = async () => {
   if (!checkAuth()) return;
   isLoading.value = true;
   try {
-    let response;
-    if (viewMode.value === 'today') {
-      response = await timetableService.getTodayTimetable(studentId.value);
-    } else {
-      response = await timetableService.getAllTimetable(studentId.value);
-    }
+    const response = await timetableService.getAllTimetable(studentId.value);
     timetableData.value = response.data || [];
   } catch (error) {
     console.error('Failed to fetch timetable:', error);
@@ -372,49 +359,18 @@ const deleteEntry = async (id) => {
 
 const handleLogout = () => {
   localStorage.removeItem('studentId');
+  localStorage.removeItem('token');
   router.push('/login');
 };
 
-const setViewMode = (mode) => {
-  viewMode.value = mode;
-  fetchData();
-};
-
-// Formatting
 const formatTime = (time) => {
   if (!time) return '';
-  // Handling both LocalTime (08:30:00) and HH:mm
-  const timeStr = time.length === 5 ? time : time.substring(0, 5);
-  return timeStr;
+  return time.length === 5 ? time : time.substring(0, 5);
 };
 
-const formatDateShort = (dateStr) => {
-  if (!dateStr) return '';
+const formatDateLong = (dateStr) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-};
-
-const formatDate = (dateStr) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-};
-
-// Task 1: Logic Update - Split categories
-const getCurrentWeekRange = () => {
-  const now = new Date();
-  const day = now.getDay();
-  // Adjust so Monday is 1, Sunday is 0 -> Mon becomes 0, Sun becomes 6
-  const diffToMonday = (day === 0 ? -6 : 1 - day);
-  
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
-  monday.setHours(0, 0, 0, 0);
-  
-  const friday = new Date(monday);
-  friday.setDate(monday.getDate() + 4);
-  friday.setHours(23, 59, 59, 999);
-  
-  return { monday, friday };
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 };
 
 const getDaysRemaining = (dateStr) => {
@@ -431,9 +387,20 @@ const getDaysRemaining = (dateStr) => {
   return `In ${diffDays} Days`;
 };
 
-const formatDateLong = (dateStr) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+const getCurrentWeekRange = () => {
+  const now = new Date();
+  const day = now.getDay();
+  const diffToMonday = (day === 0 ? -6 : 1 - day);
+  
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+  monday.setHours(0, 0, 0, 0);
+  
+  const friday = new Date(monday);
+  friday.setDate(monday.getDate() + 4);
+  friday.setHours(23, 59, 59, 999);
+  
+  return { monday, friday };
 };
 
 const filteredTimetable = computed(() => {
@@ -443,19 +410,21 @@ const filteredTimetable = computed(() => {
   );
 });
 
+const todayClasses = computed(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    return filteredTimetable.value.filter(entry => entry.date.startsWith(todayStr))
+      .sort((a,b) => {
+         const tA = parseInt(a.startTime.split(':')[0]) * 60 + parseInt(a.startTime.split(':')[1]);
+         const tB = parseInt(b.startTime.split(':')[0]) * 60 + parseInt(b.startTime.split(':')[1]);
+         return tA - tB;
+      });
+});
+
 const currentWeekEvents = computed(() => {
   const { monday, friday } = getCurrentWeekRange();
   return filteredTimetable.value.filter(entry => {
     const d = new Date(entry.date);
     return d >= monday && d <= friday;
-  });
-});
-
-const futureEvents = computed(() => {
-  const { friday } = getCurrentWeekRange();
-  return filteredTimetable.value.filter(entry => {
-    const d = new Date(entry.date);
-    return d > friday;
   });
 });
 
@@ -484,393 +453,257 @@ const weeklyGrid = computed(() => {
 });
 
 onMounted(() => {
-  fetchData();
+  if(checkAuth()) {
+      fetchStudentData();
+      fetchData();
+  }
 });
 </script>
 
 <style scoped>
-/* Base Layout & Theme */
-.timetable-wrapper {
+/* Base Styles */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.dashboard-root {
+  font-family: 'Manrope', sans-serif;
+  background-color: #fafaf5;
+  color: #2e342d;
+  min-height: 100vh;
   display: flex;
+}
+
+/* Sidebar - Exact match with StudentDashboard */
+.sidebar {
+  width: 260px;
+  background-color: #ecefe7;
   height: 100vh;
-  background-color: #050511;
-  color: #cadbee;
-  font-family: 'Inter', system-ui, sans-serif;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Strict Icons Size Task 3 */
-.icon {
-  width: 20px !important;
-  height: 20px !important;
-  min-width: 20px !important;
-  min-height: 20px !important;
-}
-
-/* Sidebar & Header (Clean CSS) */
-.sidebar { width: 220px; padding: 10px; z-index: 20; }
-.sidebar-inner {
-  height: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 32px 0;
+  z-index: 50;
+  border-right: 1px solid rgba(0,0,0,0.05);
 }
-.sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-.nav-item { display: flex; align-items: center; padding: 10px 14px; border-radius: 12px; color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: 600; }
-.nav-item.active { background: rgba(255, 255, 255, 0.05); color: white; }
 
-.main-layout { flex: 1; display: flex; flex-direction: column; padding: 12px 12px 12px 0; }
-.header { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; margin-bottom: 12px; }
-.header-title { font-size: 16px; font-weight: 800; color: white; }
+.sidebar-header { padding: 0 24px; margin-bottom: 40px; }
+.brand-wrapper { display: flex; align-items: center; gap: 12px; }
+.brand-logo { width: 32px; height: 32px; object-fit: contain; }
+.brand-title { font-size: 18px; font-weight: 800; color: #4e6073; margin: 0; line-height: 1; }
+.brand-subtitle { font-size: 10px; font-weight: 600; color: #5a6159; letter-spacing: 0.05em; margin-top: 4px; }
 
-.view-toggle { display: flex; background: rgba(255, 255, 255, 0.04); border-radius: 999px; padding: 3px; border: 1px solid rgba(255, 255, 255, 0.08); }
-.toggle-btn { background: transparent; border: none; color: #94a3b8; font-size: 10px; font-weight: 700; padding: 6px 18px; border-radius: 999px; cursor: pointer; transition: 0.3s; }
-.toggle-btn.active { background: #6366f1; color: white; box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); }
-
-.btn-add { background: #6366f1; color: white; border: none; border-radius: 999px; padding: 8px 18px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
-.btn-add:hover { background: #4f46e5; transform: translateY(-1px); }
-
-/* CRUD Form Card (Task 2 & 3) */
-.crud-form-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-.form-header { margin-bottom: 20px; }
-.form-title { font-size: 15px; font-weight: 900; color: white; }
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+.sidebar-nav { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+.nav-link {
+  display: flex;
+  align-items: center;
   gap: 16px;
-  margin-bottom: 24px;
+  padding: 12px 24px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: #5b6063;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
-.input-field { display: flex; flex-direction: column; gap: 8px; }
-.input-field label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; }
-.input-field input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; color: white; font-size: 13px; outline: none; }
-.input-field input:focus { border-color: #6366f1; background: rgba(255, 255, 255, 0.05); }
+.nav-link:hover, .nav-link.router-link-active { background-color: rgba(255, 255, 255, 0.4); }
+.nav-link.router-link-exact-active { background-color: #ffffff; color: #4e6073; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-.input-field input::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  cursor: pointer;
-  opacity: 0.8;
-  transition: 0.2s;
-}
+.sidebar-footer { margin-top: auto; padding: 24px 16px; border-top: 1px solid rgba(0,0,0,0.05); }
+.user-mini-card { background-color: #ffffff; padding: 12px 16px; border-radius: 20px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+.nav-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.nav-user-info { flex: 1; min-width: 0; }
+.nav-user-name { font-size: 13px; font-weight: 700; margin: 0; color: #2e342d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-user-id { font-size: 11px; font-weight: 600; margin: 0; color: #5a6159; }
+.btn-logout-mini { background: none; border: none; color: #9f403d; cursor: pointer; padding: 8px; border-radius: 12px; display: flex; }
+.btn-logout-mini:hover { background-color: rgba(159, 64, 61, 0.05); }
 
-.input-field input::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
-  transform: scale(1.1);
-}
+/* Main Wrapper */
+.main-wrapper { margin-left: 260px; flex: 1; display: flex; flex-direction: column; }
 
-.form-actions { display: flex; justify-content: flex-end; gap: 12px; }
-.btn-save { background: #6366f1; color: white; border: none; padding: 10px 24px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; }
-.btn-cancel { background: transparent; color: #64748b; border: 1px solid rgba(255,255,255,0.05); padding: 10px 24px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; }
-
-/* Content List Styles */
-.content-scroll { flex: 1; overflow-y: auto; padding-right: 8px; }
-.search-section { margin-bottom: 24px; }
-.search-box { position: relative; width: 300px; }
-.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #475569; }
-.search-input { width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 999px; padding: 10px 16px 10px 40px; color: white; font-size: 12px; outline: none; }
-
-.timetable-today-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.entry-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 24px; position: relative; overflow: hidden; }
-.entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-.action-icons { display: flex; gap: 8px; }
-.icon-btn { background: rgba(255,255,255,0.03); border: none; color: #64748b; padding: 6px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-.icon-btn.edit:hover { color: #6366f1; background: rgba(99,102,241,0.1); }
-.icon-btn.delete:hover { color: #f87171; background: rgba(248,113,113,0.1); }
-
-.subject-name { font-size: 15px; font-weight: 800; color: white; margin: 0; }
-.accent-bar { width: 3px; height: 18px; background: #6366f1; border-radius: 99px; }
-.subject-group { display: flex; align-items: center; gap: 12px; }
-
-.entry-details { display: flex; flex-direction: column; gap: 12px; }
-.detail-row { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #94a3b8; }
-.accent-indigo { color: #6366f1; }
-.accent-fuchsia { color: #d946ef; }
-
-/* Sidebar Footer & Others */
-.sidebar-footer { border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto; padding-top: 12px; }
-.logout-link { display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-decoration: none; color: #64748b; font-size: 13px; font-weight: 600; }
-.logout-link:hover { color: #f87171; }
-
-.glow-bubble { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.05; pointer-events: none; }
-.top-left { width: 40vw; height: 40vw; top: -10%; left: -10%; background: #6366f1; }
-.bottom-right { width: 30vw; height: 30vw; bottom: -10%; right: -5%; background: #d946ef; }
-
-.loading-overlay { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
-.spinner { width: 32px; height: 32px; border: 3px solid rgba(99, 102, 241, 0.2); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s, transform 0.3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-10px); }
-
-.timetable-grid-wrapper {
-  background: rgba(255, 255, 255, 0.02);
+/* Header */
+.app-header {
+  padding: 24px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(243, 244, 238, 0.82);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.search-bar { position: relative; width: 380px; }
+.search-bar .material-symbols-outlined { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #5a6159; font-size: 20px; }
+.search-bar input { width: 100%; background-color: rgba(222, 228, 218, 0.5); border: none; padding: 10px 16px 10px 48px; border-radius: 99px; font-family: inherit; font-size: 14px; outline: none; transition: box-shadow 0.2s; }
+.search-bar input:focus { box-shadow: 0 0 0 2px rgba(78, 96, 115, 0.2); }
+
+.header-actions { display: flex; align-items: center; gap: 24px; }
+.action-btn { background: none; border: none; color: #4e6073; cursor: pointer; position: relative; padding: 8px; border-radius: 50%; transition: background 0.2s; }
+.action-btn:hover { background-color: #dee4da; }
+.divider { width: 1px; height: 32px; background: rgba(0,0,0,0.1); margin: 0 8px; }
+.user-profile { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(78, 96, 115, 0.1); }
+.user-profile img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Content Canvas */
+.content-canvas { padding: 48px; }
+
+.page-title-section { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px; }
+.main-heading { font-size: 48px; font-weight: 800; color: #2e342d; line-height: 1; margin: 0 0 8px 0; letter-spacing: -0.02em; }
+.highlight-text { color: #4e6073; }
+.sub-heading { color: #5a6159; font-size: 16px; margin: 0; max-width: 400px; }
+
+.view-toggles { display: flex; gap: 8px; background: #e5eae0; padding: 4px; border-radius: 16px; }
+.toggle-btn { background: transparent; border: none; padding: 8px 24px; border-radius: 12px; font-weight: 700; color: #5a6159; cursor: pointer; font-size: 14px; transition: 0.2s; }
+.toggle-btn:hover { background: rgba(255,255,255,0.5); }
+.toggle-btn.active { background: white; color: #4e6073; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+/* Bento Grid */
+.timetable-grid {
+  display: grid;
+  grid-template-columns: 4fr 8fr;
+  gap: 32px;
+}
+
+/* Left Column - Today's Focus */
+.grid-left-col { display: flex; flex-direction: column; gap: 32px; }
+
+.focus-card {
+  background: #f3f4ee;
   border-radius: 20px;
+  padding: 32px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.focus-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.focus-header h3 { margin: 0; font-size: 20px; font-weight: 700; color: #4e6073; }
+.focus-badge { background: rgba(78, 96, 115, 0.1); color: #4e6073; font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 99px; letter-spacing: 0.05em; }
+
+.focus-list { display: flex; flex-direction: column; gap: 24px; }
+.empty-focus { text-align: center; color: #5a6159; font-size: 14px; font-style: italic; }
+.focus-item {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  border-left: 4px solid transparent;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  position: relative;
+}
+.border-primary { border-left-color: #4e6073; }
+.border-tertiary { border-left-color: #575e78; }
+.border-secondary { border-left-color: #5b6063; }
+.border-error { border-left-color: #9f403d; }
+.text-primary { color: #4e6073; }
+.text-tertiary { color: #575e78; }
+.text-secondary { color: #5b6063; }
+.text-error { color: #9f403d; }
+
+.focus-time { font-size: 10px; font-weight: 800; letter-spacing: 0.05em; margin: 0 0 4px 0; }
+.focus-subject { font-size: 18px; font-weight: 700; color: #2e342d; margin: 0 0 8px 0; }
+.focus-venue { display: flex; align-items: center; gap: 4px; font-size: 14px; color: #5a6159; margin: 0 0 16px 0; }
+.focus-venue .material-symbols-outlined { font-size: 16px; }
+
+.focus-actions { display: flex; gap: 12px; }
+.mini-btn { background: none; border: none; font-size: 12px; font-weight: 700; cursor: pointer; padding: 0; opacity: 0.7; transition: opacity 0.2s; }
+.mini-btn:hover { opacity: 1; }
+
+.study-goal-card {
+  background: #4e6073;
+  color: white;
+  padding: 32px;
+  border-radius: 20px;
+  position: relative;
   overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 40px rgba(78, 96, 115, 0.2);
 }
+.goal-content { position: relative; z-index: 10; }
+.goal-content h4 { font-size: 20px; font-weight: 700; margin: 0 0 16px 0; }
+.goal-stats { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; }
+.goal-perc { font-size: 36px; font-weight: 800; line-height: 1; }
+.goal-sub { font-size: 14px; font-weight: 500; opacity: 0.8; }
+.progress-track { height: 10px; background: rgba(255,255,255,0.2); border-radius: 99px; }
+.progress-fill { height: 100%; background: white; border-radius: 99px; }
+.goal-glow { position: absolute; top: -48px; right: -48px; width: 128px; height: 128px; background: rgba(255,255,255,0.1); filter: blur(40px); border-radius: 50%; }
 
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
+/* Right Column - Table */
+.weekly-grid-container {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.05);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
 }
-
-.weekly-grid-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 2px;
-  min-width: 100%;
-  table-layout: fixed;
-}
-
-.time-col { width: 35px; }
-
-.day-header {
-  padding: 6px 2px;
-  font-size: 8px;
-  font-weight: 900;
-  color: #64748b;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.03);
-  letter-spacing: 0.02em;
-  border-radius: 4px;
-}
-
-.time-cell {
-  text-align: center;
-  font-size: 8px;
-  font-weight: 800;
-  color: #475569;
-  padding: 6px 0;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-.grid-cell {
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px dashed rgba(255, 255, 255, 0.02);
-  border-radius: 4px;
-  height: 55px;
-  vertical-align: top;
-  padding: 1px;
-}
+.grid-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.time-col-header { width: 60px; background: #f3f4ee; border-bottom: 1px solid rgba(0,0,0,0.05); border-right: 1px solid rgba(0,0,0,0.05); }
+.day-col-header { padding: 24px; font-size: 12px; font-weight: 800; color: #5a6159; letter-spacing: 0.05em; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05); border-right: 1px solid rgba(0,0,0,0.05); }
+.time-cell { text-align: center; font-size: 12px; font-weight: 700; color: #5a6159; padding: 16px 0; background: #f3f4ee; border-right: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05); }
+.grid-cell { height: 140px; border-right: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05); padding: 8px; vertical-align: top; }
 
 .grid-entry {
-  position: relative;
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 4px;
-  padding: 2px;
+  background: rgba(78, 96, 115, 0.1);
+  border: 1px solid rgba(78, 96, 115, 0.2);
+  border-radius: 12px;
+  padding: 16px;
   height: 100%;
   cursor: pointer;
-  transition: 0.3s;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  transition: 0.2s;
+  display: flex; flex-direction: column; justify-content: center;
 }
+.grid-entry:hover { transform: translateY(-2px); background: rgba(78, 96, 115, 0.15); }
+.entry-sub-tag { font-size: 10px; font-weight: 800; color: #4e6073; text-transform: uppercase; margin-bottom: 4px; display: block; }
+.entry-subject-title { font-size: 13px; font-weight: 800; color: #2e342d; line-height: 1.2; }
 
-.grid-entry:hover {
-  background: rgba(99, 102, 241, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+/* Future List View */
+.future-events-section { animation: fadeIn 0.4s ease-out; }
+.future-section-title { font-size: 16px; font-weight: 800; color: #4e6073; margin-bottom: 24px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 16px; }
+.future-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+.future-card { background: white; border: 1px solid rgba(0,0,0,0.05); border-radius: 16px; padding: 24px; transition: 0.3s; cursor: pointer; position: relative; }
+.future-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+.future-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.future-subject-name { font-size: 16px; font-weight: 700; color: #2e342d; margin: 0; }
+.days-remaining-badge { background: #f3f4ee; color: #4e6073; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 8px; }
+.future-card-body { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.future-detail { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5a6159; }
+.future-detail .material-symbols-outlined { font-size: 16px; }
+.del-card-btn { background: none; border: none; color: #9f403d; font-size: 12px; font-weight: 700; padding: 0; cursor: pointer; }
+
+/* FAB */
+.fab-add-btn { position: fixed; bottom: 40px; right: 40px; width: 64px; height: 64px; border-radius: 50%; background: #4e6073; color: white; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 20px 40px rgba(78, 96, 115, 0.3); transition: 0.2s; z-index: 100; }
+.fab-add-btn:hover { transform: scale(1.1); }
+.fab-add-btn .material-symbols-outlined { font-size: 32px; transition: 0.2s; }
+.fab-add-btn:hover .material-symbols-outlined { transform: rotate(90deg); }
+.fab-tooltip { position: absolute; right: 80px; background: #2e342d; color: white; font-size: 12px; font-weight: 700; padding: 8px 16px; border-radius: 8px; opacity: 0; transition: 0.3s; pointer-events: none; white-space: nowrap; }
+.fab-add-btn:hover .fab-tooltip { opacity: 1; }
+
+/* Modals */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.crud-form { background: white; padding: 32px; border-radius: 24px; width: 100%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.form-title { margin: 0 0 24px; font-size: 24px; color: #2e342d; }
+.form-group-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-field { display: flex; flex-direction: column; gap: 8px; }
+.form-field.full { grid-column: 1 / -1; }
+.form-field label { font-size: 12px; font-weight: 700; color: #5a6159; }
+.form-field input { padding: 12px 16px; border: 1px solid #dee4da; border-radius: 12px; font-family: inherit; font-size: 14px; outline: none; transition: 0.2s; }
+.form-field input:focus { border-color: #4e6073; box-shadow: 0 0 0 2px rgba(78, 96, 115, 0.1); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
+.btn-cancel { padding: 12px 24px; border: none; background: #f3f4ee; color: #5a6159; font-weight: 700; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+.btn-cancel:hover { background: #dee4da; }
+.btn-save { padding: 12px 24px; border: none; background: #4e6073; color: white; font-weight: 700; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+.btn-save:hover { background: #3b4958; transform: translateY(-2px); }
+
+.loading-state { text-align: center; padding: 60px; color: #5a6159; font-weight: 600; font-size: 18px; }
+.spinner { width: 40px; height: 40px; border: 4px solid rgba(78, 96, 115, 0.1); border-top-color: #4e6073; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.accent-blue { color: #3b82f6; }
+.accent-purple { color: #8b5cf6; }
+.accent-pink { color: #ec4899; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+@media(max-width: 1024px) {
+  .timetable-grid { grid-template-columns: 1fr; }
+  .sidebar { transform: translateX(-100%); transition: 0.3s; }
+  .main-wrapper { margin-left: 0; }
 }
-
-.entry-slot-bg {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.2), transparent);
-  pointer-events: none;
-}
-
-.entry-inner {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.entry-header-mini {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 4px;
-}
-
-.entry-date-tag {
-  font-size: 8px;
-  font-weight: 900;
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
-  padding: 2px 5px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-
-.entry-subject {
-  font-size: 9px;
-  font-weight: 800;
-  color: white;
-  display: block;
-  line-height: 1.1;
-  word-wrap: break-word;
-  white-space: normal;
-}
-
-.entry-meta {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 7px;
-  color: #94a3b8;
-}
-
-.icon-tiny {
-  width: 10px !important;
-  height: 10px !important;
-}
-
-@media (max-width: 1024px) {
-  .weekly-grid-table { min-width: 100%; }
-}
-
-@media (max-width: 768px) {
-  .sidebar { position: fixed; left: -260px; }
-  .main-layout { padding: 12px; }
-}
-
-/* Task 2: Future Events Section & Premium Cards */
-.future-events-section {
-  margin-top: 40px;
-  animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.future-section-title {
-  font-size: 14px;
-  font-weight: 900;
-  color: #64748b;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  letter-spacing: 0.1em;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.future-section-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
-}
-
-.future-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding: 5px 5px 20px 5px;
-}
-
-.future-card {
-  min-width: 0;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.future-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(99, 102, 241, 0.1);
-}
-
-.card-glass-effect {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent);
-  pointer-events: none;
-}
-
-.future-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.future-subject-name {
-  font-size: 16px;
-  font-weight: 800;
-  color: white;
-  margin: 0;
-  max-width: 65%;
-  line-height: 1.4;
-}
-
-.days-remaining-badge {
-  background: rgba(99, 102, 241, 0.1);
-  color: #818cf8;
-  padding: 6px 12px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  border: 1px solid rgba(99, 102, 241, 0.1);
-  white-space: nowrap;
-}
-
-.future-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  position: relative;
-  z-index: 1;
-}
-
-.future-detail {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
-  color: #94a3b8;
-  font-weight: 500;
-}
-
-.accent-blue { color: #60a5fa; opacity: 0.8; }
-.accent-purple { color: #a78bfa; opacity: 0.8; }
-.accent-pink { color: #f472b6; opacity: 0.8; }
-
 </style>
