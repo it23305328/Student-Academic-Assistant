@@ -73,9 +73,9 @@
             <span class="material-symbols-outlined">help_outline</span>
           </button>
           <div class="divider"></div>
-          <div class="user-profile">
+          <router-link to="/profile" class="user-profile">
             <img :src="student.profilePic || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZLMFloQFw3dHPJPKEU3rkHcCXUhI-PejPet3H4YP4B8NeytxNNK7zizEHWtbfP6tLCoST-1XN2WsL9kna8pz5YAPc_f-mcHLIrvpuVMA-T3k_esCMMJXIni3cVGivY_rrTBhAmG8J0vzr43evcjecQm-Np8gcxwwfnuknyQGaUxlHRen09dOamPt7M9Ks8rbXwFxRwkceKVtPXqxwMQBqkkmFnD3Y9cVFeW4-UxfulRlUS_3I23ehETw977EMAClzjBnHVkOGI7o'" alt="Profile" />
-          </div>
+          </router-link>
         </div>
       </header>
 
@@ -416,7 +416,8 @@ onMounted(() => {
 .action-btn { background: none; border: none; color: #4e6073; cursor: pointer; padding: 8px; border-radius: 50%; transition: background 0.2s; position: relative; }
 .action-btn:hover { background-color: #dee4da; }
 .divider { width: 1px; height: 32px; background: rgba(0,0,0,0.1); margin: 0 8px; }
-.user-profile { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(78, 96, 115, 0.1); }
+.user-profile { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(78, 96, 115, 0.1); display: block; cursor: pointer; transition: 0.2s; }
+.user-profile:hover { border-color: #4e6073; transform: scale(1.05); }
 .user-profile img { width: 100%; height: 100%; object-fit: cover; }
 
 /* Content Canvas */

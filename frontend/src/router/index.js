@@ -8,6 +8,7 @@ const Register = () => import('../views/Register.vue');
 const Timetable = () => import('../views/Timetable.vue');
 const Attendance = () => import('../views/Attendance.vue');
 const Summarization = () => import('../views/Summarization.vue');
+const Profile = () => import('../views/Profile.vue');
 
 const routes = [
     {
@@ -62,6 +63,12 @@ const routes = [
         name: 'Summarization',
         component: Summarization,
         meta: { requiresAuth: true, role: 'STUDENT' }
+    },
+    {
+        path: '/profile',
+        name: 'Profile',
+        component: Profile,
+        meta: { requiresAuth: true }
     }
 ];
 
