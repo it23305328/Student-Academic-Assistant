@@ -47,4 +47,9 @@ public class StudentService {
         }
         return null; // or throw a custom exception
     }
+
+    public Student getStudentById(Long id) {
+        return studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+    }
 }

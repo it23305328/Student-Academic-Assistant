@@ -35,8 +35,8 @@
         <div class="user-mini-card">
           <img :src="student.profilePic || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBZLMFloQFw3dHPJPKEU3rkHcCXUhI-PejPet3H4YP4B8NeytxNNK7zizEHWtbfP6tLCoST-1XN2WsL9kna8pz5YAPc_f-mcHLIrvpuVMA-T3k_esCMMJXIni3cVGivY_rrTBhAmG8J0vzr43evcjecQm-Np8gcxwwfnuknyQGaUxlHRen09dOamPt7M9Ks8rbXwFxRwkceKVtPXqxwMQBqkkmFnD3Y9cVFeW4-UxfulRlUS_3I23ehETw977EMAClzjBnHVkOGI7o'" alt="User" class="nav-avatar" />
           <div class="nav-user-info">
-            <p class="nav-user-name">{{ student.name }}</p>
-            <p class="nav-user-id">#{{ student.studentId || 'ID1042' }}</p>
+            <p class="nav-user-name">{{ student.name || 'Loading...' }}</p>
+            <p class="nav-user-id">#{{ student.id || 'N/A' }}</p>
           </div>
           <button @click="handleLogout" class="btn-logout-mini" title="Logout">
             <span class="material-symbols-outlined">logout</span>
@@ -106,7 +106,7 @@
         <section class="hero-card">
           <div class="hero-content">
             <span class="session-tag">ACADEMIC SESSION 2024</span>
-            <h2 class="hero-title">Welcome back, {{ student.name.split(' ')[0] }}</h2>
+            <h2 class="hero-title">Welcome back, {{ student.name ? student.name.split(' ')[0] : 'Student' }}</h2>
             <p class="hero-description">You've completed 75% of your weekly targets. Great momentum for your upcoming {{ nextExamSubject }} exam.</p>
             <button class="btn-primary-action" @click="resumeFocus">
               <span class="material-symbols-outlined">play_circle</span>
@@ -329,7 +329,7 @@ const deadlineForm = ref({
 });
 
 const searchQuery = ref('');
-const student = ref({ name: 'Julian', studentId: 'ID1042' });
+const student = ref({ name: '', id: '' });
 const todayClasses = ref([]);
 const attendanceSummary = ref([]);
 const assignments = ref([]);

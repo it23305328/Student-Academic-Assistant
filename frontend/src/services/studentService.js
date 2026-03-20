@@ -15,5 +15,13 @@ export default {
      */
     loginStudent(data) {
         return api.post('/auth/login', data);
+    },
+
+    /**
+     * Gets student details by ID
+     * @param {number} id 
+     */
+    getStudentById(id) {
+        return api.get(`/v1/students/${id}`);
     }
 };

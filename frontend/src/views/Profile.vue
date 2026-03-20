@@ -105,16 +105,24 @@
                    <p class="info-val">{{ student.email || 'Not provided' }}</p>
                 </div>
                 <div class="info-item">
-                   <span class="info-label">Department</span>
-                   <p class="info-val">{{ student.department || 'Computer Science & Software Eng.' }}</p>
+                   <span class="info-label">Faculty</span>
+                   <p class="info-val">{{ student.faculty || 'Not provided' }}</p>
                 </div>
                 <div class="info-item">
-                   <span class="info-label">Current Year</span>
-                   <p class="info-val">{{ student.year || 'Year 2 (Sophomore)' }}</p>
+                   <span class="info-label">Course / Specialization</span>
+                   <p class="info-val">{{ student.course || 'Not provided' }}</p>
+                </div>
+                <div class="info-item">
+                   <span class="info-label">Academic Year</span>
+                   <p class="info-val">{{ student.academicYear || 'Not provided' }}</p>
+                </div>
+                <div class="info-item">
+                   <span class="info-label">Semester</span>
+                   <p class="info-val">{{ student.semester || 'Not provided' }}</p>
                 </div>
                 <div class="info-item full-width mt-4">
                    <span class="info-label">Academic Bio</span>
-                   <p class="info-bio">Passionate software engineering student with a focus on web technologies and UI/UX design. Continuously learning and building side projects.</p>
+                   <p class="info-bio">Passionate {{ student.course || 'software engineering' }} student at StudentX. Continuously learning and building amazing projects.</p>
                 </div>
              </div>
 
@@ -140,7 +148,7 @@
                </div>
                
                <h3 class="profile-name">{{ student.name }}</h3>
-               <p class="profile-id">Student ID: #{{ student.studentId || 'ID1042' }}</p>
+               <p class="profile-id">Student ID: #{{ student.id || 'N/A' }}</p>
              </div>
 
              <!-- Mini Status Card -->
@@ -150,7 +158,7 @@
                 </div>
                 <div>
                    <h4 class="status-title">Active Status</h4>
-                   <p class="status-desc">Enrolled in current semester.</p>
+                   <p class="status-desc">Enrolled in {{ student.academicYear || 'current' }} {{ student.semester || 'semester' }}.</p>
                 </div>
              </div>
 
@@ -174,11 +182,13 @@ const router = useRouter();
 const defaultAvatar = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250&h=250';
 
 const student = ref({ 
-  name: 'Julian', 
-  studentId: 'ID1042',
-  email: 'julian@example.com',
-  department: 'Computer Science',
-  year: 'Year 2'
+  name: '', 
+  id: '',
+  email: '',
+  faculty: '',
+  course: '',
+  academicYear: '',
+  semester: ''
 });
 
 const checkAuth = () => {
@@ -194,7 +204,7 @@ const fetchStudentData = async (uid) => {
     try {
         const response = await studentService.getStudentById(uid);
         if(response.data) {
-           student.value = { ...student.value, ...response.data };
+           student.value = response.data;
         }
     } catch (e) {
         console.error('Error fetching student data:', e);
