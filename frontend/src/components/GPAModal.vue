@@ -219,9 +219,12 @@
                       <td><input class="trans-input w-12 text-center" type="number" v-model.number="sub.final" min="0" max="100"/></td>
                       <td class="font-bold text-muted">{{ calculateTotal(sub).toFixed(1) }}</td>
                       <td class="text-right font-black">
-                         <span :class="['grade-badge', getGradeInfo(calculateTotal(sub)).label.toLowerCase().replace('-', 'n')]">
-                            {{ getGradeInfo(calculateTotal(sub)).label }}
-                         </span>
+                         <div class="grade-container">
+                           <span :class="['grade-badge', getGradeInfo(calculateTotal(sub)).label.toLowerCase().replace('-', 'n').replace('+', 'p')]">
+                              {{ getGradeInfo(calculateTotal(sub)).label }}
+                           </span>
+                           <span class="grade-point-text">{{ getGradeInfo(calculateTotal(sub)).points.toFixed(1) }}</span>
+                         </div>
                       </td>
                       <td class="text-right">
                          <button @click="removeSubject(index)" class="btn-mini-del" v-if="subjects.length > 1">
@@ -548,7 +551,22 @@ const getMotivationalText = (gpaValue) => {
 .trans-input:focus { background: #f3f4ee; color: #4e6073; }
 .text-muted { color: #adb4aa; }
 
-.grade-badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 900; }
+.grade-badge { padding: 4px 10px; border-radius: 8px; font-size: 13px; font-weight: 800; display: inline-block; }
+.grade-container { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.grade-point-text { font-size: 11px; color: #adb4aa; font-weight: 700; }
+
+.grade-badge.a { background: #dcfce7; color: #15803d; }
+.grade-badge.an { background: #dcfce7; color: #15803d; opacity: 0.9; }
+.grade-badge.bp { background: #fef9c3; color: #a16207; }
+.grade-badge.b { background: #fef9c3; color: #a16207; opacity: 0.9; }
+.grade-badge.bn { background: #fef9c3; color: #a16207; opacity: 0.8; }
+.grade-badge.cp { background: #ffedd5; color: #c2410c; }
+.grade-badge.c { background: #ffedd5; color: #c2410c; opacity: 0.9; }
+.grade-badge.cn { background: #ffedd5; color: #c2410c; opacity: 0.8; }
+.grade-badge.dp { background: #fee2e2; color: #b91c1c; }
+.grade-badge.d { background: #fee2e2; color: #b91c1c; opacity: 0.9; }
+.grade-badge.f { background: #450a0a; color: #fecaca; }
+
 .btn-mini-del { background: transparent; border: none; color: #9c9d99; cursor: pointer; opacity: 0.7; transition: 0.2s; }
 .btn-mini-del:hover { color: #f43f5e; opacity: 1; }
 

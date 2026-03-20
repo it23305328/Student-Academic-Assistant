@@ -27,12 +27,12 @@ public class LectureController {
     }
 
     @PutMapping("/{id}")
-    public Lecture updateLecture(@PathVariable Long id, @RequestBody Lecture lectureDetails) {
+    public Lecture updateLecture(@PathVariable("id") Long id, @RequestBody Lecture lectureDetails) {
         return lectureService.updateLecture(id, lectureDetails);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteLecture(@PathVariable Long id) {
+    public ResponseEntity<?> deleteLecture(@PathVariable("id") Long id) {
         lectureService.deleteLecture(id);
         return ResponseEntity.ok().build();
     }

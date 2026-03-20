@@ -150,7 +150,7 @@ const handleRegister = async () => {
     if (!isFormValid.value) return;
     isLoading.value = true;
     try {
-        const response = await api.post('register', form.value);
+        const response = await api.post('api/register', form.value);
         
         if (response.status === 201) {
             alert('Account created successfully! Please login.');
