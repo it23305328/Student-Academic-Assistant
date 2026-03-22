@@ -1,7 +1,8 @@
 <template>
   <div class="dashboard-root">
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" :class="{ 'open': isSidebarOpen }">
+      <div v-if="isSidebarOpen" class="sidebar-overlay" @click="isSidebarOpen = false"></div>
       <div class="sidebar-header">
         <div class="brand-wrapper">
           <img src="../assets/studentx_logo.png" alt="StudentX Logo" class="brand-logo" />
@@ -52,6 +53,9 @@
     <!-- Main Content -->
     <div class="main-wrapper">
       <header class="app-header">
+        <button class="hamburger-btn" @click="isSidebarOpen = !isSidebarOpen">
+          <span class="material-symbols-outlined">{{ isSidebarOpen ? 'close' : 'menu' }}</span>
+        </button>
         <div class="header-left">
           <h2 class="page-title">Dashboard Overview</h2>
         </div>
@@ -120,7 +124,9 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+const isSidebarOpen = ref(false);
 const router = useRouter();
 </script>
 
@@ -291,3 +297,45 @@ const router = useRouter();
 .radial-placeholder .lbl { font-size: 12px; font-weight: 700; color: #64748b; }
 .card-hint { font-size: 13px; color: #94a3b8; text-align: center; }
 </style>
+@media(max-width: 1024px) {
+  .sidebar { 
+    transform: translateX(-100%); 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: -1;
+  }
+  .main-wrapper { margin-left: 0; width: 100%; }
+  .app-header { padding: 12px 16px; gap: 12px; }
+  .hamburger-btn { display: flex !important; margin-right: 8px; }
+  .header-actions { gap: 8px; }
+  .btn-gpa-tracker { padding: 8px 12px; font-size: 12px; }
+  .hero-card { flex-direction: column; height: auto; padding: 32px 24px; gap: 32px; text-align: center; }
+  .hero-title { font-size: 28px; }
+  .hero-illustration img { max-width: 151px; margin: 0 auto; }
+  .btn-primary-action { width: 100%; justify-content: center; }
+  .content-canvas { padding: 16px; }
+  .bento-grid { grid-template-columns: 1fr; gap: 16px; }
+  .grid-col-8 { grid-column: span 1; }
+  .card-title { font-size: 16px; }
+}
+
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #4e6073;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}

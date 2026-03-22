@@ -1,7 +1,8 @@
 <template>
   <div class="dashboard-root">
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" :class="{ 'open': isSidebarOpen }">
+      <div v-if="isSidebarOpen" class="sidebar-overlay" @click="isSidebarOpen = false"></div>
       <div class="sidebar-header">
         <div class="brand-wrapper">
           <img src="../assets/studentx_logo.png" alt="StudentX Logo" class="brand-logo" />
@@ -48,6 +49,9 @@
     <!-- Main Content -->
     <div class="main-wrapper">
       <header class="app-header">
+        <button class="hamburger-btn" @click="isSidebarOpen = !isSidebarOpen">
+          <span class="material-symbols-outlined">{{ isSidebarOpen ? 'close' : 'menu' }}</span>
+        </button>
         <div class="search-bar">
           <span class="material-symbols-outlined">search</span>
           <input type="text" v-model="searchQuery" @input="handleSearch" placeholder="Search resources, notes..." />
@@ -332,6 +336,7 @@ const deadlineForm = ref({
     time: ''
 });
 
+const isSidebarOpen = ref(false);
 const searchQuery = ref('');
 const student = ref({ name: '', id: '' });
 const todayClasses = ref([]);
@@ -923,10 +928,47 @@ onUnmounted(() => { if (countdownInterval) clearInterval(countdownInterval); });
 .btn-save { padding: 10px 20px; border: none; background: #4e6073; color: white; font-weight: 700; border-radius: 12px; cursor: pointer; }
 
 @media(max-width: 1024px) {
-  .bento-grid { grid-template-columns: 1fr; }
-  .grid-col-4 { grid-row: 1; }
-  .sidebar { transform: translateX(-100%); transition: 0.3s; }
-  .main-wrapper { margin-left: 0; }
+  .sidebar { 
+    transform: translateX(-100%); 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: -1;
+  }
+  .main-wrapper { margin-left: 0; width: 100%; }
+  .app-header { padding: 12px 16px; gap: 12px; }
+  .hamburger-btn { display: flex !important; }
+  .search-bar { display: none; }
+  .header-actions { gap: 8px; }
+  .btn-gpa-tracker { padding: 8px 12px; font-size: 12px; }
+  .content-canvas { padding: 16px; }
+  .bento-grid { grid-template-columns: 1fr; gap: 16px; }
+  .grid-col-8, .grid-col-4 { grid-column: span 1; }
+  
+  /* Form responsiveness */
+  .form-group input { width: 100%; }
+  .modal-actions { flex-direction: column; gap: 8px; }
+  .btn-cancel, .btn-save { width: 100%; padding: 14px; }
+}
+
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #4e6073;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
 }
 </style>
 
