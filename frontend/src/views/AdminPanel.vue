@@ -282,7 +282,7 @@ const resetForm = () => {
 
 const handleLogout = () => {
   localStorage.clear();
-  router.push('/login');
+  router.push('/guest-dashboard');
 };
 
 onMounted(() => {

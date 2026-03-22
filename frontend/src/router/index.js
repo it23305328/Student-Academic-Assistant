@@ -9,6 +9,11 @@ const Timetable = () => import('../views/Timetable.vue');
 const Attendance = () => import('../views/Attendance.vue');
 const Summarization = () => import('../views/Summarization.vue');
 const Profile = () => import('../views/Profile.vue');
+const GuestDashboard = () => import('../views/GuestDashboard.vue');
+const GuestTimetable = () => import('../views/GuestTimetable.vue');
+const GuestSummarization = () => import('../views/GuestSummarization.vue');
+const GuestAttendance = () => import('../views/GuestAttendance.vue');
+const OTPVerification = () => import('../views/OTPVerification.vue');
 
 const routes = [
     {
@@ -17,12 +22,35 @@ const routes = [
             const role = localStorage.getItem('role');
             if (role === 'ADMIN') return '/admin-panel';
             if (role === 'STUDENT') return '/student-dashboard';
-            return '/login';
+            return '/guest-dashboard';
         }
     },
     {
         path: '/dashboard',
-        redirect: '/student-dashboard'
+        redirect: () => {
+             const token = localStorage.getItem('token');
+             return token ? '/student-dashboard' : '/guest-dashboard';
+        }
+    },
+    {
+        path: '/guest-dashboard',
+        name: 'GuestDashboard',
+        component: GuestDashboard
+    },
+    {
+        path: '/guest-timetable',
+        name: 'GuestTimetable',
+        component: GuestTimetable
+    },
+    {
+        path: '/guest-attendance',
+        name: 'GuestAttendance',
+        component: GuestAttendance
+    },
+    {
+        path: '/guest-summarizer',
+        name: 'GuestSummarization',
+        component: GuestSummarization
     },
     {
         path: '/student-dashboard',
@@ -69,6 +97,11 @@ const routes = [
         name: 'Profile',
         component: Profile,
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/otp-verify',
+        name: 'OTPVerification',
+        component: OTPVerification
     }
 ];
 

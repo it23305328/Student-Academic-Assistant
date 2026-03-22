@@ -261,7 +261,11 @@
               </div>
               
               <div class="deadline-stack">
-                <div v-for="item in assignments.slice(0, 3)" :key="item.id" class="deadline-card">
+                <div v-if="assignments.length === 0" class="empty-deadline-box">
+                  <span class="material-symbols-outlined empty-icon">event_busy</span>
+                  <p class="empty-text">No Upcoming Deadlines</p>
+                </div>
+                <div v-else v-for="item in assignments.slice(0, 3)" :key="item.id" class="deadline-card">
                   <div class="deadline-card-top">
                     <div>
                       <span class="subject-tag" :class="item.subjectName.toLowerCase()">{{ item.subjectName }}</span>
@@ -538,9 +542,8 @@ const getClassStatus = (cls) => {
 };
 
 const handleLogout = () => {
-    localStorage.removeItem('studentId');
-    localStorage.removeItem('token');
-    router.push('/login');
+    localStorage.clear();
+    router.push('/guest-dashboard');
 };
 
 const fetchAttendanceSummary = async (studentId) => {
@@ -878,6 +881,21 @@ onUnmounted(() => { if (countdownInterval) clearInterval(countdownInterval); });
 .btn-add-mini { background: #4e6073; color: white; border: none; width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
 .deadline-stack { display: flex; flex-direction: column; gap: 12px; }
+
+.empty-deadline-box {
+  background: white;
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  padding: 32px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  items-center: center;
+  gap: 12px;
+}
+
+.empty-icon { font-size: 32px; color: #94a3b8; }
+.empty-text { font-size: 13px; font-weight: 700; color: #64748b; margin: 0; }
 .deadline-card { background: #fafaf5; border: 1px solid rgba(0,0,0,0.03); border-radius: 12px; padding: 16px; }
 .deadline-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
 .subject-tag { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; background: #e0e7ff; color: #4338ca; }

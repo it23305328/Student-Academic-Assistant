@@ -94,21 +94,7 @@
         </form>
 
         <!-- Social Login / Secondary Action -->
-        <div class="sso-section">
-          <div class="sso-divider">
-            <span class="sso-divider-text">Single Sign-On</span>
-          </div>
-          <div class="sso-grid">
-            <button class="sso-btn">
-              <img alt="Google Logo" class="google-icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-waJMSf-eaLpWKa5xnwljiHHzH7HuDEvNYjAec3TB4Myo122vpEPKZu5dGButOsOHtGg0LolU2iwZBqcy7ZLsxDOHm5pYwBrsI_X1OUn_4js-cnDoTA5nNDL8-bWTbKb_jPcM258jYn5xVcJCiMul6TT7JNp4fMNJ3EN5maYY3apuasLBX4Wd0YEmhnihWaLRUQSFlAEVXeIriMtL8lLNuqgdMTft8kImV7hVn0VOvaXe_AzNoJnZOepTgSJRL6hWjd_uESOzZsw"/>
-              <span>Google</span>
-            </button>
-            <button class="sso-btn">
-              <span class="material-symbols-outlined">fingerprint</span>
-              <span>Passkey</span>
-            </button>
-          </div>
-        </div>
+        <!-- SSO Section Remotion per User Request -->
       </div>
 
       <!-- Footer Help -->
@@ -170,7 +156,7 @@ const emailError = computed(() => {
 const handleLogin = async () => {
     isLoading.value = true;
     try {
-        const response = await api.post('api/login', form.value);
+        const response = await api.post('api/auth/login', form.value);
         
         // Success: Only if the backend returns 200 OK
         if (response.status === 200 && response.data.token) {
@@ -247,6 +233,10 @@ const handleLogin = async () => {
   --on-tertiary-fixed: #343b53;
   --on-background: #2e342d;
   --primary-container: #d1e4fb;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 .login-page {
@@ -399,15 +389,15 @@ const handleLogin = async () => {
 
 .form-input {
   width: 100%;
-  height: 56px;
+  height: 48px;
   padding-left: 48px;
   padding-right: 24px;
   border-radius: 9999px;
   background-color: rgba(243, 244, 238, 0.5); /* surface-container-low/50 */
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
   transition: all 0.3s ease;
   color: #2e342d;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .form-input:focus {
@@ -586,7 +576,7 @@ const handleLogin = async () => {
 
 .register-link {
   color: #4E6073;
-  font-weight: 700;
+  font-weight: 800;
   text-decoration: none;
   margin-left: 4px;
   transition: text-decoration 0.2s;

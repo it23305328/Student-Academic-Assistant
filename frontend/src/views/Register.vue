@@ -154,7 +154,6 @@
                 <span v-else-if="isVerified" class="material-symbols-outlined verified-icon">check_circle</span>
               </div>
             </div>
-            <div id="recaptcha-container" style="display: none;"></div>
           </div>
 
           <!-- OTP Input -->
@@ -233,10 +232,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { auth } from '../firebase'; // Import from local module
 import api from '../services/api';
 
 const router = useRouter();
@@ -285,37 +282,19 @@ const changeNumber = () => {
 const isVerified = ref(false);
 const isVerifying = ref(false);
 const verificationError = ref('');
-let confirmationResult = null;
-
-onMounted(() => {
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible',
-      'callback': (response) => {
-        console.log("reCAPTCHA solved");
-      },
-      'expired-callback': () => {
-        verificationError.value = "reCAPTCHA expired. Please try again.";
-      }
-    });
-  }
-});
 
 const sendOtp = async () => {
   verificationError.value = '';
   isVerifying.value = true;
   try {
-    const appVerifier = window.recaptchaVerifier;
-    confirmationResult = await signInWithPhoneNumber(auth, form.value.phone, appVerifier);
-    otpSent.value = true;
+    const response = await api.post('api/auth/send-otp', { phoneNumber: form.value.phone });
+    if (response.status === 200) {
+      otpSent.value = true;
+      verificationError.value = '';
+    }
   } catch (error) {
     console.error("Error sending OTP:", error);
-    verificationError.value = "Failed to send OTP. Check your number (+123...).";
-    if (window.recaptchaVerifier) {
-       window.recaptchaVerifier.render().then(function(widgetId) {
-         grecaptcha.reset(widgetId);
-       });
-    }
+    verificationError.value = error.response?.data?.message || "Failed to send OTP. Check your number.";
   } finally {
     isVerifying.value = false;
   }
@@ -325,13 +304,20 @@ const verifyOtp = async () => {
   verificationError.value = '';
   isVerifying.value = true;
   try {
-    const result = await confirmationResult.confirm(otpCode.value);
-    console.log("Firebase Auth User:", result.user);
-    isVerified.value = true;
-    verificationError.value = '';
+    const response = await api.post('api/auth/verify-otp', { 
+        phoneNumber: form.value.phone, 
+        otp: otpCode.value 
+    });
+    
+    if (response.data.success) {
+      isVerified.value = true;
+      verificationError.value = '';
+    } else {
+      verificationError.value = "Invalid OTP. Please try again.";
+    }
   } catch (error) {
     console.error("Error verifying OTP:", error);
-    verificationError.value = "Invalid OTP. Please try again.";
+    verificationError.value = error.response?.data?.message || "Verification failed.";
   } finally {
     isVerifying.value = false;
   }
@@ -372,18 +358,14 @@ const isFormValid = computed(() => {
          form.value.faculty && 
          form.value.course &&
          form.value.phone &&
-         isVerified.value; // Require verification before final submit
+         isVerified.value; 
 });
 
 const handleRegister = async () => {
     if (!isFormValid.value) return;
     isLoading.value = true;
     try {
-        // Now appending Firebase UID internally through ID token in auth header or as param if Spring expects it.
-        // If your Spring boot expecting token, send it, otherwise standard payload.
-        // const idToken = await auth.currentUser.getIdToken();
-        const response = await api.post('api/register', form.value);
-        
+        const response = await api.post('api/auth/register', form.value);
         if (response.status === 201 || response.status === 200) {
             alert('Account created successfully! Please login.');
             router.push('/login');
@@ -402,54 +384,8 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
-:root {
-  --on-surface-variant: #5a6159;
-  --secondary-container: #dfe3e7;
-  --on-primary-container: #415366;
-  --tertiary-fixed-dim: #c7ceec;
-  --inverse-surface: #0d0f0c;
-  --on-secondary-container: #4d5256;
-  --secondary: #5b6063;
-  --on-secondary: #f5f9fd;
-  --on-primary: #f4f8ff;
-  --tertiary-fixed: #d5dcfb;
-  --surface-bright: #fafaf5;
-  --on-primary-fixed: #2f4153;
-  --on-tertiary-container: #474d67;
-  --surface-dim: #d5dcd0;
-  --secondary-fixed: #dfe3e7;
-  --tertiary-container: #d5dcfb;
-  --surface-container-low: #f3f4ee;
-  --on-tertiary: #faf8ff;
-  --background: #fafaf5;
-  --surface-variant: #dee4da;
-  --primary-fixed: #d1e4fb;
-  --on-error: #fff7f6;
-  --inverse-on-surface: #9c9d99;
-  --inverse-primary: #ccdff6;
-  --surface-container-high: #e5eae0;
-  --primary-fixed-dim: #c3d6ed;
-  --outline: #767c74;
-  --outline-variant: #adb4aa;
-  --surface-container: #ecefe7;
-  --surface-container-highest: #dee4da;
-  --tertiary: #575e78;
-  --on-primary-fixed-variant: #4b5d70;
-  --on-secondary-fixed-variant: #575c60;
-  --surface-tint: #4E6073;
-  --surface: #fafaf5;
-  --on-surface: #2e342d;
-  --on-secondary-fixed: #3b4043;
-  --error-container: #fe8983;
-  --secondary-fixed-dim: #d1d5d9;
-  --surface-container-lowest: #ffffff;
-  --error: #9f403d;
-  --on-tertiary-fixed-variant: #505771;
-  --primary: #4E6073;
-  --on-error-container: #752121;
-  --on-tertiary-fixed: #343b53;
-  --on-background: #2e342d;
-  --primary-container: #d1e4fb;
+* {
+  box-sizing: border-box;
 }
 
 .register-page {
@@ -596,20 +532,21 @@ const handleRegister = async () => {
 
 .form-input, .form-select {
   width: 100%;
-  height: 56px;
+  height: 48px;
   padding-left: 48px;
   padding-right: 24px;
   border-radius: 9999px;
   background-color: rgba(243, 244, 238, 0.5);
-  border: none;
+  border: 1.5px solid transparent;
   transition: all 0.3s ease;
   color: #2e342d;
-  font-size: 16px;
+  font-size: 15px;
   outline: none;
 }
 
 .form-select {
   padding-left: 24px;
+  height: 48px;
   appearance: none;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23767c74' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 1.25rem center;
@@ -819,7 +756,7 @@ const handleRegister = async () => {
 
 .login-link {
   color: #4E6073;
-  font-weight: 700;
+  font-weight: 800;
   text-decoration: none;
   margin-left: 4px;
 }
@@ -927,4 +864,3 @@ const handleRegister = async () => {
   }
 }
 </style>
-
