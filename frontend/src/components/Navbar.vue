@@ -4,10 +4,9 @@
       <div class="navbar-content">
         <!-- Logo Section -->
         <div class="navbar-brand">
-          <div class="brand-info">
-             <div class="brand-icon">S</div>
-             <span class="brand-text">Student System</span>
-          </div>
+          <router-link to="/" class="brand-link">
+            <img src="../assets/studentx_logo.png" alt="StudentX Logo" class="navbar-logo" />
+          </router-link>
         </div>
 
         <!-- Navigation Links (Desktop) -->
@@ -99,18 +98,16 @@ const handleLogout = () => {
   gap: 12px;
 }
 
-.brand-icon {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #6366f1, #d946ef);
-  border-radius: 8px;
+.brand-link {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 800;
-  font-size: 16px;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  text-decoration: none;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
 }
 
 .brand-text {

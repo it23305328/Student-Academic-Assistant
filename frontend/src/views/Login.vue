@@ -7,10 +7,7 @@
     <main class="login-main">
       <!-- Brand Identity -->
       <div class="brand-identity">
-        <div class="logo-box">
-          <span class="material-symbols-outlined text-white">school</span>
-        </div>
-        <h1 class="brand-title">StudentX</h1>
+        <img src="../assets/studentx_logo.png" alt="StudentX Logo" class="brand-logo" />
         <p class="brand-subtitle">Academic Support Portal</p>
       </div>
 
@@ -296,28 +293,11 @@ const handleLogin = async () => {
   text-align: center;
 }
 
-.logo-box {
-  width: 64px;
-  height: 64px;
-  background-color: #4E6073; /* primary */
-  border-radius: 1rem; /* rounded-2xl */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 20px 25px -5px rgba(78, 96, 115, 0.2);
+.brand-logo {
+  height: 120px;
+  width: auto;
+  object-fit: contain;
   margin-bottom: 24px;
-}
-
-.logo-box .material-symbols-outlined {
-  font-size: 30px;
-}
-
-.brand-title {
-  font-size: 36px; /* text-4xl */
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  margin-bottom: 8px;
-  color: #2e342d;
 }
 
 .brand-subtitle {
@@ -725,4 +705,5 @@ const handleLogin = async () => {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 </style>
+
 

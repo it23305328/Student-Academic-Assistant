@@ -4,7 +4,7 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="brand-wrapper">
-          <img src="../assets/images/logo.png" alt="StudentX Logo" class="brand-logo" />
+          <img src="../assets/studentx_logo.png" alt="StudentX Logo" class="brand-logo" />
           <div class="brand-text">
             <h1 class="brand-title">StudentX</h1>
             <p class="brand-subtitle">Academic Support</p>
@@ -368,9 +368,11 @@ onMounted(() => {
 
 .sidebar-header { padding: 0 24px; margin-bottom: 40px; }
 .brand-wrapper { display: flex; align-items: center; gap: 12px; }
-.brand-logo { width: 32px; height: 32px; object-fit: contain; }
-.brand-title { font-size: 18px; font-weight: 800; color: #4e6073; margin: 0; line-height: 1; }
-.brand-subtitle { font-size: 10px; font-weight: 600; color: #5a6159; letter-spacing: 0.05em; margin-top: 4px; }
+.brand-logo { height: 60px; width: auto; object-fit: contain; }
+.brand-title { font-size: 20px; font-weight: 800; color: #4e6073; margin: 0; line-height: 1; }
+.brand-subtitle { font-size: 14px; font-weight: 600; color: #5a6159; letter-spacing: 0.05em; margin-top: 4px; }
+
+
 
 .sidebar-nav { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
 .nav-link {
@@ -612,3 +614,4 @@ onMounted(() => {
   .main-wrapper { margin-left: 0; }
 }
 </style>
+
