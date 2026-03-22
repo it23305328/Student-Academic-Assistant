@@ -1,7 +1,8 @@
 <template>
   <div class="dashboard-root">
     <!-- Sidebar (Same as Dashboard) -->
-    <aside class="sidebar">
+    <aside class="sidebar" :class="{ 'open': isSidebarOpen }">
+      <div v-if="isSidebarOpen" class="sidebar-overlay" @click="isSidebarOpen = false"></div>
       <div class="sidebar-header">
         <div class="brand-wrapper">
           <img src="../assets/studentx_logo.png" alt="StudentX Logo" class="brand-logo" />
@@ -48,6 +49,9 @@
 
     <div class="main-wrapper">
       <header class="app-header">
+        <button class="hamburger-btn" @click="isSidebarOpen = !isSidebarOpen">
+          <span class="material-symbols-outlined">{{ isSidebarOpen ? 'close' : 'menu' }}</span>
+        </button>
         <h2 class="page-title">Attendance Insights</h2>
         <button @click="handleMarkAttendance" class="btn-mark-primary">+ Mark Today</button>
       </header>
@@ -92,7 +96,9 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+const isSidebarOpen = ref(false);
 const router = useRouter();
 
 const sampleBars = [
@@ -153,3 +159,41 @@ const handleMarkAttendance = () => {
 .save-data-cta p { font-size: 11px; font-weight: 800; margin-bottom: 10px; }
 .btn-sign-in-small { background: white; color: #4e6073; text-decoration: none; font-size: 12px; font-weight: 800; padding: 6px; border-radius: 10px; display: block; }
 </style>
+@media(max-width: 1024px) {
+  .sidebar { 
+    transform: translateX(-100%); 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: -1;
+  }
+  .main-wrapper { margin-left: 0; width: 100%; }
+  .app-header { padding: 12px 16px; gap: 12px; }
+  .hamburger-btn { display: flex !important; }
+  .tracker-preview { grid-template-columns: 1fr; gap: 16px; }
+  .content-canvas { padding: 16px; }
+  .page-title { font-size: 20px; }
+  .perc-val { font-size: 24px; }
+  .bar-grid { gap: 8px; }
+  .bar-fill-wrap { width: 30px; }
+}
+
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #4e6073;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}

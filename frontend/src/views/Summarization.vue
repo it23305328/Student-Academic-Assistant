@@ -1,7 +1,8 @@
 <template>
   <div class="dashboard-root">
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" :class="{ 'open': isSidebarOpen }">
+      <div v-if="isSidebarOpen" class="sidebar-overlay" @click="isSidebarOpen = false"></div>
       <div class="sidebar-header">
         <div class="brand-wrapper">
           <img src="../assets/studentx_logo.png" alt="StudentX Logo" class="brand-logo" />
@@ -49,6 +50,9 @@
     <div class="main-wrapper">
       <!-- Header -->
       <header class="app-header">
+        <button class="hamburger-btn" @click="isSidebarOpen = !isSidebarOpen">
+          <span class="material-symbols-outlined">{{ isSidebarOpen ? 'close' : 'menu' }}</span>
+        </button>
         <div class="search-bar">
           <span class="material-symbols-outlined">search</span>
           <input type="text" placeholder="Search resources, notes..." />
@@ -214,6 +218,7 @@ import studentService from '../services/studentService';
 
 const router = useRouter();
 
+const isSidebarOpen = ref(false);
 const student = ref({ name: '', id: '' });
 
 const activeTab = ref('upload');
@@ -608,10 +613,44 @@ onMounted(() => {
 .generated-list { margin-top: 24px; padding-left: 20px; }
 
 @media(max-width: 1024px) {
-  .summary-bento-grid { grid-template-columns: 1fr; }
-  .grid-col-8 { grid-row: 1; }
-  .sidebar { transform: translateX(-100%); transition: 0.3s; }
-  .main-wrapper { margin-left: 0; }
+  .sidebar { 
+    transform: translateX(-100%); 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: -1;
+  }
+  .main-wrapper { margin-left: 0; width: 100%; }
+  .app-header { padding: 12px 16px; gap: 12px; }
+  .hamburger-btn { display: flex !important; }
+  .search-bar { display: none; }
+  .header-actions { gap: 8px; }
+  .content-canvas { padding: 16px; }
+  .hero-title { font-size: 32px; }
+  .summary-bento-grid { grid-template-columns: 1fr; gap: 16px; }
+  .upload-card { padding: 20px; }
+  .drop-zone { min-height: 250px; }
+  .insight-card { padding: 20px; gap: 16px; }
+}
+
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #4e6073;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
 }
 </style>
 
