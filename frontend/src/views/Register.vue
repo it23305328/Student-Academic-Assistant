@@ -130,6 +130,63 @@
             </select>
           </div>
 
+          <!-- Phone Number -->
+          <div class="form-input-container">
+            <label class="form-label" for="phone">Phone Number</label>
+            <div class="form-input-wrapper">
+              <div class="input-icon">
+                <span class="material-symbols-outlined">call</span>
+              </div>
+              <input 
+                class="form-input pr-12" 
+                id="phone" 
+                v-model="form.phone" 
+                placeholder="+94770000000" 
+                type="tel"
+                :disabled="otpSent || isVerifying"
+                required
+              />
+              <div class="password-toggle otp-action">
+                <button v-if="!otpSent && !isVerified" class="otp-btn" type="button" @click="sendOtp" :disabled="isVerifying || !form.phone">
+                  <span v-if="isVerifying" class="material-symbols-outlined spinning action-icon">hourglass_empty</span>
+                  <span v-else>{{ 'Send OTP' }}</span>
+                </button>
+                <span v-else-if="isVerified" class="material-symbols-outlined verified-icon">check_circle</span>
+              </div>
+            </div>
+            <div id="recaptcha-container" style="display: none;"></div>
+          </div>
+
+          <!-- OTP Input -->
+          <div v-if="otpSent && !isVerified" class="form-input-container">
+            <div class="otp-header-row">
+              <label class="form-label">Enter OTP</label>
+              <button class="text-btn" type="button" @click="changeNumber">Change Number</button>
+            </div>
+            <div class="otp-boxes-wrapper">
+              <input 
+                v-for="(digit, index) in otpArray" 
+                :key="index"
+                ref="otpInputRefs"
+                class="otp-box form-input" 
+                type="text"
+                maxlength="1"
+                v-model="otpArray[index]"
+                @input="handleOtpInput(index, $event)"
+                @keydown.delete="handleOtpDelete(index, $event)"
+                :disabled="isVerifying"
+              />
+            </div>
+            <button class="submit-btn otp-verify-btn" type="button" @click="verifyOtp" :disabled="isVerifying || otpCode.length !== 6">
+              <span v-if="isVerifying" class="material-symbols-outlined spinning action-icon">hourglass_empty</span>
+              <span>{{ isVerifying ? 'Verifying...' : 'Verify OTP' }}</span>
+            </button>
+            <p v-if="verificationError" class="error-msg">
+              <span class="material-symbols-outlined">error</span>
+              {{ verificationError }}
+            </p>
+          </div>
+
           <!-- Create Account Button -->
           <div class="submit-section">
             <button 
@@ -176,8 +233,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { auth } from '../firebase'; // Import from local module
 import api from '../services/api';
 
 const router = useRouter();
@@ -191,8 +250,92 @@ const form = ref({
   academicYear: '',
   semester: '',
   faculty: '',
-  course: ''
+  course: '',
+  phone: ''
 });
+
+const otpArray = ref(['', '', '', '', '', '']);
+const otpCode = computed(() => otpArray.value.join(''));
+const otpInputRefs = ref([]);
+const otpSent = ref(false);
+
+const handleOtpInput = (index, event) => {
+  const value = event.target.value;
+  if (!/^\d*$/.test(value)) {
+    otpArray.value[index] = '';
+    return;
+  }
+  if (value && index < 5 && otpInputRefs.value[index + 1]) {
+    otpInputRefs.value[index + 1].focus();
+  }
+};
+
+const handleOtpDelete = (index, event) => {
+  if (!otpArray.value[index] && index > 0 && otpInputRefs.value[index - 1]) {
+    otpInputRefs.value[index - 1].focus();
+  }
+};
+
+const changeNumber = () => {
+    otpSent.value = false;
+    otpArray.value = ['', '', '', '', '', ''];
+    verificationError.value = '';
+    isVerified.value = false;
+};
+const isVerified = ref(false);
+const isVerifying = ref(false);
+const verificationError = ref('');
+let confirmationResult = null;
+
+onMounted(() => {
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      'size': 'invisible',
+      'callback': (response) => {
+        console.log("reCAPTCHA solved");
+      },
+      'expired-callback': () => {
+        verificationError.value = "reCAPTCHA expired. Please try again.";
+      }
+    });
+  }
+});
+
+const sendOtp = async () => {
+  verificationError.value = '';
+  isVerifying.value = true;
+  try {
+    const appVerifier = window.recaptchaVerifier;
+    confirmationResult = await signInWithPhoneNumber(auth, form.value.phone, appVerifier);
+    otpSent.value = true;
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    verificationError.value = "Failed to send OTP. Check your number (+123...).";
+    if (window.recaptchaVerifier) {
+       window.recaptchaVerifier.render().then(function(widgetId) {
+         grecaptcha.reset(widgetId);
+       });
+    }
+  } finally {
+    isVerifying.value = false;
+  }
+};
+
+const verifyOtp = async () => {
+  verificationError.value = '';
+  isVerifying.value = true;
+  try {
+    const result = await confirmationResult.confirm(otpCode.value);
+    console.log("Firebase Auth User:", result.user);
+    isVerified.value = true;
+    verificationError.value = '';
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    verificationError.value = "Invalid OTP. Please try again.";
+  } finally {
+    isVerifying.value = false;
+  }
+};
 
 const faculties = ['Computing', 'Business', 'Hotel Management'];
 const coursesByFaculty = {
@@ -227,16 +370,21 @@ const isFormValid = computed(() => {
          form.value.academicYear && 
          form.value.semester && 
          form.value.faculty && 
-         form.value.course;
+         form.value.course &&
+         form.value.phone &&
+         isVerified.value; // Require verification before final submit
 });
 
 const handleRegister = async () => {
     if (!isFormValid.value) return;
     isLoading.value = true;
     try {
+        // Now appending Firebase UID internally through ID token in auth header or as param if Spring expects it.
+        // If your Spring boot expecting token, send it, otherwise standard payload.
+        // const idToken = await auth.currentUser.getIdToken();
         const response = await api.post('api/register', form.value);
         
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === 200) {
             alert('Account created successfully! Please login.');
             router.push('/login');
         }
@@ -503,6 +651,111 @@ const handleRegister = async () => {
 
 .toggle-btn:hover {
   color: #4E6073;
+}
+
+.otp-action {
+  right: 12px;
+}
+
+.otp-btn {
+  background: none;
+  border: none;
+  color: #4E6073;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.otp-btn:hover:not(:disabled) {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.otp-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.verified-icon {
+  color: #10b981;
+  font-size: 24px !important;
+}
+
+.otp-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  margin-left: 16px;
+  margin-bottom: 4px;
+}
+
+.otp-header-row .form-label {
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: #4E6073;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.text-btn:hover {
+  color: #3b4958;
+}
+
+.otp-boxes-wrapper {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.otp-box {
+  width: 100%;
+  height: 56px;
+  text-align: center;
+  padding: 0 !important;
+  font-size: 24px;
+  font-weight: 700;
+  border-radius: 12px;
+  color: #4E6073;
+}
+
+.otp-verify-btn {
+  height: 48px;
+  font-size: 16px;
+  border-radius: 12px;
+  background-color: #10b981;
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.25);
+}
+
+.otp-verify-btn:hover:not(:disabled) {
+  background-color: #0d9e6e;
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.35);
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.action-icon {
+  font-size: 18px !important;
+  vertical-align: middle;
+  margin-right: 4px;
 }
 
 .academic-grid {
