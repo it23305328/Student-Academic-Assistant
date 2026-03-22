@@ -120,6 +120,26 @@
         </div>
       </main>
     </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+      <router-link to="/guest-dashboard" class="mobile-nav-item">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span>Home</span>
+      </router-link>
+      <router-link to="/guest-timetable" class="mobile-nav-item">
+        <span class="material-symbols-outlined">calendar_month</span>
+        <span>Schedule</span>
+      </router-link>
+      <router-link to="/guest-attendance" class="mobile-nav-item">
+        <span class="material-symbols-outlined">assignment_turned_in</span>
+        <span>Presence</span>
+      </router-link>
+      <router-link to="/guest-summarizer" class="mobile-nav-item">
+        <span class="material-symbols-outlined">auto_awesome</span>
+        <span>AI</span>
+      </router-link>
+    </nav>
   </div>
 </template>
 
@@ -296,38 +316,6 @@ const router = useRouter();
 .radial-placeholder .val { font-size: 28px; font-weight: 800; color: #4e6073; }
 .radial-placeholder .lbl { font-size: 12px; font-weight: 700; color: #64748b; }
 .card-hint { font-size: 13px; color: #94a3b8; text-align: center; }
-</style>
-@media(max-width: 1024px) {
-  .sidebar { 
-    transform: translateX(-100%); 
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 2000;
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
-    z-index: -1;
-  }
-  .main-wrapper { margin-left: 0; width: 100%; }
-  .app-header { padding: 12px 16px; gap: 12px; }
-  .hamburger-btn { display: flex !important; margin-right: 8px; }
-  .header-actions { gap: 8px; }
-  .btn-gpa-tracker { padding: 8px 12px; font-size: 12px; }
-  .hero-card { flex-direction: column; height: auto; padding: 32px 24px; gap: 32px; text-align: center; }
-  .hero-title { font-size: 28px; }
-  .hero-illustration img { max-width: 151px; margin: 0 auto; }
-  .btn-primary-action { width: 100%; justify-content: center; }
-  .content-canvas { padding: 16px; }
-  .bento-grid { grid-template-columns: 1fr; gap: 16px; }
-  .grid-col-8 { grid-column: span 1; }
-  .card-title { font-size: 16px; }
-}
-
 .hamburger-btn {
   display: none;
   background: none;
@@ -339,3 +327,92 @@ const router = useRouter();
   width: 40px;
   height: 40px;
 }
+
+/* Mobile Bottom Nav Styles */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  transition: 0.3s;
+}
+
+.mobile-nav-item.router-link-active {
+  color: #4e6073;
+}
+
+.mobile-nav-item .material-symbols-outlined {
+  font-size: 24px;
+}
+
+@media(max-width: 1024px) {
+  .mobile-bottom-nav { display: flex; }
+  .content-canvas { padding-bottom: 90px; }
+  .sidebar { display: none !important; } /* Hide sidebar completely when bottom nav is active */
+  .hamburger-btn { display: none !important; }
+}
+
+@media(max-width: 1024px) {
+  .sidebar { 
+    transform: translateX(-100%); 
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    z-index: -1;
+  }
+  .main-wrapper { margin-left: 0; width: 100%; }
+  .app-header { 
+    padding: 16px; 
+    position: sticky; 
+    top: 0; 
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+  }
+  .hamburger-btn { display: flex !important; }
+  .page-title { font-size: 18px; }
+  
+  .hero-card { 
+    padding: 40px 24px; 
+    border-radius: 32px;
+    background: linear-gradient(135deg, #4e6073 0%, #334155 100%);
+  }
+  .hero-title { font-size: 24px; line-height: 1.3; }
+  .hero-description { font-size: 14px; margin-bottom: 24px; }
+  .hero-illustration img { height: 160px; margin-top: 16px; }
+
+  .bento-grid { gap: 16px; }
+  .content-card { padding: 24px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.03); }
+  .sample-item { padding: 14px; gap: 12px; }
+  .time-block { width: 70px; font-size: 13px; }
+  .subject-block { font-size: 14px; }
+}
+</style>
