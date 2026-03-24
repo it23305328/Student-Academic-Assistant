@@ -44,4 +44,26 @@ public class LearningResourceController {
     public List<LearningResource> getApprovedResources() {
         return service.getApprovedResources();
     }
+
+    /**
+     * Endpoint to fetch all pending resources for the Admin Dashboard.
+     */
+    @GetMapping("/pending")
+    public List<LearningResource> getPendingResources() {
+        return service.getPendingResources();
+    }
+
+    /**
+     * Endpoint to approve or reject a resource.
+     * Admin will send the resource ID and the new status (approved/rejected).
+     */
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestParam String status) {
+        try {
+            service.updateStatus(id, status);
+            return ResponseEntity.ok("Resource status updated to: " + status);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating status: " + e.getMessage());
+        }
+    }
 }

@@ -38,4 +38,22 @@ public class LearningResourceService {
     public List<LearningResource> getApprovedResources() {
         return repository.findByStatus("approved");
     }
+
+    /**
+     * Retrieve all resources that are currently in 'pending' status for admin
+     * review.
+     */
+    public List<LearningResource> getPendingResources() {
+        return repository.findByStatus("pending");
+    }
+
+    /**
+     * Update the status of a specific resource (e.g., to 'approved' or 'rejected').
+     */
+    public LearningResource updateStatus(Long id, String status) {
+        LearningResource resource = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
+        resource.setStatus(status);
+        return repository.save(resource);
+    }
 }

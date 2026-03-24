@@ -1,6 +1,7 @@
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\LectureRepository.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\LearningResource.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\StudentRepository.java
+C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\LearningResourceController.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\config\SecurityConfig.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\LoginResponse.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Lecture.java
@@ -27,6 +28,7 @@ C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\BackendApplication.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\GPACalculationRequest.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\AttendanceLogRepository.java
+C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\LearningResourceService.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\config\WebConfig.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\AttendanceDTO.java
 C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\AttendanceRepository.java
