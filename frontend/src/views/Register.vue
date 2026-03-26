@@ -23,6 +23,7 @@
           <label for="email">Email Address</label>
           <input 
             type="email" 
+            
             id="email" 
             v-model="form.email" 
             placeholder="example@my.sliit.lk" 
