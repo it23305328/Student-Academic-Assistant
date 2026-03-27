@@ -9,7 +9,6 @@ com\studentdashboard\service\SummarizerService.class
 com\studentdashboard\repository\AssignmentRepository.class
 com\studentdashboard\dto\TimetableDTO.class
 com\studentdashboard\model\Attendance.class
-com\studentdashboard\service\SummarizerService$1.class
 com\studentdashboard\controller\SummarizerController.class
 com\studentdashboard\model\Student.class
 com\studentdashboard\dto\SubjectGradeDTO.class
