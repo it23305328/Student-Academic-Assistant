@@ -1,34 +1,55 @@
-This is a solid tool that actually solves a real struggle for students. To make your GitHub repo look professional and stand out to recruiters or collaborators, you need a README that is clean, well-structured, and highlights the technical logic behind your features.
+Student Academic Assistant 🎓
+A comprehensive web-based platform designed to streamline academic resource management for students and administrators. This project focuses on efficient resource sharing, validation, and real-time status updates.
 
-Here is a comprehensive description you can copy and paste into your README.md.
+✨ Key Features (My Contribution)
+📤 Smart Resource Uploading
+Secure File Upload: Students can upload academic materials (PDFs) with ease.
 
-StudentDashboardManager 🎓
-StudentDashboardManager is a comprehensive academic productivity tool designed to help students bridge the gap between their hectic schedules and academic success. It’s not just a calendar; it’s a smart assistant that tracks attendance, predicts GPA, and ensures you never miss a deadline.
+Real-time Form Validation: Ensures all required fields (Subject, Semester, and File) are filled correctly before submission.
 
-🚀 Key Features
-📅 Smart Scheduling & Management
-Dynamic Timetable: Add, edit, and view your weekly lectures with a clean, responsive UI.
+Dynamic Feedback: Instant error messages for invalid inputs to enhance user experience.
 
-Automatic "Free Time" Finder: A smart algorithm that scans your schedule to identify gaps between classes—perfect for planning study sessions or quick breaks.
+📚 Learning Materials Library
+Centralized Repository: Access to all approved academic resources in one place.
 
-20-Day Intensive Planner: A dedicated mode to manage high-pressure periods (like exam months) with 20-day granular scheduling.
+Instant View: Preview PDF materials directly in the browser.
 
-⏰ Deadline & Exam Reminders
-Keep track of assignments and exams with an automated countdown system.
+One-Click Download: Securely download resources for offline study.
 
-Tiered Notifications: * 🔔 3 Days Before: Initial heads-up.
+🛡️ Admin Resource Management
+Approval Workflow: Admins can review pending uploads and Approve/Reject them with a single click.
 
-🔔 1 Day Before: Final prep reminder.
+Live Status Tracking: Real-time updates on resource status (Pending/Approved) using a modern dashboard.
 
-🔔 1 Hour Before: Last-minute alert.
+Modern UI: Clean, responsive data tables with custom Black & Gold branding.
 
-📊 Attendance & Performance Tracker
-Stay on top of your eligibility with real-time analytics.
+🛠️ Tech Stack
+Frontend: Vue.js 3, Tailwind CSS, Axios
 
-Visual Attendance: Tracks attendance per subject (e.g., OOP, SE, DBMS).
+Backend: Spring Boot (Java), Spring Security
 
-Smart Warnings: Automatically flags subjects with a ⚠️ warning if attendance falls below 80%.
+Database: MySQL
 
-Grade Book: Log assignment and quiz marks to keep a central record of your academic progress.
+Build Tool: Maven / Vite
 
-GPA Estimator: Calculates your projected GPA based on current marks and credit weights.
+🚀 How to Run Locally
+1. Backend Setup
+Navigate to the backend folder.
+
+Update application.properties with your MySQL credentials.
+
+Run the project:
+
+Bash
+mvn spring-boot:run
+2. Frontend Setup
+Navigate to the frontend folder.
+
+Install dependencies:
+
+Bash
+npm install
+Start the development server:
+
+Bash
+npm run dev
