@@ -1,3 +1,9 @@
+-- Sample data for students table
+INSERT INTO students (name, email, password, academic_year, semester, faculty, course, role) VALUES
+('John Doe', 'john@my.sliit.lk', 'password123', '2024', 'Semester 1', 'Engineering', 'Computer Science', 'STUDENT'),
+('Jane Smith', 'jane@my.sliit.lk', 'password123', '2024', 'Semester 1', 'Engineering', 'Computer Science', 'STUDENT'),
+('Admin User', 'admin@my.sliit.lk', 'admin123', '2024', 'Semester 1', 'Engineering', 'Computer Science', 'ADMIN');
+
 -- Sample data for lectures table
 INSERT INTO lectures (academic_year, semester, course, module_name, title, youtube_url, description) VALUES
 ('2024', 'Semester 1', 'Computer Science', 'OOP', 'Introduction to Object Oriented Programming', 'https://www.youtube.com/watch?v=example1', 'Learn the basics of OOP concepts'),
