@@ -1,0 +1,1 @@
+import{a as i}from"./api-eGj3vv52.js";const e={getNotifications(t){return i.get(`/notifications/${t}`)},markAsRead(t){return i.put(`/notifications/${t}/read`)},getUpcomingAlerts(t){return i.get(`/notifications/alerts/${t}`)}};export{e as n};

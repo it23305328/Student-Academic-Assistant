@@ -387,7 +387,57 @@
                </div>
              </div>
           </div>
-          
+
+          <!-- Smart Recommendations Card -->
+          <div class="card card-small recommendations-card">
+            <div class="card-inner">
+              <div class="card-glow planner-glow"></div>
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h2 class="card-main-title">Smart Recommendations</h2>
+                  <p class="card-sub-title">Materials tailored for your subjects.</p>
+                </div>
+              </div>
+
+              <div class="recommendations-content">
+                <div v-if="isLoadingRecommendations" class="loading-state">
+                  <div class="spinner-small"></div>
+                </div>
+                <template v-else>
+                  <div class="recommendation-group">
+                    <h3>Subject Matches</h3>
+                    <div v-if="recommendations.subjectMatches.length === 0" class="empty-state">No subject matches yet.</div>
+                    <div v-for="item in recommendations.subjectMatches" :key="item.title" class="recommendation-item">
+                      <h4>{{ item.title }}</h4>
+                      <p>{{ item.summary }}</p>
+                      <a :href="item.link" target="_blank" class="recommendation-link">Open</a>
+                    </div>
+                  </div>
+
+                  <div class="recommendation-group">
+                    <h3>Trending</h3>
+                    <div v-if="recommendations.trending.length === 0" class="empty-state">No trending recommendations.</div>
+                    <div v-for="item in recommendations.trending" :key="'t'+item.title" class="recommendation-item">
+                      <h4>{{ item.title }}</h4>
+                      <p>{{ item.summary }}</p>
+                      <a :href="item.link" target="_blank" class="recommendation-link">Open</a>
+                    </div>
+                  </div>
+
+                  <div class="recommendation-group">
+                    <h3>Latest Updates</h3>
+                    <div v-if="recommendations.latestUpdates.length === 0" class="empty-state">No latest updates yet.</div>
+                    <div v-for="item in recommendations.latestUpdates" :key="'u'+item.title" class="recommendation-item">
+                      <h4>{{ item.title }}</h4>
+                      <p>{{ item.summary }}</p>
+                      <a :href="item.link" target="_blank" class="recommendation-link">Open</a>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
       
@@ -431,6 +481,7 @@ import timetableService from '../services/timetableService';
 import attendanceService from '../services/attendanceService';
 import assignmentService from '../services/assignmentService';
 import notificationService from '../services/notificationService';
+import recommendationService from '../services/recommendationService';
 
 const router = useRouter();
 
@@ -452,6 +503,8 @@ const isLoadingAttendance = ref(true);
 const isLoadingAssignments = ref(true);
 const upcomingAlerts = ref([]);
 const isLoadingAlerts = ref(false);
+const recommendations = ref({ subjectMatches: [], trending: [], latestUpdates: [] });
+const isLoadingRecommendations = ref(false);
 
 // Deadline Form
 const showDeadlineForm = ref(false);
@@ -637,6 +690,19 @@ const fetchUpcomingAlerts = async (studentId) => {
     }
 };
 
+const fetchRecommendations = async (studentId) => {
+    isLoadingRecommendations.value = true;
+    try {
+        const response = await recommendationService.getRecommendations(studentId);
+        recommendations.value = response.data || { subjectMatches: [], trending: [], latestUpdates: [] };
+    } catch (error) {
+        console.error('Error fetching recommendations:', error);
+        recommendations.value = { subjectMatches: [], trending: [], latestUpdates: [] };
+    } finally {
+        isLoadingRecommendations.value = false;
+    }
+};
+
 const dismissAlert = (id) => {
     upcomingAlerts.value = upcomingAlerts.value.filter(a => a.id !== id);
 };
@@ -707,6 +773,7 @@ onMounted(async () => {
         await fetchAssignments(studentId);
         await fetchTodayClasses(studentId);
         fetchUpcomingAlerts(studentId);
+        fetchRecommendations(studentId);
         updateSmartPlanner();
 
         // Notification Check System

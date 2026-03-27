@@ -1,0 +1,1 @@
+import{a as e}from"./api-eGj3vv52.js";const m={getAttendanceSummary(t){return e.get(`/attendance/summary/${t}`)},markAttendance(t,a,n=!0){return e.post("/attendance/mark",{studentId:t,subjectName:a,present:n})}};export{m as a};

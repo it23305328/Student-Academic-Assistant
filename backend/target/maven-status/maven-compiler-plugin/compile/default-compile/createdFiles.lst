@@ -8,6 +8,7 @@ com\studentdashboard\dto\TimetableDTO.class
 com\studentdashboard\model\Attendance.class
 com\studentdashboard\model\Student.class
 com\studentdashboard\dto\SubjectGradeDTO.class
+com\studentdashboard\dto\RecommendationDTO.class
 com\studentdashboard\dto\AttendanceDTO.class
 com\studentdashboard\service\AssignmentService.class
 com\studentdashboard\controller\TimetableController.class
