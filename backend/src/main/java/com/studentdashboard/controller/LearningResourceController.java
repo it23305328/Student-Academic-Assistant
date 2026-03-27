@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import java.util.List;
 
 @RestController
@@ -55,15 +57,40 @@ public class LearningResourceController {
 
     /**
      * Endpoint to approve or reject a resource.
-     * Admin will send the resource ID and the new status (approved/rejected).
      */
-    @PutMapping("/{id}/status")
-    public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestParam String status) {
+    @PutMapping("/{id}/status/{status}")
+    public ResponseEntity<?> updateStatus(@PathVariable("id") Long id, @PathVariable("status") String status) {
         try {
             service.updateStatus(id, status);
             return ResponseEntity.ok("Resource status updated to: " + status);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error updating status: " + e.getMessage());
+        } catch (Throwable e) {
+            java.io.StringWriter sw = new java.io.StringWriter();
+            e.printStackTrace(new java.io.PrintWriter(sw));
+            return ResponseEntity.status(500).body("Error: " + e.toString() + "\nTrace: " + sw.toString());
         }
+    }
+
+    /**
+     * Endpoint to download a resource as an attachment.
+     */
+    @GetMapping("/download/{id}")
+    public ResponseEntity<byte[]> downloadResource(@PathVariable("id") Long id) {
+        LearningResource resource = service.getResourceById(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFileName() + "\"")
+                .contentType(MediaType.parseMediaType(resource.getFileType()))
+                .body(resource.getData());
+    }
+
+    /**
+     * Endpoint to view a resource inline in the browser.
+     */
+    @GetMapping("/view/{id}")
+    public ResponseEntity<byte[]> viewResource(@PathVariable("id") Long id) {
+        LearningResource resource = service.getResourceById(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFileName() + "\"")
+                .contentType(MediaType.parseMediaType(resource.getFileType()))
+                .body(resource.getData());
     }
 }

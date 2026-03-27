@@ -1,23 +1,22 @@
 <template>
   <div class="admin-wrapper">
-    <!-- Sidebar -->
     <aside class="admin-sidebar">
       <div class="sidebar-header">
         <div class="logo">A</div>
         <h2>Admin Console</h2>
       </div>
       <nav class="sidebar-nav">
-        <a href="#" class="nav-item" :class="{ active: currentView === 'dashboard' }" @click="currentView = 'dashboard'">Dashboard</a>
-        <a href="#" class="nav-item" :class="{ active: currentView === 'add-lecture' }" @click="currentView = 'add-lecture'">Add Lecture</a>
-        <a href="#" class="nav-item" :class="{ active: currentView === 'manage-lectures' }" @click="currentView = 'manage-lectures'">Manage Lectures</a>
-        <a href="#" class="nav-item" :class="{ active: currentView === 'students' }" @click="currentView = 'students'">Student Overview</a>
+        <a href="#" class="nav-item" :class="{ active: currentView === 'dashboard' }" @click.prevent="currentView = 'dashboard'">Dashboard</a>
+        <a href="#" class="nav-item" :class="{ active: currentView === 'add-lecture' }" @click.prevent="currentView = 'add-lecture'">Add Lecture</a>
+        <a href="#" class="nav-item" :class="{ active: currentView === 'manage-lectures' }" @click.prevent="currentView = 'manage-lectures'">Manage Lectures</a>
+        <a href="#" class="nav-item" :class="{ active: currentView === 'students' }" @click.prevent="currentView = 'students'">Student Overview</a>
+        <a href="#" class="nav-item" :class="{ active: currentView === 'manage-resources' }" @click.prevent="currentView = 'manage-resources'">Manage Resources</a>
       </nav>
       <div class="sidebar-footer">
         <button @click="handleLogout" class="logout-btn">Logout</button>
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="admin-main">
       <header class="admin-header">
         <h1>{{ viewTitle }}</h1>
@@ -27,7 +26,6 @@
       </header>
 
       <section class="admin-content">
-        <!-- Dashboard Overview -->
         <div v-if="currentView === 'dashboard'" class="dashboard-overview">
           <div class="admin-stats">
             <div class="stat-card">
@@ -45,7 +43,6 @@
           </div>
         </div>
 
-        <!-- Add Lecture Form -->
         <div v-if="currentView === 'add-lecture'" class="admin-card">
           <form @submit.prevent="handleSubmitLecture" class="lecture-form">
             <div class="form-grid">
@@ -104,7 +101,6 @@
           </form>
         </div>
 
-        <!-- Manage Lectures Table -->
         <div v-if="currentView === 'manage-lectures'" class="admin-table-container">
           <table class="admin-table">
             <thead>
@@ -127,19 +123,15 @@
                   </div>
                 </td>
               </tr>
-              <tr v-if="lectures.length === 0">
-                <td colspan="4" class="text-center">No lectures found. Upload your first lecture!</td>
-              </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Student Overview Table -->
         <div v-if="currentView === 'students'" class="admin-table-container">
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Registration No</th>
+                <th>Reg No</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Batch</th>
@@ -152,8 +144,36 @@
                 <td>{{ student.email }}</td>
                 <td>Y{{ student.academicYear }} S{{ student.semester }} ({{ student.course }})</td>
               </tr>
-              <tr v-if="students.length === 0">
-                <td colspan="4" class="text-center">No students registered yet.</td>
+            </tbody>
+          </table>
+        </div>
+
+        <div v-if="currentView === 'manage-resources'" class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>File Name</th>
+                <th>Subject</th>
+                <th>Semester</th>
+                <th>Uploaded By</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="res in pendingResources" :key="res.id">
+                <td><strong>{{ res.fileName || res.file_name }}</strong></td>
+                <td>{{ res.subject }}</td>
+                <td>{{ res.semester }}</td>
+                <td>{{ res.uploadedBy || res.uploaded_by }}</td>
+                <td>
+                  <div class="action-btns">
+                    <button @click="handleStatusUpdate(res.id, 'APPROVED')" class="btn-edit" style="color: #10b981; background: #ecfdf5; border: 1px solid #10b981;">Approve</button>
+                    <button @click="handleStatusUpdate(res.id, 'REJECTED')" class="btn-delete">Reject</button>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="pendingResources.length === 0">
+                <td colspan="5" class="text-center">No pending resources found. Everything is clear!</td>
               </tr>
             </tbody>
           </table>
@@ -164,9 +184,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import lectureService from '../services/lectureService';
+import resourceService from '../services/resourceService';
 
 const router = useRouter();
 const adminName = ref(localStorage.getItem('username') || 'Administrator');
@@ -177,18 +198,56 @@ const editingId = ref(null);
 
 const lectures = ref([]);
 const students = ref([]);
+const pendingResources = ref([]);
 
-const lectureForm = ref({
-  academicYear: '',
-  semester: '',
-  course: '',
-  moduleName: '',
-  title: '',
-  youtubeUrl: '',
-  description: ''
-});
+// --- API FETCH FUNCTIONS ---
+const fetchPendingResources = async () => {
+    try {
+        const response = await resourceService.getPendingResources();
+        pendingResources.value = response.data;
+        console.log("Pending data loaded:", response.data);
+    } catch (error) {
+        console.error("Error loading pending resources:", error);
+    }
+};
 
-// Mock modules data for the dynamic dropdown
+const fetchInitialData = async () => {
+  try {
+    const [lecRes, stuRes] = await Promise.all([
+      lectureService.getAllLectures(),
+      lectureService.getAllStudents()
+    ]);
+    lectures.value = lecRes.data;
+    students.value = stuRes.data;
+    await fetchPendingResources();
+  } catch (error) {
+    console.error('Failed to fetch admin data:', error);
+  }
+};
+
+// --- FIXED APPROVAL LOGIC ---
+//  Function to handle Approve or Reject button clicks
+const handleStatusUpdate = async (id, status) => {
+    if (!id) return;
+    
+    try {
+        // Directly update the resource status in the backend via PUT request
+        await resourceService.updateResourceStatus(id, status);
+        
+        alert(`Resource ${status} successfully!`);
+        
+        // 💡 Crucial: Refresh the table data after the update to reflect changes
+        await fetchPendingResources(); 
+    } catch (error) {
+        console.error("Update failed:", error);
+        alert("Failed to update status. Please try again.");
+    }
+};
+
+
+// --- LECTURE FORM LOGIC ---
+const lectureForm = ref({ academicYear: '', semester: '', course: '', moduleName: '', title: '', youtubeUrl: '', description: '' });
+
 const modulesMatrix = {
   '1-1': ['Introduction to IT', 'Mathematics for IT', 'PC Applications'],
   '1-2': ['Programming in C', 'Database Systems I', 'English for Professionals'],
@@ -212,22 +271,10 @@ const viewTitle = computed(() => {
     case 'add-lecture': return isEditing.value ? 'Edit Lecture' : 'Upload New Lecture';
     case 'manage-lectures': return 'Manage Uploads';
     case 'students': return 'Registered Students';
+    case 'manage-resources': return 'Approve Learning Materials';
     default: return 'Admin Panel';
   }
 });
-
-const fetchInitialData = async () => {
-  try {
-    const [lecRes, stuRes] = await Promise.all([
-      lectureService.getAllLectures(),
-      lectureService.getAllStudents()
-    ]);
-    lectures.value = lecRes.data;
-    students.value = stuRes.data;
-  } catch (error) {
-    console.error('Failed to fetch admin data:', error);
-  }
-};
 
 const handleSubmitLecture = async () => {
   isSubmitting.value = true;
@@ -243,20 +290,13 @@ const handleSubmitLecture = async () => {
     await fetchInitialData();
     currentView.value = 'manage-lectures';
   } catch (error) {
-    alert('Error saving lecture. Please check console.');
-  } finally {
-    isSubmitting.value = false;
-  }
+    alert('Error saving lecture.');
+  } finally { isSubmitting.value = false; }
 };
 
 const deleteLecture = async (id) => {
-  if (!confirm('Are you sure you want to delete this lecture?')) return;
-  try {
-    await lectureService.deleteLecture(id);
-    await fetchInitialData();
-  } catch (error) {
-    alert('Failed to delete lecture');
-  }
+  if (!confirm('Are you sure?')) return;
+  try { await lectureService.deleteLecture(id); await fetchInitialData(); } catch (error) { alert('Failed'); }
 };
 
 const editLecture = (lec) => {
@@ -267,34 +307,30 @@ const editLecture = (lec) => {
 };
 
 const resetForm = () => {
-  lectureForm.value = {
-    academicYear: '',
-    semester: '',
-    course: '',
-    moduleName: '',
-    title: '',
-    youtubeUrl: '',
-    description: ''
-  };
+  lectureForm.value = { academicYear: '', semester: '', course: '', moduleName: '', title: '', youtubeUrl: '', description: '' };
   isEditing.value = false;
   editingId.value = null;
 };
 
-const handleLogout = () => {
-  localStorage.clear();
-  router.push('/login');
-};
+const handleLogout = () => { localStorage.clear(); router.push('/login'); };
 
 onMounted(() => {
-  const role = localStorage.getItem('role');
-  if (role !== 'ADMIN') {
+  // 1. Security Check: First, check if the user is an ADMIN
+  if (localStorage.getItem('role') !== 'ADMIN') {
+    // If not an admin, redirect to student dashboard
     router.push('/student-dashboard');
     return;
   }
-  fetchInitialData();
+
+  // 2. Fetch Data: If the user is an ADMIN, load the table data
+  // Call both your initial data and the pending resources list
+  if (typeof fetchInitialData === 'function') {
+    fetchInitialData();
+  }
+  
+  fetchPendingResources(); 
 });
 </script>
-
 <style scoped>
 /* Admin General Styles */
 .admin-wrapper {

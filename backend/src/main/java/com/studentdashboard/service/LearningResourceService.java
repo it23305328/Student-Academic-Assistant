@@ -56,4 +56,12 @@ public class LearningResourceService {
         resource.setStatus(status);
         return repository.save(resource);
     }
+
+    /**
+     * Retrieve a specific resource by ID for view or download.
+     */
+    public LearningResource getResourceById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
+    }
 }

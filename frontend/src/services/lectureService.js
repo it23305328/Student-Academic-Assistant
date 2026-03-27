@@ -15,7 +15,8 @@ const lectureService = {
     },
     getAllStudents() {
         return apiClient.get('/admin/students');
-    }
+    },
+
 };
 
 export default lectureService;

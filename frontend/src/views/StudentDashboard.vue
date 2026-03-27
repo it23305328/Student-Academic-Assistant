@@ -194,6 +194,55 @@
                       </div>
                    </div>
                    <div v-if="!todayClasses.length" class="empty-state">No classes scheduled for today.</div>
+                   <hr style="margin: 40px 0; border: 0; border-top: 1px solid #eee;" />
+                   
+
+                   <div style="margin: 20px 0; text-align: right;">
+    <button @click="openUploadModal" class="upload-trigger-btn">
+        + Upload Lecture Materials
+    </button>
+</div>
+<div v-if="isUploadModalOpen" class="modal-overlay">
+    <div class="modal-content">
+        <button @click="closeUploadModal" class="close-btn">&times;</button>
+        
+        <StudentUpload @success="closeUploadModal" @close="closeUploadModal" /> 
+    </div>
+</div>
+
+<div class="library-section">
+    <h3>📚 Learning Materials Library</h3>
+    </div>
+                   <div class="library-section" style="padding: 20px; background: #fff; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                      <h3 style="color: #2d3748; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">📚</span> Learning Materials Library
+                      </h3>
+                      
+                      <div v-if="approvedFiles.length > 0" class="resource-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+                        <div v-for="file in approvedFiles" :key="file.id" class="file-card" style="border: 1px solid #edf2f7; padding: 20px; border-radius: 12px; text-align: center; transition: transform 0.2s;">
+                           <div style="font-size: 40px; margin-bottom: 10px;">📄</div>
+                           <h4 style="margin: 10px 0; color: #4a5568; font-size: 16px;">{{ file.subject }}</h4>
+                           <p style="font-size: 13px; color: #718096; margin-bottom: 15px;">{{ file.fileName }}</p>
+                           
+                          <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                            <a :href="'http://localhost:8082/api/resources/view/' + file.id" 
+                             target="_blank"
+                             style="background: #10b981; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; transition: background 0.2s;">
+                             View
+                            </a>
+                            <a :href="'http://localhost:8082/api/resources/download/' + file.id" 
+                             style="background: #4f46e5; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; transition: background 0.2s;" 
+                             download>
+                             Download
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div v-else style="text-align: center; padding: 40px; color: #a0aec0;">
+                         <p>No study materials are available for download at this time.</p>
+                      </div>
+                   </div>
                  </template>
 
                  <!-- Free Slots Section -->
@@ -431,6 +480,8 @@ import timetableService from '../services/timetableService';
 import attendanceService from '../services/attendanceService';
 import assignmentService from '../services/assignmentService';
 import notificationService from '../services/notificationService';
+import resourceService from '../services/resourceService';
+import StudentUpload from './StudentUpload.vue';
 
 const router = useRouter();
 
@@ -452,6 +503,10 @@ const isLoadingAttendance = ref(true);
 const isLoadingAssignments = ref(true);
 const upcomingAlerts = ref([]);
 const isLoadingAlerts = ref(false);
+// Learning Materials Library Variables
+const approvedFiles = ref([]);
+const isLoadingLibrary = ref(true);
+
 
 // Deadline Form
 const showDeadlineForm = ref(false);
@@ -460,6 +515,23 @@ const deadlineForm = ref({
     title: '',
     deadline: ''
 });
+// --- 🆕 Upload Modal Variable ---
+const isUploadModalOpen = ref(false); // This controls the popup visibility
+
+// 2. Function to open the upload popup
+const openUploadModal = () => {
+    isUploadModalOpen.value = true;
+};
+
+// 3. Function to close the upload popup
+const closeUploadModal = () => {
+    isUploadModalOpen.value = false; // Modal එක වහනවා
+    
+    // Refresh library data - If function exists
+    if (typeof fetchLibraryData === 'function') {
+        fetchLibraryData();
+    }
+}; 
 
 const checkAuth = () => {
     const token = localStorage.getItem('token');
@@ -508,6 +580,23 @@ const fetchAttendanceSummary = async (studentId) => {
         isLoadingAttendance.value = false;
     }
 };
+
+const fetchLibraryData = async () => {
+    isLoadingLibrary.value = true;
+    try {
+      const res = await resourceService.getApprovedResources();
+        // Ensure only APPROVED resources are displayed
+        approvedFiles.value = (res.data || []).filter(item => String(item.status).toUpperCase() === 'APPROVED');
+        console.log("Library loaded via resourceService!");
+    } catch (error) {
+        console.error("Error loading library:", error);
+        approvedFiles.value = [];
+    } finally {
+        isLoadingLibrary.value = false;
+    }
+};
+
+
 
 const updateSmartPlanner = () => {
     const gaps = calculateFreeSlots();
@@ -708,6 +797,7 @@ onMounted(async () => {
         await fetchTodayClasses(studentId);
         fetchUpcomingAlerts(studentId);
         updateSmartPlanner();
+        fetchLibraryData();
 
         // Notification Check System
         checkNotifications();
@@ -2105,4 +2195,47 @@ onUnmounted(() => {
   
   .header-search { display: none; }
 }
+
+/* --- 🆕 Upload Modal CSS Starts Here --- */
+/* Background overlay that covers the entire screen and dims it */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.upload-trigger-btn {
+    background: #4f46e5;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px; right: 15px;
+    font-size: 28px;
+    background: none; border: none;
+    cursor: pointer; color: #64748b;
+}
+
+
 </style>
