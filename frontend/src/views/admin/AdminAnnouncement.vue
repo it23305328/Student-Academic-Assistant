@@ -283,7 +283,8 @@
                 <img
                   :src="announcement.imageUrl"
                   alt="Announcement image"
-                  class="rounded-[1.5rem] border border-gray-200 shadow-sm transition-transform hover:scale-[1.01] duration-500"
+                  class="rounded-[1.5rem] border border-gray-200 shadow-sm max-w-[200px] max-h-[200px] object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                  @click.stop="openImageModal(announcement.imageUrl)"
                 />
               </div>
             </div>
@@ -335,6 +336,12 @@
       @confirm="deleteAnnouncement"
       @cancel="closeDeleteModal"
     />
+
+    <ImageModal
+      v-if="showImageModal"
+      :image-url="modalImageUrl"
+      @close="closeImageModal"
+    />
   </div>
 </template>
 
@@ -343,6 +350,7 @@ import { ref, computed, onMounted } from "vue";
 import announcementService from "../../services/announcementService";
 import AnnouncementFormModal from "../../components/AnnouncementFormModal.vue";
 import ConfirmationModal from "../../components/common/ConfirmationModal.vue";
+import ImageModal from "../../components/common/ImageModal.vue";
 
 const announcements = ref([]);
 const expandedId = ref(null);
@@ -351,6 +359,8 @@ const isEditing = ref(false);
 const editingAnnouncement = ref(null);
 const showDeleteModal = ref(false);
 const deleteId = ref(null);
+const showImageModal = ref(false);
+const modalImageUrl = ref("");
 
 const filters = ref({
   searchQuery: "",
@@ -523,6 +533,16 @@ const formatDate = (dateString) => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+const openImageModal = (imageUrl) => {
+  modalImageUrl.value = imageUrl;
+  showImageModal.value = true;
+};
+
+const closeImageModal = () => {
+  showImageModal.value = false;
+  modalImageUrl.value = "";
 };
 
 onMounted(() => {

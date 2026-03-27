@@ -2,7 +2,6 @@ package com.studentdashboard.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class StudyGroupDTO {
     private Long id;
@@ -14,7 +13,6 @@ public class StudyGroupDTO {
     private String specialization;
     private String module;
     private String topic;
-    private String contactNumber;
     private Integer maxMembers;
     private Integer currentMembers;
     private LocalDateTime createdAt;
@@ -25,7 +23,7 @@ public class StudyGroupDTO {
     
     public StudyGroupDTO(Long id, String creatorName, String creatorEmail, String creatorPhone, Integer year, 
                         Integer semester, String specialization, String module, String topic, 
-                        String contactNumber, Integer maxMembers, Integer currentMembers, 
+                        Integer maxMembers, Integer currentMembers, 
                         LocalDateTime createdAt, List<GroupMemberDTO> members) {
         this.id = id;
         this.creatorName = creatorName;
@@ -36,7 +34,6 @@ public class StudyGroupDTO {
         this.specialization = specialization;
         this.module = module;
         this.topic = topic;
-        this.contactNumber = contactNumber;
         this.maxMembers = maxMembers;
         this.currentMembers = currentMembers;
         this.createdAt = createdAt;
@@ -114,14 +111,6 @@ public class StudyGroupDTO {
     
     public void setTopic(String topic) {
         this.topic = topic;
-    }
-    
-    public String getContactNumber() {
-        return contactNumber;
-    }
-    
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
     }
     
     public Integer getMaxMembers() {

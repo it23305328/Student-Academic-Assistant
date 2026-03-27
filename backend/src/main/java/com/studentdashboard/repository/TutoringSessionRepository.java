@@ -19,8 +19,6 @@ public interface TutoringSessionRepository extends JpaRepository<TutoringSession
     
     List<TutoringSession> findByDateAfter(LocalDate date);
     
-    boolean existsByTutorEmail(String tutorEmail);
-    
     @Query("SELECT t FROM TutoringSession t WHERE t.year = :year AND t.semester = :semester AND t.specialization = :specialization")
     List<TutoringSession> findByStudentInfo(@Param("year") Integer year, 
                                             @Param("semester") Integer semester, 

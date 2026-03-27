@@ -76,7 +76,7 @@
                   </div>
                   <div class="flex items-center gap-3 text-sm text-gray-600 font-medium">
                     <Phone class="w-4 h-4 text-[#A89060]" />
-                    <span>{{ group.contactNumber }}</span>
+                    <span>{{ group.creatorPhone }}</span>
                   </div>
                   <div class="inline-block px-3 py-1 bg-[#F8F9FA] rounded text-[10px] font-black text-gray-400 uppercase tracking-widest border border-gray-100">
                     {{ group.specialization }}
@@ -93,7 +93,7 @@
                     Members ({{ group.currentMembers }})
                   </button>
                   <button 
-                    @click="deleteGroup(group)" 
+                    @click="openDeleteConfirmModal(group)" 
                     class="flex-1 border-2 border-red-500 text-red-500 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
                   >
                     <Trash2 class="w-4 h-4 inline mr-2" />
@@ -118,7 +118,7 @@
                   </button>
                   <button 
                     v-else
-                    @click="leaveGroup(group)" 
+                    @click="openLeaveConfirmModal(group)" 
                     class="w-full border-2 border-red-500 text-red-500 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
                   >
                     Leave Group
@@ -153,7 +153,16 @@
           
           <div>
             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone Number</label>
-            <input v-model="newGroup.creatorPhone" type="tel" required class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all">
+            <input 
+              v-model="newGroup.creatorPhone" 
+              type="tel" 
+              required 
+              pattern="07[0-9]{8}"
+              maxlength="10"
+              class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all"
+              placeholder="0712345678"
+            >
+            <p class="text-xs text-gray-400 mt-1">Must start with 07 and be exactly 10 digits</p>
           </div>
           
           <div class="grid grid-cols-2 gap-6">
@@ -193,15 +202,9 @@
             <input v-model="newGroup.topic" type="text" required placeholder="What will the group focus on?" class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all">
           </div>
           
-          <div class="grid grid-cols-2 gap-6">
-            <div>
-              <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Contact Number</label>
-              <input v-model="newGroup.contactNumber" type="tel" required class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all">
-            </div>
-            <div>
-              <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Max Capacity</label>
-              <input v-model="newGroup.maxMembers" type="number" min="2" max="10" required class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all">
-            </div>
+          <div>
+            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Max Capacity</label>
+            <input v-model="newGroup.maxMembers" type="number" min="2" max="10" required class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all">
           </div>
           
           <div class="flex gap-4 pt-6">
@@ -235,7 +238,16 @@
           
           <div>
             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone Number</label>
-            <input v-model="joinData.phone" type="tel" required class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all">
+            <input 
+              v-model="joinData.phone" 
+              type="tel" 
+              required 
+              pattern="07[0-9]{8}"
+              maxlength="10"
+              class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all"
+              placeholder="0712345678"
+            >
+            <p class="text-xs text-gray-400 mt-1">Must start with 07 and be exactly 10 digits</p>
           </div>
           
           <div class="flex gap-4 pt-6">
@@ -275,20 +287,68 @@
       </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div v-if="showSuccessToast" class="fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[1000] animate-fade-in-up">
-      {{ successMessage }}
+    <!-- Custom Confirmation Modal for Delete -->
+    <div v-if="showDeleteConfirmModal" class="fixed inset-0 bg-[#1A1A1A]/90 backdrop-blur-sm flex items-center justify-center z-[1000] p-4" @click="closeDeleteConfirmModal">
+      <div class="relative bg-white rounded-3xl w-full max-w-md p-8 text-center shadow-2xl" @click.stop>
+        <div class="mb-4 flex justify-center">
+          <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center">
+            <Trash2 class="w-8 h-8 text-red-500" />
+          </div>
+        </div>
+        <h3 class="text-2xl font-serif font-bold text-[#1A1A1A] mb-2">Delete Group</h3>
+        <p class="text-gray-500 text-sm mb-6">Are you sure you want to delete this study group? This action cannot be undone.</p>
+        <div class="flex gap-3">
+          <button @click="closeDeleteConfirmModal" class="flex-1 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all">Cancel</button>
+          <button @click="confirmDeleteGroup" :disabled="deleting" class="flex-1 bg-red-500 text-white px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all disabled:opacity-50">
+            {{ deleting ? 'Deleting...' : 'Delete' }}
+          </button>
+        </div>
+      </div>
     </div>
-    
-    <div v-if="showErrorToast" class="fixed bottom-8 right-8 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-[1000] animate-fade-in-up">
-      {{ errorMessage }}
+
+    <!-- Custom Confirmation Modal for Leave -->
+    <div v-if="showLeaveConfirmModal" class="fixed inset-0 bg-[#1A1A1A]/90 backdrop-blur-sm flex items-center justify-center z-[1000] p-4" @click="closeLeaveConfirmModal">
+      <div class="relative bg-white rounded-3xl w-full max-w-md p-8 text-center shadow-2xl" @click.stop>
+        <div class="mb-4 flex justify-center">
+          <div class="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center">
+            <AlertCircle class="w-8 h-8 text-amber-500" />
+          </div>
+        </div>
+        <h3 class="text-2xl font-serif font-bold text-[#1A1A1A] mb-2">Leave Group</h3>
+        <p class="text-gray-500 text-sm mb-6">Are you sure you want to leave this study group? You can rejoin if the group is still open.</p>
+        <div class="flex gap-3">
+          <button @click="closeLeaveConfirmModal" class="flex-1 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all">Cancel</button>
+          <button @click="confirmLeaveGroup" :disabled="leaving" class="flex-1 bg-amber-500 text-white px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-amber-600 transition-all disabled:opacity-50">
+            {{ leaving ? 'Leaving...' : 'Leave' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications Container - Top Right -->
+    <div class="toast-container fixed top-6 right-6 z-[9999] flex flex-col gap-3">
+      <transition-group name="toast">
+        <div v-for="toast in notificationToasts" :key="toast.id" class="toast-item bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex items-center gap-4 p-4 min-w-[280px] max-w-[380px]" :class="{
+          'border-l-4 border-l-[#1A1A1A]': toast.type === 'success',
+          'border-l-4 border-l-red-500': toast.type === 'error'
+        }">
+          <div class="toast-icon flex-shrink-0">
+            <CheckCircle v-if="toast.type === 'success'" class="w-5 h-5 text-[#1A1A1A]" />
+            <XCircle v-else-if="toast.type === 'error'" class="w-5 h-5 text-red-500" />
+          </div>
+          <div class="toast-content flex-1">
+            <p class="text-xs font-medium text-gray-800">{{ toast.message }}</p>
+          </div>
+          <button @click="dismissToast(toast.id)" class="toast-close text-gray-300 hover:text-gray-600 transition-colors text-xl leading-none">&times;</button>
+        </div>
+      </transition-group>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Users, Calendar, BookOpen, Phone, RefreshCw, Trash2 } from 'lucide-vue-next';
+import { Users, Calendar, BookOpen, Phone, RefreshCw, Trash2, CheckCircle, XCircle, AlertCircle } from 'lucide-vue-next';
 import Navbar from '../../components/Navbar.vue';
 import studyGroupService from '../../services/studyGroupService';
 
@@ -297,13 +357,14 @@ const loading = ref(true);
 const showCreateModal = ref(false);
 const showJoinModal = ref(false);
 const showMembersModal = ref(false);
+const showDeleteConfirmModal = ref(false);
+const showLeaveConfirmModal = ref(false);
 const selectedGroup = ref(null);
 const submitting = ref(false);
 const joining = ref(false);
-const showSuccessToast = ref(false);
-const showErrorToast = ref(false);
-const successMessage = ref('');
-const errorMessage = ref('');
+const deleting = ref(false);
+const leaving = ref(false);
+const notificationToasts = ref([]);
 
 // Get current user from localStorage
 const currentUser = ref({
@@ -320,7 +381,6 @@ const newGroup = ref({
   specialization: '',
   module: '',
   topic: '',
-  contactNumber: '',
   maxMembers: 5
 });
 
@@ -330,26 +390,27 @@ const joinData = ref({
   phone: ''
 });
 
-const showSuccessMessage = (message) => {
-  successMessage.value = message;
-  showSuccessToast.value = true;
+const showToast = (message, type = 'success') => {
+  const id = Date.now();
+  notificationToasts.value.push({ id, message, type });
   setTimeout(() => {
-    showSuccessToast.value = false;
-  }, 3000);
+    dismissToast(id);
+  }, 4000);
 };
 
-const showErrorMessage = (message) => {
-  errorMessage.value = message;
-  showErrorToast.value = true;
-  setTimeout(() => {
-    showErrorToast.value = false;
-  }, 3000);
+const dismissToast = (id) => {
+  notificationToasts.value = notificationToasts.value.filter(t => t.id !== id);
 };
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+const validatePhoneNumber = (phone) => {
+  const phoneRegex = /^07[0-9]{8}$/;
+  return phoneRegex.test(phone);
 };
 
 const loadGroups = async () => {
@@ -359,7 +420,7 @@ const loadGroups = async () => {
     studyGroups.value = response.data;
   } catch (error) {
     console.error('Error loading study groups:', error);
-    showErrorMessage('Failed to load study groups. Please try again.');
+    showToast('Failed to load study groups. Please try again.', 'error');
   } finally {
     loading.value = false;
   }
@@ -384,7 +445,6 @@ const openCreateModal = () => {
     specialization: '',
     module: '',
     topic: '',
-    contactNumber: '',
     maxMembers: 5
   };
   showCreateModal.value = true;
@@ -395,6 +455,12 @@ const closeCreateModal = () => {
 };
 
 const createStudyGroup = async () => {
+  // Validate phone number
+  if (!validatePhoneNumber(newGroup.value.creatorPhone)) {
+    showToast('Phone number must start with "07" and be exactly 10 digits', 'error');
+    return;
+  }
+  
   submitting.value = true;
   try {
     const response = await studyGroupService.createGroup({
@@ -403,11 +469,11 @@ const createStudyGroup = async () => {
       semester: parseInt(newGroup.value.semester)
     });
     studyGroups.value.unshift(response.data);
-    showSuccessMessage('Study group created successfully!');
+    showToast('Study group created successfully!', 'success');
     closeCreateModal();
   } catch (error) {
     console.error('Error creating study group:', error);
-    showErrorMessage(error.response?.data?.message || 'Failed to create group. Please try again.');
+    showToast(error.response?.data?.message || 'Failed to create group. Please try again.', 'error');
   } finally {
     submitting.value = false;
   }
@@ -431,6 +497,12 @@ const closeJoinModal = () => {
 const joinStudyGroup = async () => {
   if (!selectedGroup.value) return;
   
+  // Validate phone number
+  if (!validatePhoneNumber(joinData.value.phone)) {
+    showToast('Phone number must start with "07" and be exactly 10 digits', 'error');
+    return;
+  }
+  
   joining.value = true;
   try {
     const response = await studyGroupService.joinGroup(selectedGroup.value.id, joinData.value);
@@ -438,42 +510,70 @@ const joinStudyGroup = async () => {
     if (index !== -1) {
       studyGroups.value[index] = response.data;
     }
-    showSuccessMessage('Successfully joined the group!');
+    showToast('Successfully joined the group!', 'success');
     closeJoinModal();
   } catch (error) {
     console.error('Error joining group:', error);
-    showErrorMessage(error.response?.data?.message || 'Failed to join group. Please try again.');
+    showToast(error.response?.data?.message || 'Failed to join group. Please try again.', 'error');
   } finally {
     joining.value = false;
   }
 };
 
-const leaveGroup = async (group) => {
-  if (!confirm('Are you sure you want to leave this group?')) return;
+const openLeaveConfirmModal = (group) => {
+  selectedGroup.value = group;
+  showLeaveConfirmModal.value = true;
+};
+
+const closeLeaveConfirmModal = () => {
+  showLeaveConfirmModal.value = false;
+  selectedGroup.value = null;
+};
+
+const confirmLeaveGroup = async () => {
+  if (!selectedGroup.value) return;
   
+  leaving.value = true;
   try {
-    const response = await studyGroupService.leaveGroup(group.id, currentUser.value.email);
-    const index = studyGroups.value.findIndex(g => g.id === group.id);
+    const response = await studyGroupService.leaveGroup(selectedGroup.value.id, currentUser.value.email);
+    const index = studyGroups.value.findIndex(g => g.id === selectedGroup.value.id);
     if (index !== -1) {
       studyGroups.value[index] = response.data;
     }
-    showSuccessMessage('Successfully left the group!');
+    showToast('Successfully left the group!', 'success');
+    closeLeaveConfirmModal();
   } catch (error) {
     console.error('Error leaving group:', error);
-    showErrorMessage(error.response?.data?.message || 'Failed to leave group. Please try again.');
+    showToast(error.response?.data?.message || 'Failed to leave group. Please try again.', 'error');
+  } finally {
+    leaving.value = false;
   }
 };
 
-const deleteGroup = async (group) => {
-  if (!confirm('Are you sure you want to delete this group? This action cannot be undone.')) return;
+const openDeleteConfirmModal = (group) => {
+  selectedGroup.value = group;
+  showDeleteConfirmModal.value = true;
+};
+
+const closeDeleteConfirmModal = () => {
+  showDeleteConfirmModal.value = false;
+  selectedGroup.value = null;
+};
+
+const confirmDeleteGroup = async () => {
+  if (!selectedGroup.value) return;
   
+  deleting.value = true;
   try {
-    await studyGroupService.deleteGroup(group.id, currentUser.value.email);
-    studyGroups.value = studyGroups.value.filter(g => g.id !== group.id);
-    showSuccessMessage('Group deleted successfully!');
+    await studyGroupService.deleteGroup(selectedGroup.value.id, currentUser.value.email);
+    studyGroups.value = studyGroups.value.filter(g => g.id !== selectedGroup.value.id);
+    showToast('Group deleted successfully!', 'success');
+    closeDeleteConfirmModal();
   } catch (error) {
     console.error('Error deleting group:', error);
-    showErrorMessage(error.response?.data?.message || 'Failed to delete group. Please try again.');
+    showToast(error.response?.data?.message || 'Failed to delete group. Please try again.', 'error');
+  } finally {
+    deleting.value = false;
   }
 };
 
@@ -511,26 +611,24 @@ onMounted(() => {
   to { transform: rotate(360deg); }
 }
 
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.3s ease-out;
-}
-
 .content-scroll::-webkit-scrollbar {
   width: 4px;
 }
 .content-scroll::-webkit-scrollbar-thumb {
   background: #E5E7EB;
   border-radius: 10px;
+}
+
+/* Toast animations - Top Right */
+.toast-enter-active, .toast-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(50px) translateY(-20px) scale(0.9);
+}
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(100px) translateY(-10px);
 }
 </style>

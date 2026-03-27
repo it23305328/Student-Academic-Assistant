@@ -16,7 +16,7 @@ public class StudyGroup {
     @Column(nullable = false)
     private String creatorName;
     
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String creatorEmail;
     
     @Column(nullable = false)
@@ -36,9 +36,6 @@ public class StudyGroup {
     
     @Column(nullable = false)
     private String topic;
-    
-    @Column(nullable = false)
-    private String contactNumber;
     
     @Column(nullable = false)
     private Integer maxMembers;
@@ -61,7 +58,7 @@ public class StudyGroup {
     public StudyGroup() {}
     
     public StudyGroup(String creatorName, String creatorEmail, String creatorPhone, Integer year, Integer semester, 
-                     String specialization, String module, String topic, String contactNumber, Integer maxMembers) {
+                     String specialization, String module, String topic, Integer maxMembers) {
         this.creatorName = creatorName;
         this.creatorEmail = creatorEmail;
         this.creatorPhone = creatorPhone;
@@ -70,7 +67,6 @@ public class StudyGroup {
         this.specialization = specialization;
         this.module = module;
         this.topic = topic;
-        this.contactNumber = contactNumber;
         this.maxMembers = maxMembers;
         this.currentMembers = 1;
     }
@@ -146,14 +142,6 @@ public class StudyGroup {
     
     public void setTopic(String topic) {
         this.topic = topic;
-    }
-    
-    public String getContactNumber() {
-        return contactNumber;
-    }
-    
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
     }
     
     public Integer getMaxMembers() {

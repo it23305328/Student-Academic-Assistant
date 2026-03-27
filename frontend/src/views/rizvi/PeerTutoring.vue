@@ -226,20 +226,30 @@
       </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div v-if="showSuccessToast" class="fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[1000] animate-fade-in-up">
-      {{ successMessage }}
-    </div>
-    
-    <div v-if="showErrorToast" class="fixed bottom-8 right-8 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-[1000] animate-fade-in-up">
-      {{ errorMessage }}
+    <!-- Toast Notifications Container - Top Right -->
+    <div class="toast-container fixed top-6 right-6 z-[9999] flex flex-col gap-3">
+      <transition-group name="toast">
+        <div v-for="toast in notificationToasts" :key="toast.id" class="toast-item bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex items-center gap-4 p-4 min-w-[280px] max-w-[380px]" :class="{
+          'border-l-4 border-l-[#1A1A1A]': toast.type === 'success',
+          'border-l-4 border-l-red-500': toast.type === 'error'
+        }">
+          <div class="toast-icon flex-shrink-0">
+            <CheckCircle v-if="toast.type === 'success'" class="w-5 h-5 text-[#1A1A1A]" />
+            <XCircle v-else-if="toast.type === 'error'" class="w-5 h-5 text-red-500" />
+          </div>
+          <div class="toast-content flex-1">
+            <p class="text-xs font-medium text-gray-800">{{ toast.message }}</p>
+          </div>
+          <button @click="dismissToast(toast.id)" class="toast-close text-gray-300 hover:text-gray-600 transition-colors text-xl leading-none">&times;</button>
+        </div>
+      </transition-group>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { GraduationCap, Calendar, BookOpen, Users, RefreshCw, Edit, Trash2 } from 'lucide-vue-next';
+import { GraduationCap, Calendar, BookOpen, Users, RefreshCw, Edit, Trash2, CheckCircle, XCircle } from 'lucide-vue-next';
 import Navbar from '../../components/Navbar.vue';
 import tutoringService from '../../services/tutoringService';
 
@@ -251,10 +261,7 @@ const submitting = ref(false);
 const deleting = ref(false);
 const isEditing = ref(false);
 const editingId = ref(null);
-const showSuccessToast = ref(false);
-const showErrorToast = ref(false);
-const successMessage = ref('');
-const errorMessage = ref('');
+const notificationToasts = ref([]);
 
 // Get current user from localStorage
 const currentUser = ref({
@@ -276,6 +283,18 @@ const newSession = ref({
   meetingLink: ''
 });
 
+const showToast = (message, type = 'success') => {
+  const id = Date.now();
+  notificationToasts.value.push({ id, message, type });
+  setTimeout(() => {
+    dismissToast(id);
+  }, 4000);
+};
+
+const dismissToast = (id) => {
+  notificationToasts.value = notificationToasts.value.filter(t => t.id !== id);
+};
+
 // Load sessions from API
 const loadSessions = async () => {
   try {
@@ -284,26 +303,10 @@ const loadSessions = async () => {
     tutoringSessions.value = response.data;
   } catch (error) {
     console.error('Error loading tutoring sessions:', error);
-    showErrorMessage('Failed to load sessions. Please try again.');
+    showToast('Failed to load sessions. Please try again.', 'error');
   } finally {
     loading.value = false;
   }
-};
-
-const showSuccessMessage = (message) => {
-  successMessage.value = message;
-  showSuccessToast.value = true;
-  setTimeout(() => {
-    showSuccessToast.value = false;
-  }, 3000);
-};
-
-const showErrorMessage = (message) => {
-  errorMessage.value = message;
-  showErrorToast.value = true;
-  setTimeout(() => {
-    showErrorToast.value = false;
-  }, 3000);
 };
 
 const validatePhoneNumber = (phone) => {
@@ -358,7 +361,7 @@ const closeCreateModal = () => {
 const saveSession = async () => {
   // Validate phone number
   if (!validatePhoneNumber(newSession.value.tutorPhone)) {
-    showErrorMessage('Phone number must start with "07" and be exactly 10 digits');
+    showToast('Phone number must start with "07" and be exactly 10 digits', 'error');
     return;
   }
   
@@ -378,16 +381,16 @@ const saveSession = async () => {
       if (index !== -1) {
         tutoringSessions.value[index] = response.data;
       }
-      showSuccessMessage('Tutoring session updated successfully!');
+      showToast('Tutoring session updated successfully!', 'success');
     } else {
       response = await tutoringService.addSession(sessionData);
       tutoringSessions.value.unshift(response.data);
-      showSuccessMessage('Tutoring session published successfully!');
+      showToast('Tutoring session published successfully!', 'success');
     }
     closeCreateModal();
   } catch (error) {
     console.error('Error saving tutoring session:', error);
-    showErrorMessage(error.response?.data?.message || 'Failed to save session. Please try again.');
+    showToast(error.response?.data?.message || 'Failed to save session. Please try again.', 'error');
   } finally {
     submitting.value = false;
   }
@@ -408,11 +411,11 @@ const deleteSession = async () => {
   try {
     await tutoringService.deleteSession(editingId.value);
     tutoringSessions.value = tutoringSessions.value.filter(s => s.id !== editingId.value);
-    showSuccessMessage('Tutoring session deleted successfully!');
+    showToast('Tutoring session deleted successfully!', 'success');
     closeDeleteModal();
   } catch (error) {
     console.error('Error deleting tutoring session:', error);
-    showErrorMessage('Failed to delete session. Please try again.');
+    showToast('Failed to delete session. Please try again.', 'error');
   } finally {
     deleting.value = false;
   }
@@ -453,26 +456,24 @@ onMounted(() => {
   to { transform: rotate(360deg); }
 }
 
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.3s ease-out;
-}
-
 .content-scroll::-webkit-scrollbar {
   width: 4px;
 }
 .content-scroll::-webkit-scrollbar-thumb {
   background: #E5E7EB;
   border-radius: 10px;
+}
+
+/* Toast animations - Top Right */
+.toast-enter-active, .toast-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(50px) translateY(-20px) scale(0.9);
+}
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(100px) translateY(-10px);
 }
 </style>

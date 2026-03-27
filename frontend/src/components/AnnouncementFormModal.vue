@@ -1,6 +1,6 @@
 <template>
-  <div class="fixed inset-0 backdrop-blur-md bg-[#111827]/40 flex items-center justify-center z-50 p-4" @click.self="close">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-gray-100">
+  <div class="fixed inset-0 backdrop-blur-md bg-[#111827]/40 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-gray-100 scrollbar-hide">
       <div class="sticky top-0 bg-white/80 backdrop-blur-sm border-b border-gray-100 px-8 py-6 flex justify-between items-center z-10">
         <h3 class="text-2xl font-serif font-bold text-[#111827] flex items-center gap-3">
           <div class="w-10 h-10 rounded-full bg-[#f9f9f9] flex items-center justify-center">
@@ -25,8 +25,10 @@
             v-model="formData.topic" 
             placeholder="e.g., Modernism in Digital Spaces"
             required 
+            @input="validateTopic"
             class="w-full px-5 py-3.5 bg-[#f9f9f9] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#a38a4d] focus:border-transparent outline-none transition-all duration-300 font-serif text-lg"
           />
+          <p v-if="topicError" class="text-red-500 text-xs mt-1 ml-1">{{ topicError }}</p>
         </div>
 
         <div class="form-group">
@@ -75,8 +77,10 @@
             rows="5" 
             placeholder="Compose the details of your announcement..."
             required
+            @input="validateContent"
             class="w-full px-5 py-3.5 bg-[#f9f9f9] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#a38a4d] focus:border-transparent outline-none transition-all duration-300 resize-y font-serif leading-relaxed"
           ></textarea>
+          <p v-if="contentError" class="text-red-500 text-xs mt-1 ml-1">{{ contentError }}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -125,7 +129,7 @@
           <button 
             type="submit" 
             class="flex-1 flex items-center justify-center gap-3 bg-[#111827] hover:bg-[#1f2937] text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none" 
-            :disabled="isSubmitting"
+            :disabled="isSubmitting || !!topicError || !!contentError"
           >
             <svg v-if="isSubmitting" class="animate-spin h-5 w-5 text-[#a38a4d]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -165,6 +169,8 @@ const emit = defineEmits(['close', 'saved']);
 
 const isSubmitting = ref(false);
 const imageInput = ref(null);
+const topicError = ref('');
+const contentError = ref('');
 
 const minDateTime = computed(() => {
   const now = new Date();
@@ -203,6 +209,24 @@ const getCoursesForFaculty = (faculty) => {
   return courses[faculty] || [];
 };
 
+const validateTopic = () => {
+  const value = formData.value.topic;
+  if (value && /^\d+$/.test(value)) {
+    topicError.value = 'Announcement topic cannot contain only numbers. Please include at least one letter.';
+  } else {
+    topicError.value = '';
+  }
+};
+
+const validateContent = () => {
+  const value = formData.value.content;
+  if (value && /^\d+$/.test(value)) {
+    contentError.value = 'Curatorial content cannot contain only numbers. Please include at least one letter.';
+  } else {
+    contentError.value = '';
+  }
+};
+
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -230,6 +254,10 @@ const handleSubmit = async () => {
   }
 
   if (!formData.value.targetType) {
+    return;
+  }
+
+  if (topicError.value || contentError.value) {
     return;
   }
 
@@ -287,19 +315,28 @@ input::placeholder, textarea::placeholder {
   font-size: 0.95rem;
 }
 
-/* Custom scrollbar for curatorial feel */
-div::-webkit-scrollbar {
+/* Hides scrollbar but allows scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Custom scrollbar for textareas only */
+textarea::-webkit-scrollbar {
   width: 6px;
 }
-div::-webkit-scrollbar-track {
+textarea::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
-div::-webkit-scrollbar-thumb {
+textarea::-webkit-scrollbar-thumb {
   background: #d1d5db;
   border-radius: 10px;
 }
-div::-webkit-scrollbar-thumb:hover {
+textarea::-webkit-scrollbar-thumb:hover {
   background: #a38a4d;
 }
 </style>

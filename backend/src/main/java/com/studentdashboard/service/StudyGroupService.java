@@ -36,7 +36,6 @@ public class StudyGroupService {
     }
     
     public StudyGroupDTO createGroup(StudyGroupDTO groupDTO) {
-        // Remove the check for existing group by creator email to allow multiple groups
         StudyGroup group = convertToEntity(groupDTO);
         
         // Add creator as first member
@@ -161,7 +160,6 @@ public class StudyGroupService {
             group.getSpecialization(),
             group.getModule(),
             group.getTopic(),
-            group.getContactNumber(),
             group.getMaxMembers(),
             group.getCurrentMembers(),
             group.getCreatedAt(),
@@ -179,7 +177,6 @@ public class StudyGroupService {
             dto.getSpecialization(),
             dto.getModule(),
             dto.getTopic(),
-            dto.getContactNumber(),
             dto.getMaxMembers()
         );
     }

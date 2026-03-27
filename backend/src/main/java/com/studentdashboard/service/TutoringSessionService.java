@@ -31,11 +31,7 @@ public class TutoringSessionService {
     }
     
     public TutoringSessionDTO createSession(TutoringSessionDTO sessionDTO) {
-        // Check if email already exists
-        if (tutoringSessionRepository.existsByTutorEmail(sessionDTO.getTutorEmail())) {
-            throw new RuntimeException("A session with this email already exists");
-        }
-        
+        // Remove the email uniqueness check to allow multiple sessions per user
         TutoringSession session = convertToEntity(sessionDTO);
         TutoringSession savedSession = tutoringSessionRepository.save(session);
         return convertToDTO(savedSession);
@@ -44,12 +40,6 @@ public class TutoringSessionService {
     public TutoringSessionDTO updateSession(Long id, TutoringSessionDTO sessionDTO) {
         TutoringSession existingSession = tutoringSessionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tutoring session not found with id: " + id));
-        
-        // Check if email is being changed and if it already exists
-        if (!existingSession.getTutorEmail().equals(sessionDTO.getTutorEmail()) && 
-            tutoringSessionRepository.existsByTutorEmail(sessionDTO.getTutorEmail())) {
-            throw new RuntimeException("A session with this email already exists");
-        }
         
         existingSession.setTutorName(sessionDTO.getTutorName());
         existingSession.setTutorEmail(sessionDTO.getTutorEmail());
