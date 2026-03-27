@@ -42,6 +42,7 @@ Run the project:
 
 Bash
 mvn spring-boot:run
+
 2. Frontend Setup
 Navigate to the frontend folder.
 
