@@ -1,43 +1,43 @@
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\LectureRepository.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\LearningResource.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\StudentRepository.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\LearningResourceController.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\config\SecurityConfig.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\LoginResponse.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Lecture.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\NotificationService.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\TimetableDTO.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Student.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\NotificationController.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\AdminController.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\AssignmentController.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\SubjectGradeDTO.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\AssignmentRepository.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\AttendanceLog.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Notification.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\TimetableRepository.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\AssignmentService.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\AttendanceService.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Assignment.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\AuthController.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\TimetableService.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Timetable.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Attendance.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\GPAService.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\LearningResourceRepository.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\BackendApplication.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\GPACalculationRequest.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\AttendanceLogRepository.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\LearningResourceService.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\config\WebConfig.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\AttendanceDTO.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\AttendanceRepository.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\AttendanceController.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\UpcomingAlertDTO.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\StudentService.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\TimetableController.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\NotificationRepository.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\StudentController.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\LectureController.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\LectureService.java
-C:\Users\ASUS VIVOBOOK\Desktop\ITPM\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\GPAController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\TimetableRepository.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\AssignmentController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\AssignmentRepository.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\LearningResourceService.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Assignment.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\AttendanceLog.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\TimetableController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\LectureRepository.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\AttendanceLogRepository.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\config\WebConfig.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\config\SecurityConfig.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\SubjectGradeDTO.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\LearningResource.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\TimetableService.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Lecture.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\LectureService.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\GPAService.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\NotificationService.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Notification.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\NotificationRepository.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\StudentService.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\GPAController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\AttendanceController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\AttendanceRepository.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\AttendanceDTO.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\GPACalculationRequest.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\BackendApplication.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Timetable.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\AuthController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\LearningResourceRepository.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\TimetableDTO.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\UpcomingAlertDTO.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\AdminController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\dto\LoginResponse.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\NotificationController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\StudentController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Attendance.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\AssignmentService.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\LectureController.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\service\AttendanceService.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\repository\StudentRepository.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\model\Student.java
+C:\Users\User\Documents\GitHub\Student-Academic-Assistant\backend\src\main\java\com\studentdashboard\controller\LearningResourceController.java
