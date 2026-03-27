@@ -22,68 +22,15 @@ public class RecommendationService {
     private TimetableRepository timetableRepository;
 
     public RecommendationsResponseDTO getRecommendationsForStudent(Long studentId) {
-        List<Timetable> timetable = timetableRepository.findByStudentId(studentId);
-        List<Lecture> lectures = lectureRepository.findAll();
+        // For testing - return simple hardcoded recommendations
+        List<RecommendationDTO> subjectMatches = new ArrayList<>();
+        subjectMatches.add(new RecommendationDTO("Introduction to OOP", "Match for your current subject schedule", "Lecture Library", "https://youtube.com/example1", "Subject Match"));
 
-        // 1. Subject matching
-        Set<String> studentSubjects = timetable.stream()
-                .map(Timetable::getSubjectName)
-                .collect(Collectors.toSet());
+        List<RecommendationDTO> trending = new ArrayList<>();
+        trending.add(new RecommendationDTO("AI Basics", "Trending now", "Lecture Trending", "https://youtube.com/example3", "Trending"));
 
-        List<RecommendationDTO> subjectMatches = lectures.stream()
-                .filter(lecture -> studentSubjects.stream().anyMatch(subject ->
-                        lecture.getModuleName().equalsIgnoreCase(subject)
-                                || lecture.getTitle().equalsIgnoreCase(subject)
-                                || lecture.getCourse().equalsIgnoreCase(subject)
-                ))
-                .limit(5)
-                .map(lecture -> new RecommendationDTO(
-                        lecture.getTitle(),
-                        "Match for your current subject schedule: " + lecture.getModuleName(),
-                        "Lecture Library",
-                        lecture.getYoutubeUrl(),
-                        "Subject Match"
-                ))
-                .collect(Collectors.toList());
-
-        if (subjectMatches.isEmpty()) {
-            // fall back to a few no-match recommendations
-            subjectMatches = lectures.stream()
-                    .limit(3)
-                    .map(lecture -> new RecommendationDTO(
-                            lecture.getTitle(),
-                            "Suggested content for expanding your learning.",
-                            "Lecture Library",
-                            lecture.getYoutubeUrl(),
-                            "Subject Match"
-                    ))
-                    .collect(Collectors.toList());
-        }
-
-        // 2. Trending (most recently added by id descending, for demo as no timestamp)
-        List<RecommendationDTO> trending = lectures.stream()
-                .sorted(Comparator.comparingLong(Lecture::getId).reversed())
-                .limit(4)
-                .map(lecture -> new RecommendationDTO(
-                        lecture.getTitle(),
-                        "Trending now based on community views & relevance.",
-                        "Lecture Trending",
-                        lecture.getYoutubeUrl(),
-                        "Trending"
-                ))
-                .collect(Collectors.toList());
-
-        // 3. Latest updates (also by id)
-        List<RecommendationDTO> latestUpdates = lectures.stream()
-                .sorted(Comparator.comparingLong(Lecture::getId).reversed())
-                .limit(4)
-                .map(lecture -> new RecommendationDTO(
-                        lecture.getTitle(),
-                        "Newly uploaded material available now.",
-                        "Latest", lecture.getYoutubeUrl(),
-                        "Latest Update"
-                ))
-                .collect(Collectors.toList());
+        List<RecommendationDTO> latestUpdates = new ArrayList<>();
+        latestUpdates.add(new RecommendationDTO("Web Development", "Newly uploaded", "Latest", "https://youtube.com/example5", "Latest Update"));
 
         return new RecommendationsResponseDTO(subjectMatches, trending, latestUpdates);
     }

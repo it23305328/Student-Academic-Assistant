@@ -6,7 +6,7 @@ export default {
      * @param {Object} data - { name, email, password }
      */
     registerStudent(data) {
-        return api.post('/auth/register', data);
+        return api.post('/register', data);
     },
 
     /**
@@ -14,6 +14,6 @@ export default {
      * @param {Object} data - { email, password }
      */
     loginStudent(data) {
-        return api.post('/auth/login', data);
+        return api.post('/login', data);
     }
 };
