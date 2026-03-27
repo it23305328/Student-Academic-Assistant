@@ -1,210 +1,191 @@
 <template>
-  <div class="timetable-wrapper">
+  <div class="dashboard-wrapper flex h-screen bg-[#050511] overflow-hidden">
+    <!-- Sidebar Navbar Component -->
+    <Navbar />
     
-    <!-- Ambient Background Bubbles -->
-    <div class="ambient-glows">
-      <div class="glow-bubble top-left"></div>
-      <div class="glow-bubble bottom-right"></div>
-    </div>
-
-    <!-- Sidebar Aside -->
-    <aside class="sidebar">
-      <div class="sidebar-inner">
-        <div class="sidebar-mesh"></div>
-        <div class="sidebar-brand">
-          <div class="brand-logo-icon">S</div>
-          <span class="brand-name">StudentX</span>
-        </div>
-        
-        <nav class="sidebar-nav">
-          <router-link to="/student-dashboard" class="nav-item">
-            <svg class="icon nav-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-            </svg>
-            <span class="nav-text">Overview</span>
-          </router-link>
-
-          <router-link to="/timetable" class="nav-item active">
-            <svg class="icon nav-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <span class="nav-text">Timetable</span>
-          </router-link>
-
-          <router-link to="/attendance" class="nav-item">
-            <svg class="icon nav-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
-            <span class="nav-text">Attendance</span>
-          </router-link>
-        </nav>
-
-        <div class="sidebar-footer">
-          <router-link to="/login" class="logout-link" @click="handleLogout">
-            <svg class="icon logout-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-            </svg>
-            <span class="nav-text">Logout</span>
-          </router-link>
-        </div>
-      </div>
-    </aside>
-
     <!-- Main Content Area -->
-    <div class="main-layout">
-      
+    <div class="main-layout flex-1 flex flex-col overflow-hidden">
       <!-- Top Header Sticky -->
-      <header class="header">
-        <div class="header-left">
-           <h1 class="header-title">Timetable</h1>
-           <div class="view-toggle">
-             <button @click="setViewMode('today')" :class="['toggle-btn', viewMode === 'today' ? 'active' : '']">Today</button>
-             <button @click="setViewMode('all')" :class="['toggle-btn', viewMode === 'all' ? 'active' : '']">Full Schedule</button>
-           </div>
+      <header class="header flex items-center justify-between h-14 px-3 mb-3 flex-shrink-0">
+        <div class="header-left flex items-center gap-6">
+          <h1 class="text-base font-extrabold text-white m-0">Timetable</h1>
+          <div class="view-toggle flex bg-white/5 rounded-full p-1 border border-white/10">
+            <button 
+              @click="setViewMode('today')" 
+              :class="[
+                'bg-transparent border-none text-gray-400 text-[10px] font-bold px-5 py-1.5 rounded-full cursor-pointer transition-all duration-200',
+                viewMode === 'today' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' : 'hover:bg-white/5 hover:text-white'
+              ]"
+            >
+              Today
+            </button>
+            <button 
+              @click="setViewMode('all')" 
+              :class="[
+                'bg-transparent border-none text-gray-400 text-[10px] font-bold px-5 py-1.5 rounded-full cursor-pointer transition-all duration-200',
+                viewMode === 'all' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' : 'hover:bg-white/5 hover:text-white'
+              ]"
+            >
+              Full Schedule
+            </button>
+          </div>
         </div>
 
-        <div class="header-right">
-           <button @click="toggleForm" class="btn-add">
-             {{ showForm ? 'Close Form' : '+ New Entry' }}
-           </button>
-           <div class="header-notif-group">
-            <div class="notif-bell-circle">
-              <NotificationBell class="icon notif-bell" />
+        <div class="header-right flex items-center gap-3">
+          <button @click="toggleForm" class="bg-indigo-600 text-white border-none rounded-full px-5 py-1.5 text-[11px] font-extrabold cursor-pointer transition-all hover:bg-indigo-500 hover:-translate-y-px shadow-md shadow-indigo-500/30">
+            {{ showForm ? 'Close Form' : '+ New Entry' }}
+          </button>
+          <div class="header-notif-group flex bg-white/5 border border-white/10 rounded-full p-1">
+            <div class="notif-bell-circle w-8 h-8 flex items-center justify-center rounded-full cursor-pointer">
+              <Bell class="w-5 h-5 text-gray-400" />
             </div>
-           </div>
+          </div>
         </div>
       </header>
 
       <!-- Main Content Scroll Area -->
-      <main class="content-scroll">
-        <div class="timetable-container">
+      <main class="content-scroll flex-1 overflow-y-auto pr-2">
+        <div class="timetable-container flex flex-col gap-6 pb-10">
           
-          <!-- Add/Edit Form Section (Task 2 & 3) -->
+          <!-- Add/Edit Form Section -->
           <transition name="fade">
-            <div v-if="showForm" class="crud-form-card">
-              <div class="form-header">
-                <h3 class="form-title">{{ editingId ? 'Edit Entry' : 'Add New Subject' }}</h3>
+            <div v-if="showForm" class="crud-form-card bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 mb-6 shadow-2xl">
+              <div class="form-header mb-5">
+                <h3 class="form-title text-sm font-extrabold text-white">{{ editingId ? 'Edit Entry' : 'Add New Subject' }}</h3>
               </div>
-              <div class="form-grid">
-                <div class="input-field">
-                  <label>Subject Name</label>
-                  <input type="text" v-model="form.subjectName" placeholder="e.g. Data Science">
+              <div class="form-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                <div class="input-field flex flex-col gap-2">
+                  <label class="text-[10px] font-extrabold text-gray-500 uppercase">Subject Name</label>
+                  <input 
+                    type="text" 
+                    v-model="form.subjectName" 
+                    placeholder="e.g. Data Science"
+                    class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-indigo-500 focus:bg-white/10 transition-all"
+                  >
                 </div>
-                <div class="input-field">
-                  <label>Date</label>
-                  <input type="date" v-model="form.date">
+                <div class="input-field flex flex-col gap-2">
+                  <label class="text-[10px] font-extrabold text-gray-500 uppercase">Date</label>
+                  <input 
+                    type="date" 
+                    v-model="form.date"
+                    class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-indigo-500 focus:bg-white/10 transition-all [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-80 [&::-webkit-calendar-picker-indicator]:cursor-pointer hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
+                  >
                 </div>
-                <div class="input-field">
-                  <label>Start Time</label>
-                  <input type="time" v-model="form.startTime">
+                <div class="input-field flex flex-col gap-2">
+                  <label class="text-[10px] font-extrabold text-gray-500 uppercase">Start Time</label>
+                  <input 
+                    type="time" 
+                    v-model="form.startTime"
+                    class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-indigo-500 focus:bg-white/10 transition-all [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-80 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                  >
                 </div>
-                <div class="input-field">
-                  <label>End Time</label>
-                  <input type="time" v-model="form.endTime">
+                <div class="input-field flex flex-col gap-2">
+                  <label class="text-[10px] font-extrabold text-gray-500 uppercase">End Time</label>
+                  <input 
+                    type="time" 
+                    v-model="form.endTime"
+                    class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-indigo-500 focus:bg-white/10 transition-all [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-80"
+                  >
                 </div>
-                <div class="input-field">
-                  <label>Venue</label>
-                  <input type="text" v-model="form.venue" placeholder="e.g. Lab 01">
+                <div class="input-field flex flex-col gap-2">
+                  <label class="text-[10px] font-extrabold text-gray-500 uppercase">Venue</label>
+                  <input 
+                    type="text" 
+                    v-model="form.venue" 
+                    placeholder="e.g. Lab 01"
+                    class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-indigo-500 focus:bg-white/10 transition-all"
+                  >
                 </div>
               </div>
-              <div class="form-actions">
-                <button @click="cancelForm" class="btn-cancel">Cancel</button>
-                <button @click="saveEntry" class="btn-save">{{ editingId ? 'Update Entry' : 'Save Entry' }}</button>
+              <div class="form-actions flex justify-end gap-3">
+                <button @click="cancelForm" class="btn-cancel bg-transparent text-gray-500 border border-white/10 px-6 py-2.5 rounded-xl font-bold text-xs cursor-pointer transition-all hover:bg-white/5 hover:text-white">Cancel</button>
+                <button @click="saveEntry" class="btn-save bg-indigo-600 text-white border-none px-6 py-2.5 rounded-xl font-extrabold text-xs cursor-pointer transition-all hover:bg-indigo-500 shadow-md shadow-indigo-500/30">{{ editingId ? 'Update Entry' : 'Save Entry' }}</button>
               </div>
             </div>
           </transition>
 
           <!-- Search (Only for Full View) -->
-          <div v-if="viewMode === 'all'" class="search-section">
-             <div class="search-box">
-               <svg class="icon search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-               </svg>
-               <input type="text" v-model="searchQuery" placeholder="Filter subjects..." class="search-input">
-             </div>
+          <div v-if="viewMode === 'all'" class="search-section mb-4">
+            <div class="search-box relative w-72">
+              <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <input 
+                type="text" 
+                v-model="searchQuery" 
+                placeholder="Filter subjects..." 
+                class="search-input w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-9 pr-4 text-white text-xs outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all"
+              >
+            </div>
           </div>
 
           <!-- Loading Overlay -->
-          <div v-if="isLoading" class="loading-overlay">
-            <div class="spinner"></div>
-            <p class="loading-text">Loading secure data...</p>
+          <div v-if="isLoading" class="loading-overlay flex flex-col items-center justify-center py-16">
+            <div class="spinner w-8 h-8 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
+            <p class="loading-text text-gray-500 text-sm">Loading secure data...</p>
           </div>
 
           <!-- Empty State -->
-          <div v-else-if="filteredTimetable.length === 0" class="empty-placeholder">
-            <svg class="icon large-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <p>Your timetable is empty. Add a new entry to get started.</p>
+          <div v-else-if="filteredTimetable.length === 0" class="empty-placeholder text-center py-16">
+            <Calendar class="w-12 h-12 text-gray-500 mx-auto mb-4 opacity-30" />
+            <p class="text-gray-500 text-sm">Your timetable is empty. Add a new entry to get started.</p>
           </div>
 
           <!-- Timetable Content -->
           <div v-else class="timetable-content">
             
             <!-- Today's View List -->
-            <div v-if="viewMode === 'today'" class="timetable-today-grid">
-              <div v-for="entry in filteredTimetable" :key="entry.id" class="entry-card">
-                <div class="card-glow"></div>
-                <div class="entry-header">
-                  <div class="subject-group">
-                    <div class="accent-bar"></div>
-                    <h3 class="subject-name">{{ entry.subjectName }}</h3>
+            <div v-if="viewMode === 'today'" class="timetable-today-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div v-for="entry in filteredTimetable" :key="entry.id" class="entry-card bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/30">
+                <div class="card-glow absolute inset-0 bg-gradient-to-tr from-indigo-500/5 to-transparent pointer-events-none"></div>
+                <div class="entry-header flex justify-between items-start mb-5">
+                  <div class="subject-group flex items-center gap-3">
+                    <div class="accent-bar w-1 h-5 bg-indigo-500 rounded-full"></div>
+                    <h3 class="subject-name text-sm font-extrabold text-white m-0">{{ entry.subjectName }}</h3>
                   </div>
-                  <div class="action-icons">
-                    <button @click="editEntry(entry)" class="icon-btn edit">
-                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                      </svg>
+                  <div class="action-icons flex gap-2">
+                    <button @click="editEntry(entry)" class="icon-btn edit bg-transparent border-none text-gray-500 p-1.5 rounded-lg cursor-pointer transition-all hover:text-indigo-400 hover:bg-indigo-500/10">
+                      <Edit2 class="w-4 h-4" />
                     </button>
-                    <button @click="deleteEntry(entry.id)" class="icon-btn delete">
-                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                      </svg>
+                    <button @click="deleteEntry(entry.id)" class="icon-btn delete bg-transparent border-none text-gray-500 p-1.5 rounded-lg cursor-pointer transition-all hover:text-red-400 hover:bg-red-500/10">
+                      <Trash2 class="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-                <div class="entry-details">
-                  <div class="detail-row">
-                    <svg class="icon detail-icon accent-indigo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                <div class="entry-details flex flex-col gap-3">
+                  <div class="detail-row flex items-center gap-2.5 text-xs text-gray-400">
+                    <Clock class="w-4 h-4 text-indigo-400" />
                     <span>{{ formatTime(entry.startTime) }} - {{ formatTime(entry.endTime) }}</span>
                   </div>
-                  <div class="detail-row">
-                    <svg class="icon detail-icon accent-fuchsia" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                    </svg>
+                  <div class="detail-row flex items-center gap-2.5 text-xs text-gray-400">
+                    <MapPin class="w-4 h-4 text-purple-400" />
                     <span>{{ entry.venue || 'Virtual Lab' }}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Full Weekly Grid View (Professional Grid) -->
-            <div v-else class="timetable-grid-wrapper">
-              <div class="table-responsive no-scrollbar">
-                <table class="weekly-grid-table">
+            <!-- Full Weekly Grid View -->
+            <div v-else class="timetable-grid-wrapper bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+              <div class="table-responsive w-full overflow-x-auto">
+                <table class="weekly-grid-table w-full border-separate border-spacing-0.5 min-w-[800px]">
                   <thead>
                     <tr>
-                      <th class="time-col">TIME</th>
-                      <th v-for="day in weekDays" :key="day" class="day-header">{{ day.toUpperCase() }}</th>
+                      <th class="time-col w-12 px-1 py-1.5 text-[8px] font-extrabold text-gray-500 text-center bg-white/5 rounded">TIME</th>
+                      <th v-for="day in weekDays" :key="day" class="day-header px-1 py-1.5 text-[8px] font-extrabold text-gray-500 text-center bg-white/5 rounded">{{ day.toUpperCase() }}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="hour in timeSlots" :key="hour">
-                      <td class="time-cell">{{ hour.toString().padStart(2, '0') }}:00</td>
-                      <td v-for="day in weekDays" :key="day" class="grid-cell">
-                        <div v-for="entry in weeklyGrid[day][hour]" :key="entry.id" class="grid-entry" @click="editEntry(entry)">
-                          <div class="entry-slot-bg"></div>
-                          <div class="entry-inner">
-                            <div class="entry-header-mini">
-                              <span class="entry-subject">{{ entry.subjectName }}</span>
-                              <span class="entry-date-tag">{{ formatDateShort(entry.date) }}</span>
+                      <td class="time-cell text-center text-[8px] font-extrabold text-gray-600 py-1.5 bg-black/20 rounded">{{ hour.toString().padStart(2, '0') }}:00</td>
+                      <td v-for="day in weekDays" :key="day" class="grid-cell bg-white/5 border border-white/5 rounded h-14 align-top p-0.5">
+                        <div v-for="entry in weeklyGrid[day][hour]" :key="entry.id" class="grid-entry relative bg-indigo-500/10 border border-indigo-500/20 rounded p-1 h-full cursor-pointer transition-all hover:bg-indigo-500/20 hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-500/20" @click="editEntry(entry)">
+                          <div class="entry-slot-bg absolute inset-0 bg-gradient-to-tr from-indigo-500/20 to-transparent pointer-events-none rounded"></div>
+                          <div class="entry-inner relative z-10 flex flex-col gap-1">
+                            <div class="entry-header-mini flex justify-between items-start gap-1">
+                              <span class="entry-subject text-[9px] font-extrabold text-white leading-tight break-words">{{ entry.subjectName }}</span>
+                              <span class="entry-date-tag text-[8px] font-extrabold text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded uppercase flex-shrink-0">{{ formatDateShort(entry.date) }}</span>
                             </div>
-                            <div class="entry-meta">
-                              <svg class="icon-tiny" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                              </svg>
+                            <div class="entry-meta flex items-center gap-1 text-[7px] text-gray-400">
+                              <MapPin class="w-2.5 h-2.5" />
                               <span>{{ entry.venue || 'TBA' }}</span>
                             </div>
                           </div>
@@ -216,33 +197,30 @@
               </div>
             </div>
 
-            <!-- Task 2: Category B - Future Events Section -->
-            <div v-if="viewMode === 'all' && futureEvents.length > 0" class="future-events-section">
-              <h2 class="future-section-title">Upcoming Beyond This Week</h2>
-              <div class="future-cards-grid">
-                <div v-for="event in futureEvents" :key="event.id" class="future-card" @click="editEntry(event)">
-                  <div class="card-glass-effect"></div>
-                  <div class="future-card-header">
-                    <h3 class="future-subject-name">{{ event.subjectName }}</h3>
-                    <div class="days-remaining-badge">{{ getDaysRemaining(event.date) }}</div>
+            <!-- Future Events Section -->
+            <div v-if="viewMode === 'all' && futureEvents.length > 0" class="future-events-section mt-10">
+              <h2 class="future-section-title text-sm font-extrabold text-gray-500 uppercase mb-5 flex items-center gap-4">
+                Upcoming Beyond This Week
+                <span class="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent"></span>
+              </h2>
+              <div class="future-cards-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div v-for="event in futureEvents" :key="event.id" class="future-card bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 relative overflow-hidden transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:scale-[1.02] hover:bg-white/10 hover:border-indigo-500/40 hover:shadow-2xl" @click="editEntry(event)">
+                  <div class="card-glass-effect absolute top-0 left-0 right-0 h-full bg-gradient-to-tr from-indigo-500/10 to-transparent pointer-events-none"></div>
+                  <div class="future-card-header flex justify-between items-start mb-5 relative z-10">
+                    <h3 class="future-subject-name text-base font-extrabold text-white max-w-[65%] leading-tight">{{ event.subjectName }}</h3>
+                    <div class="days-remaining-badge bg-indigo-500/10 text-indigo-400 px-3 py-1.5 rounded-lg text-[10px] font-extrabold border border-indigo-500/20 whitespace-nowrap">{{ getDaysRemaining(event.date) }}</div>
                   </div>
-                  <div class="future-card-body">
-                    <div class="future-detail">
-                      <svg class="icon accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                      </svg>
+                  <div class="future-card-body flex flex-col gap-3.5 relative z-10">
+                    <div class="future-detail flex items-center gap-3 text-xs text-gray-400">
+                      <Calendar class="w-4 h-4 text-blue-400" />
                       <span>{{ formatDateLong(event.date) }}</span>
                     </div>
-                    <div class="future-detail">
-                      <svg class="icon accent-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
+                    <div class="future-detail flex items-center gap-3 text-xs text-gray-400">
+                      <Clock class="w-4 h-4 text-purple-400" />
                       <span>{{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}</span>
                     </div>
-                    <div class="future-detail">
-                      <svg class="icon accent-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                      </svg>
+                    <div class="future-detail flex items-center gap-3 text-xs text-gray-400">
+                      <MapPin class="w-4 h-4 text-pink-400" />
                       <span>{{ event.venue || 'Virtual Lab' }}</span>
                     </div>
                   </div>
@@ -253,7 +231,6 @@
           </div>
         </div>
       </main>
-      
     </div>
   </div>
 </template>
@@ -261,19 +238,18 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { Bell, Search, Calendar, Clock, MapPin, Edit2, Trash2 } from 'lucide-vue-next';
 import timetableService from '../services/timetableService';
-import NotificationBell from '../components/NotificationBell.vue';
+import Navbar from '../components/Navbar.vue';
 
 const router = useRouter();
 
-// Task 2: Data State
 const viewMode = ref('today');
 const timetableData = ref([]);
 const searchQuery = ref('');
 const isLoading = ref(true);
 const studentId = ref(null);
 
-// Form Control
 const showForm = ref(false);
 const editingId = ref(null);
 const form = ref({
@@ -287,7 +263,6 @@ const form = ref({
 const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const timeSlots = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
-// Privacy Redirect (Task 2)
 const checkAuth = () => {
   const storedId = localStorage.getItem('studentId');
   if (!storedId) {
@@ -373,10 +348,8 @@ const setViewMode = (mode) => {
   fetchData();
 };
 
-// Formatting
 const formatTime = (time) => {
   if (!time) return '';
-  // Handling both LocalTime (08:30:00) and HH:mm
   const timeStr = time.length === 5 ? time : time.substring(0, 5);
   return timeStr;
 };
@@ -387,16 +360,9 @@ const formatDateShort = (dateStr) => {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-const formatDate = (dateStr) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-};
-
-// Task 1: Logic Update - Split categories
 const getCurrentWeekRange = () => {
   const now = new Date();
   const day = now.getDay();
-  // Adjust so Monday is 1, Sunday is 0 -> Mon becomes 0, Sun becomes 6
   const diffToMonday = (day === 0 ? -6 : 1 - day);
   
   const monday = new Date(now);
@@ -482,388 +448,34 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Base Layout & Theme */
-.timetable-wrapper {
-  display: flex;
-  height: 100vh;
-  background-color: #050511;
-  color: #cadbee;
-  font-family: 'Inter', system-ui, sans-serif;
-  overflow: hidden;
-  position: relative;
+/* Animations */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Strict Icons Size Task 3 */
-.icon {
-  width: 20px !important;
-  height: 20px !important;
-  min-width: 20px !important;
-  min-height: 20px !important;
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
-/* Sidebar & Header (Clean CSS) */
-.sidebar { width: 220px; padding: 10px; z-index: 20; }
-.sidebar-inner {
-  height: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
+/* Fade transitions */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
 }
-.sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-.nav-item { display: flex; align-items: center; padding: 10px 14px; border-radius: 12px; color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: 600; }
-.nav-item.active { background: rgba(255, 255, 255, 0.05); color: white; }
-
-.main-layout { flex: 1; display: flex; flex-direction: column; padding: 12px 12px 12px 0; }
-.header { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; margin-bottom: 12px; }
-.header-title { font-size: 16px; font-weight: 800; color: white; }
-
-.view-toggle { display: flex; background: rgba(255, 255, 255, 0.04); border-radius: 999px; padding: 3px; border: 1px solid rgba(255, 255, 255, 0.08); }
-.toggle-btn { background: transparent; border: none; color: #94a3b8; font-size: 10px; font-weight: 700; padding: 6px 18px; border-radius: 999px; cursor: pointer; transition: 0.3s; }
-.toggle-btn.active { background: #6366f1; color: white; box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); }
-
-.btn-add { background: #6366f1; color: white; border: none; border-radius: 999px; padding: 8px 18px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
-.btn-add:hover { background: #4f46e5; transform: translateY(-1px); }
-
-/* CRUD Form Card (Task 2 & 3) */
-.crud-form-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-.form-header { margin-bottom: 20px; }
-.form-title { font-size: 15px; font-weight: 900; color: white; }
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.input-field { display: flex; flex-direction: column; gap: 8px; }
-.input-field label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; }
-.input-field input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; color: white; font-size: 13px; outline: none; }
-.input-field input:focus { border-color: #6366f1; background: rgba(255, 255, 255, 0.05); }
-
-.input-field input::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  cursor: pointer;
-  opacity: 0.8;
-  transition: 0.2s;
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
-.input-field input::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
-  transform: scale(1.1);
+/* Scrollbar styling */
+.content-scroll::-webkit-scrollbar {
+  width: 4px;
 }
-
-.form-actions { display: flex; justify-content: flex-end; gap: 12px; }
-.btn-save { background: #6366f1; color: white; border: none; padding: 10px 24px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; }
-.btn-cancel { background: transparent; color: #64748b; border: 1px solid rgba(255,255,255,0.05); padding: 10px 24px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; }
-
-/* Content List Styles */
-.content-scroll { flex: 1; overflow-y: auto; padding-right: 8px; }
-.search-section { margin-bottom: 24px; }
-.search-box { position: relative; width: 300px; }
-.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #475569; }
-.search-input { width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 999px; padding: 10px 16px 10px 40px; color: white; font-size: 12px; outline: none; }
-
-.timetable-today-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.entry-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 24px; position: relative; overflow: hidden; }
-.entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-.action-icons { display: flex; gap: 8px; }
-.icon-btn { background: rgba(255,255,255,0.03); border: none; color: #64748b; padding: 6px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-.icon-btn.edit:hover { color: #6366f1; background: rgba(99,102,241,0.1); }
-.icon-btn.delete:hover { color: #f87171; background: rgba(248,113,113,0.1); }
-
-.subject-name { font-size: 15px; font-weight: 800; color: white; margin: 0; }
-.accent-bar { width: 3px; height: 18px; background: #6366f1; border-radius: 99px; }
-.subject-group { display: flex; align-items: center; gap: 12px; }
-
-.entry-details { display: flex; flex-direction: column; gap: 12px; }
-.detail-row { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #94a3b8; }
-.accent-indigo { color: #6366f1; }
-.accent-fuchsia { color: #d946ef; }
-
-/* Sidebar Footer & Others */
-.sidebar-footer { border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto; padding-top: 12px; }
-.logout-link { display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-decoration: none; color: #64748b; font-size: 13px; font-weight: 600; }
-.logout-link:hover { color: #f87171; }
-
-.glow-bubble { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.05; pointer-events: none; }
-.top-left { width: 40vw; height: 40vw; top: -10%; left: -10%; background: #6366f1; }
-.bottom-right { width: 30vw; height: 30vw; bottom: -10%; right: -5%; background: #d946ef; }
-
-.loading-overlay { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
-.spinner { width: 32px; height: 32px; border: 3px solid rgba(99, 102, 241, 0.2); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s, transform 0.3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-10px); }
-
-.timetable-grid-wrapper {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-}
-
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.weekly-grid-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 2px;
-  min-width: 100%;
-  table-layout: fixed;
-}
-
-.time-col { width: 35px; }
-
-.day-header {
-  padding: 6px 2px;
-  font-size: 8px;
-  font-weight: 900;
-  color: #64748b;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.03);
-  letter-spacing: 0.02em;
+.content-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
 }
-
-.time-cell {
-  text-align: center;
-  font-size: 8px;
-  font-weight: 800;
-  color: #475569;
-  padding: 6px 0;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+.content-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
-
-.grid-cell {
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px dashed rgba(255, 255, 255, 0.02);
-  border-radius: 4px;
-  height: 55px;
-  vertical-align: top;
-  padding: 1px;
-}
-
-.grid-entry {
-  position: relative;
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 4px;
-  padding: 2px;
-  height: 100%;
-  cursor: pointer;
-  transition: 0.3s;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.grid-entry:hover {
-  background: rgba(99, 102, 241, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
-}
-
-.entry-slot-bg {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.2), transparent);
-  pointer-events: none;
-}
-
-.entry-inner {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.entry-header-mini {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 4px;
-}
-
-.entry-date-tag {
-  font-size: 8px;
-  font-weight: 900;
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
-  padding: 2px 5px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-
-.entry-subject {
-  font-size: 9px;
-  font-weight: 800;
-  color: white;
-  display: block;
-  line-height: 1.1;
-  word-wrap: break-word;
-  white-space: normal;
-}
-
-.entry-meta {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 7px;
-  color: #94a3b8;
-}
-
-.icon-tiny {
-  width: 10px !important;
-  height: 10px !important;
-}
-
-@media (max-width: 1024px) {
-  .weekly-grid-table { min-width: 100%; }
-}
-
-@media (max-width: 768px) {
-  .sidebar { position: fixed; left: -260px; }
-  .main-layout { padding: 12px; }
-}
-
-/* Task 2: Future Events Section & Premium Cards */
-.future-events-section {
-  margin-top: 40px;
-  animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.future-section-title {
-  font-size: 14px;
-  font-weight: 900;
-  color: #64748b;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  letter-spacing: 0.1em;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.future-section-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
-}
-
-.future-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding: 5px 5px 20px 5px;
-}
-
-.future-card {
-  min-width: 0;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.future-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(99, 102, 241, 0.1);
-}
-
-.card-glass-effect {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent);
-  pointer-events: none;
-}
-
-.future-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.future-subject-name {
-  font-size: 16px;
-  font-weight: 800;
-  color: white;
-  margin: 0;
-  max-width: 65%;
-  line-height: 1.4;
-}
-
-.days-remaining-badge {
-  background: rgba(99, 102, 241, 0.1);
-  color: #818cf8;
-  padding: 6px 12px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  border: 1px solid rgba(99, 102, 241, 0.1);
-  white-space: nowrap;
-}
-
-.future-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  position: relative;
-  z-index: 1;
-}
-
-.future-detail {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
-  color: #94a3b8;
-  font-weight: 500;
-}
-
-.accent-blue { color: #60a5fa; opacity: 0.8; }
-.accent-purple { color: #a78bfa; opacity: 0.8; }
-.accent-pink { color: #f472b6; opacity: 0.8; }
-
 </style>

@@ -1,0 +1,46 @@
+# --- OS Metadata ---
+.DS_Store
+Thumbs.db
+
+# --- IDEs and Editors ---
+.vscode/
+.idea/
+*.iws
+*.iml
+*.ipr
+.classpath
+.project
+.settings/
+.nbproject/
+
+# --- Node / Vue.js (Frontend) ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Spring Boot / Java (Backend) ---
+target/
+build/
+.gradle/
+bin/
+out/
+extracted/
+*.jar
+*.war
+*.ear
+
+# --- Environment & Secrets ---
+.env
+.env.local
+.env.*.local
+application-local.properties
+application-local.yml
+
+# --- Logs ---
+*.log
+logs/

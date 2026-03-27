@@ -1,93 +1,170 @@
 <template>
-  <div class="register-wrapper">
-    <!-- Ambient Background Bubbles -->
-    <div class="glow-container">
-      <div class="glow-ball glow-1"></div>
-      <div class="glow-ball glow-2"></div>
+  <div class="register-wrapper min-h-screen flex items-center justify-center bg-[#F8F9FA] font-sans relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none opacity-40">
+      <div class="absolute top-0 right-0 w-full h-1 bg-[#1A1A1A]"></div>
+      <div class="absolute top-20 left-10 w-48 h-48 border border-[#A89060]/10 rounded-full"></div>
     </div>
     
-    <div class="register-card">
-      <div class="card-header">
-        <div class="logo-circle">S</div>
-        <h1>Create Account</h1>
-        <p>Join StudentX dashboard system</p>
+    <div class="register-card w-full max-w-[500px] bg-white rounded-3xl p-12 shadow-xl shadow-black/[0.03] border border-gray-100 z-10 my-10">
+      <div class="card-header text-center mb-10">
+        <div class="logo-box w-14 h-14 bg-[#1A1A1A] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-black/10">
+          <span class="font-serif italic text-2xl text-[#A89060]">S</span>
+        </div>
+        <div class="flex items-center justify-center gap-2 mb-2">
+          <div class="h-[1px] w-4 bg-[#A89060]"></div>
+          <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#A89060]">New Enrollment</span>
+          <div class="h-[1px] w-4 bg-[#A89060]"></div>
+        </div>
+        <h1 class="text-3xl font-serif font-bold text-[#1A1A1A] m-0 mb-2">Create Account</h1>
+        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">Join the StudentX ecosystem</p>
       </div>
       
-      <form @submit.prevent="handleRegister" class="register-form">
-        <div class="input-group">
-          <label for="name">Full Name</label>
-          <input type="text" id="name" v-model="form.name" placeholder="John Doe" required>
+      <form @submit.prevent="handleRegister" class="register-form flex flex-col gap-6">
+        <div class="input-group flex flex-col gap-2">
+          <label for="name" class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Full Name</label>
+          <div class="relative">
+            <User class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#A89060]" />
+            <input 
+              type="text" 
+              id="name" 
+              v-model="form.name" 
+              placeholder="Enter your full name" 
+              class="w-full bg-[#F8F9FA] border border-transparent rounded-xl py-4 pl-11 pr-4 text-[#1A1A1A] text-sm transition-all focus:outline-none focus:border-[#A89060] focus:bg-white"
+              required
+            >
+          </div>
         </div>
 
-        <div class="input-group">
-          <label for="email">Email Address</label>
-          <input 
-            type="email" 
-            id="email" 
-            v-model="form.email" 
-            placeholder="example@my.sliit.lk" 
-            :class="{ 'input-error': emailError }"
-            required
-          >
-          <span v-if="emailError" class="error-text">{{ emailError }}</span>
-        </div>
-        
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" v-model="form.password" placeholder="••••••••" required>
-        </div>
-
-        <div class="dropdown-row">
-            <div class="input-group">
-                <label for="academicYear">Academic Year</label>
-                <select id="academicYear" v-model="form.academicYear" required>
-                    <option value="" disabled>Select Year</option>
-                    <option value="Year 1">Year 1</option>
-                    <option value="Year 2">Year 2</option>
-                    <option value="Year 3">Year 3</option>
-                    <option value="Year 4">Year 4</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="semester">Semester</label>
-                <select id="semester" v-model="form.semester" required>
-                    <option value="" disabled>Select Semester</option>
-                    <option value="Semester 1">Semester 1</option>
-                    <option value="Semester 2">Semester 2</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="dropdown-row">
-            <div class="input-group">
-                <label for="faculty">Faculty/Department</label>
-                <select id="faculty" v-model="form.faculty" @change="handleFacultyChange" required>
-                    <option value="" disabled>Select Faculty</option>
-                    <option v-for="faculty in faculties" :key="faculty" :value="faculty">
-                        {{ faculty }}
-                    </option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="course">Course/Specialization</label>
-                <select id="course" v-model="form.course" :disabled="!form.faculty" required>
-                    <option value="" disabled>Select Course</option>
-                    <option v-for="course in availableCourses" :key="course" :value="course">
-                        {{ course }}
-                    </option>
-                </select>
-            </div>
+        <div class="input-group flex flex-col gap-2">
+          <label for="email" class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Email Address</label>
+          <div class="relative">
+            <Mail class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#A89060]" />
+            <input 
+              type="email" 
+              id="email" 
+              v-model="form.email" 
+              placeholder="it22xxxx@my.sliit.lk" 
+              :class="[
+                'w-full bg-[#F8F9FA] border rounded-xl py-4 pl-11 pr-4 text-[#1A1A1A] text-sm transition-all focus:outline-none focus:border-[#A89060] focus:bg-white',
+                emailError ? 'border-red-500' : 'border-transparent'
+              ]"
+              required
+            >
+          </div>
+          <span v-if="emailError" class="error-text text-red-500 text-[10px] font-bold uppercase mt-1">{{ emailError }}</span>
         </div>
         
-        <button type="submit" class="register-btn" :disabled="isLoading || !isFormValid">
-          {{ isLoading ? 'Creating account...' : 'Create Account' }}
+        <div class="input-group flex flex-col gap-2">
+          <label for="password" class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Secure Password</label>
+          <div class="relative">
+            <Lock class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#A89060]" />
+            <input 
+              type="password" 
+              id="password" 
+              v-model="form.password" 
+              placeholder="••••••••" 
+              class="w-full bg-[#F8F9FA] border border-transparent rounded-xl py-4 pl-11 pr-4 text-[#1A1A1A] text-sm transition-all focus:outline-none focus:border-[#A89060] focus:bg-white"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="dropdown-row grid grid-cols-2 gap-4">
+          <div class="input-group flex flex-col gap-2">
+            <label for="academicYear" class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Academic Year</label>
+            <div class="relative">
+              <Calendar class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#A89060] pointer-events-none" />
+              <select 
+                id="academicYear" 
+                v-model="form.academicYear" 
+                class="w-full bg-[#F8F9FA] border border-transparent rounded-xl py-4 pl-11 pr-8 text-[#1A1A1A] text-sm appearance-none cursor-pointer transition-all focus:outline-none focus:border-[#A89060] focus:bg-white"
+                required
+              >
+                <option value="" disabled>Select Year</option>
+                <option value="Year 1">Year 1</option>
+                <option value="Year 2">Year 2</option>
+                <option value="Year 3">Year 3</option>
+                <option value="Year 4">Year 4</option>
+              </select>
+              <ChevronDown class="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+
+          <div class="input-group flex flex-col gap-2">
+            <label for="semester" class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Semester</label>
+            <div class="relative">
+              <BookOpen class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#A89060] pointer-events-none" />
+              <select 
+                id="semester" 
+                v-model="form.semester" 
+                class="w-full bg-[#F8F9FA] border border-transparent rounded-xl py-4 pl-11 pr-8 text-[#1A1A1A] text-sm appearance-none cursor-pointer transition-all focus:outline-none focus:border-[#A89060] focus:bg-white"
+                required
+              >
+                <option value="" disabled>Select Semester</option>
+                <option value="Semester 1">Semester 1</option>
+                <option value="Semester 2">Semester 2</option>
+              </select>
+              <ChevronDown class="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+        </div>
+
+        <div class="dropdown-row grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="input-group flex flex-col gap-2">
+            <label for="faculty" class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Faculty</label>
+            <div class="relative">
+              <Building2 class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#A89060] pointer-events-none" />
+              <select 
+                id="faculty" 
+                v-model="form.faculty" 
+                @change="handleFacultyChange" 
+                class="w-full bg-[#F8F9FA] border border-transparent rounded-xl py-4 pl-11 pr-8 text-[#1A1A1A] text-sm appearance-none cursor-pointer transition-all focus:outline-none focus:border-[#A89060] focus:bg-white"
+                required
+              >
+                <option value="" disabled>Select Faculty</option>
+                <option v-for="faculty in faculties" :key="faculty" :value="faculty">
+                  {{ faculty }}
+                </option>
+              </select>
+              <ChevronDown class="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+
+          <div class="input-group flex flex-col gap-2">
+            <label for="course" class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Specialization</label>
+            <div class="relative">
+              <GraduationCap class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#A89060] pointer-events-none" />
+              <select 
+                id="course" 
+                v-model="form.course" 
+                :disabled="!form.faculty" 
+                :class="[
+                  'w-full bg-[#F8F9FA] border border-transparent rounded-xl py-4 pl-11 pr-8 text-[#1A1A1A] text-sm appearance-none transition-all focus:outline-none focus:border-[#A89060] focus:bg-white',
+                  !form.faculty ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                ]"
+                required
+              >
+                <option value="" disabled>Select Course</option>
+                <option v-for="course in availableCourses" :key="course" :value="course">
+                  {{ course }}
+                </option>
+              </select>
+              <ChevronDown class="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+        </div>
+        
+        <button 
+          type="submit" 
+          class="register-btn bg-[#1A1A1A] text-white border-none rounded-xl py-4 text-[11px] font-black uppercase tracking-[0.2em] cursor-pointer transition-all hover:bg-[#A89060] hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-black/5 mt-4" 
+          :disabled="isLoading || !isFormValid"
+        >
+          {{ isLoading ? 'Processing...' : 'Complete Registration' }}
         </button>
       </form>
       
-      <div class="card-footer">
-        <p>Already have an account? <router-link to="/login">Sign In</router-link></p>
+      <div class="card-footer text-center mt-10 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+        <p>Already have an account? <router-link to="/login" class="text-[#A89060] hover:text-[#1A1A1A] transition-colors">Sign In</router-link></p>
       </div>
     </div>
   </div>
@@ -96,6 +173,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { User, Mail, Lock, Calendar, BookOpen, Building2, GraduationCap, ChevronDown } from 'lucide-vue-next';
 import api from '../services/api';
 
 const router = useRouter();
@@ -130,7 +208,7 @@ const emailError = computed(() => {
   if (!form.value.email) return '';
   const regex = /^[a-zA-Z0-9._%+-]+@my\.sliit\.lk$/i;
   if (!regex.test(form.value.email)) {
-    return 'Only university email addresses (@my.sliit.lk) are allowed';
+    return 'University email required (@my.sliit.lk)';
   }
   return '';
 });
@@ -159,7 +237,7 @@ const handleRegister = async () => {
     } catch (error) {
         console.error('Registration error:', error);
         if (error.response && error.response.data) {
-            alert(error.response.data); // Email already exists etc
+            alert(error.response.data);
         } else {
             alert('Registration failed. Please try again.');
         }
@@ -170,203 +248,31 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
-/* Pure CSS Register View Styles */
-.register-wrapper {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #050511;
-  font-family: 'Inter', -apple-system, sans-serif;
-  position: relative;
-  overflow: hidden;
-  color: #e2e8f0;
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;700;900&display=swap');
+
+.font-serif {
+  font-family: 'Playfair Display', serif;
 }
 
-.glow-container {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+.font-sans {
+  font-family: 'Inter', sans-serif;
 }
 
-.glow-ball {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.1;
+input::placeholder {
+  color: #9CA3AF;
+  font-weight: 500;
 }
 
-.glow-1 {
-  width: 40vw;
-  height: 40vw;
-  top: -10%;
-  left: -10%;
-  background-color: #4f46e5;
+select {
+  background-image: none;
 }
 
-.glow-2 {
-  width: 30vw;
-  height: 30vw;
-  bottom: -10%;
-  right: -5%;
-  background-color: #c026d3;
+/* Custom Scrollbar for the card if it overflows */
+.register-card::-webkit-scrollbar {
+  width: 4px;
 }
-
-.register-card {
-  width: 100%;
-  max-width: 450px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  z-index: 10;
-}
-
-.card-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.logo-circle {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #6366f1, #d946ef);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-  font-weight: 900;
-  font-size: 20px;
-  color: white;
-  box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-}
-
-.card-header h1 {
-  font-size: 24px;
-  font-weight: 800;
-  color: white;
-  margin: 0 0 8px;
-}
-
-.card-header p {
-  font-size: 14px;
-  color: #64748b;
-}
-
-.register-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.input-group label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.input-group input, 
-.input-group select {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px 16px;
-  color: white;
-  font-size: 14px;
-  transition: all 0.2s;
-  width: 100%;
-  appearance: none;
-}
-
-.input-group select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px;
-  cursor: pointer;
-}
-
-.input-group input:focus,
-.input-group select:focus {
-  outline: none;
-  border-color: #6366f1;
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-}
-
-.input-group select:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.dropdown-row {
-  display: flex;
-  gap: 16px;
-}
-
-.dropdown-row .input-group {
-  flex: 1;
-}
-
-.input-group input.input-error {
-  border-color: #ef4444;
-}
-
-.error-text {
-  color: #ef4444;
-  font-size: 11px;
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-.register-btn {
-  background: #6366f1;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 10px;
-}
-
-.register-btn:hover:not(:disabled) {
-  background: #4f46e5;
-  transform: translateY(-1px);
-}
-
-.register-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.card-footer {
-  text-align: center;
-  margin-top: 32px;
-  font-size: 14px;
-  color: #64748b;
-}
-
-.card-footer a {
-  color: #6366f1;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.card-footer a:hover {
-  text-decoration: underline;
+.register-card::-webkit-scrollbar-thumb {
+  background: #E5E7EB;
+  border-radius: 10px;
 }
 </style>
