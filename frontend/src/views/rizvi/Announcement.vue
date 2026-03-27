@@ -3,6 +3,7 @@
     <Navbar />
     
     <div class="main-layout flex-1 flex flex-col overflow-hidden">
+      <!-- Announcements Banner -->
       <div v-if="recentAnnouncements.length > 0" class="announcements-banner bg-white border border-gray-200 rounded-2xl mx-6 mt-6 mb-4 p-4 flex items-center gap-4 cursor-pointer transition-all hover:shadow-md">
         <div class="banner-icon text-3xl">
           <Megaphone class="w-8 h-8 text-[#A89060]" />
@@ -100,10 +101,14 @@
                         </div>
                       </div>
                       
+                      <!-- Content area with proper structure - matches admin side display -->
                       <div class="text-gray-600 text-sm leading-relaxed mb-4">
-                        <p :class="{ 'line-clamp-2': !expandedAnnouncements.includes(announcement.id) }">
+                        <div 
+                          :class="{ 'line-clamp-2': !expandedAnnouncements.includes(announcement.id) }"
+                          class="whitespace-pre-wrap"
+                        >
                           {{ announcement.content }}
-                        </p>
+                        </div>
                       </div>
                       
                       <div v-if="expandedAnnouncements.includes(announcement.id)" class="mt-4 pt-6 border-t border-gray-100 animate-fade-in">
@@ -379,5 +384,12 @@ onMounted(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Added for proper text formatting */
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.6;
 }
 </style>
