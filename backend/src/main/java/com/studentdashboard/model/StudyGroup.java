@@ -16,7 +16,7 @@ public class StudyGroup {
     @Column(nullable = false)
     private String creatorName;
     
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)  // Removed unique = true
     private String creatorEmail;
     
     @Column(nullable = false)

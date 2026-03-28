@@ -132,8 +132,17 @@
     </div>
 
     <!-- Create Modal -->
-    <div v-if="showCreateModal" class="fixed inset-0 bg-[#1A1A1A]/90 backdrop-blur-sm flex items-center justify-center z-[1000] p-4" @click="closeCreateModal">
-      <div class="relative bg-white rounded-3xl w-full max-w-lg p-10 max-h-[90vh] overflow-y-auto shadow-2xl" @click.stop>
+    <div v-if="showCreateModal" class="fixed inset-0 bg-[#1A1A1A]/90 backdrop-blur-sm flex items-center justify-center z-[1000] p-4">
+      <div class="relative bg-white rounded-3xl w-full max-w-lg p-10 max-h-[90vh] overflow-y-auto shadow-2xl">
+        <!-- Close button added here -->
+        <button 
+          @click="closeCreateModal" 
+          class="absolute top-6 right-6 text-gray-400 hover:text-[#1A1A1A] transition-colors text-2xl leading-none z-10"
+          aria-label="Close modal"
+        >
+          &times;
+        </button>
+        
         <div class="mb-8">
           <h2 class="text-3xl font-serif font-bold text-[#1A1A1A] mb-2">Create Group</h2>
           <div class="h-1 w-12 bg-[#A89060]"></div>
@@ -189,17 +198,41 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Module</label>
-              <input v-model="newGroup.module" type="text" required placeholder="e.g., Software Eng." class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all">
+              <input 
+                v-model="newGroup.module" 
+                type="text" 
+                required 
+                placeholder="e.g., Software Eng." 
+                class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all"
+                @input="validateTextAndNoSpecialChars($event, 'module')"
+              >
+              <p v-if="validationErrors.module" class="text-xs text-red-500 mt-1">{{ validationErrors.module }}</p>
             </div>
             <div>
               <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Specialization</label>
-              <input v-model="newGroup.specialization" type="text" required placeholder="e.g., IT / CS" class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all">
+              <input 
+                v-model="newGroup.specialization" 
+                type="text" 
+                required 
+                placeholder="e.g., IT / CS" 
+                class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all"
+                @input="validateTextAndNoSpecialChars($event, 'specialization')"
+              >
+              <p v-if="validationErrors.specialization" class="text-xs text-red-500 mt-1">{{ validationErrors.specialization }}</p>
             </div>
           </div>
           
           <div>
             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Discussion Topic</label>
-            <input v-model="newGroup.topic" type="text" required placeholder="What will the group focus on?" class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all">
+            <input 
+              v-model="newGroup.topic" 
+              type="text" 
+              required 
+              placeholder="What will the group focus on?" 
+              class="w-full px-4 py-3 bg-[#F8F9FA] border border-transparent rounded-xl focus:outline-none focus:border-[#A89060] focus:bg-white transition-all"
+              @input="validateTextAndNoSpecialChars($event, 'topic')"
+            >
+            <p v-if="validationErrors.topic" class="text-xs text-red-500 mt-1">{{ validationErrors.topic }}</p>
           </div>
           
           <div>
@@ -209,7 +242,7 @@
           
           <div class="flex gap-4 pt-6">
             <button type="button" @click="closeCreateModal" class="flex-1 px-6 py-4 rounded-xl text-xs font-black uppercase tracking-widest text-gray-400 hover:text-[#1A1A1A] transition-all">Cancel</button>
-            <button type="submit" :disabled="submitting" class="flex-1 bg-[#1A1A1A] text-white px-6 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#A89060] transition-all shadow-lg shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button type="submit" :disabled="submitting || hasValidationErrors" class="flex-1 bg-[#1A1A1A] text-white px-6 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#A89060] transition-all shadow-lg shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed">
               {{ submitting ? 'Creating...' : 'Create Group' }}
             </button>
           </div>
@@ -347,7 +380,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Users, Calendar, BookOpen, Phone, RefreshCw, Trash2, CheckCircle, XCircle, AlertCircle } from 'lucide-vue-next';
 import Navbar from '../../components/Navbar.vue';
 import studyGroupService from '../../services/studyGroupService';
@@ -365,6 +398,20 @@ const joining = ref(false);
 const deleting = ref(false);
 const leaving = ref(false);
 const notificationToasts = ref([]);
+
+// Validation errors object
+const validationErrors = ref({
+  module: '',
+  specialization: '',
+  topic: ''
+});
+
+// Computed property to check if there are any validation errors
+const hasValidationErrors = computed(() => {
+  return validationErrors.value.module !== '' || 
+         validationErrors.value.specialization !== '' || 
+         validationErrors.value.topic !== '';
+});
 
 // Get current user from localStorage
 const currentUser = ref({
@@ -389,6 +436,22 @@ const joinData = ref({
   email: '',
   phone: ''
 });
+
+// Validation function to check if input contains only numbers or special characters
+const validateTextAndNoSpecialChars = (event, field) => {
+  const value = event.target.value;
+  const numberRegex = /^\d+$/;
+  // Special characters regex: anything that is not a letter (a-z A-Z), not a space, not a hyphen, not a slash, not a period, not a comma, not an apostrophe
+  const specialCharRegex = /[^a-zA-Z\s\-/.,']/;
+  
+  if (numberRegex.test(value)) {
+    validationErrors.value[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} cannot contain only numbers. Please enter valid text.`;
+  } else if (specialCharRegex.test(value)) {
+    validationErrors.value[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} cannot contain special characters. Please use letters, spaces, hyphens, slashes, periods, commas, or apostrophes only.`;
+  } else {
+    validationErrors.value[field] = '';
+  }
+};
 
 const showToast = (message, type = 'success') => {
   const id = Date.now();
@@ -436,6 +499,13 @@ const isMember = (group) => {
 };
 
 const openCreateModal = () => {
+  // Reset validation errors
+  validationErrors.value = {
+    module: '',
+    specialization: '',
+    topic: ''
+  };
+  
   newGroup.value = {
     creatorName: currentUser.value.name || '',
     creatorEmail: currentUser.value.email || '',
@@ -455,6 +525,12 @@ const closeCreateModal = () => {
 };
 
 const createStudyGroup = async () => {
+  // Check if there are any validation errors
+  if (hasValidationErrors.value) {
+    showToast('Please fix validation errors before submitting', 'error');
+    return;
+  }
+  
   // Validate phone number
   if (!validatePhoneNumber(newGroup.value.creatorPhone)) {
     showToast('Phone number must start with "07" and be exactly 10 digits', 'error');
